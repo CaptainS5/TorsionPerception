@@ -100,15 +100,15 @@ try
             
             % initial welcome
             textBlock = ['Block ', num2str(blockN)];
-            Screen('DrawText', prm.screen.windowPtr, textBlock, prm.screen.center(1)-80, prm.screen.center(2), prm.screen.whiteColour);
+            Screen('DrawText', prm.screen.windowPtr, textBlock, prm.screen.center(1)-60, prm.screen.center(2), prm.screen.whiteColour);
             if info.reportStyle==-1
                 reportInstruction = 'Report LOWER';
-            elseif reportStyle==1
+            elseif info.reportStyle==1
                 reportInstruction = 'Report HIGHER';
             else
                 reportStyle = 'Wrong! Get experimenter.'
             end
-            Screen('DrawText', prm.screen.windowPtr, reportInstruction, prm.screen.center(1)-100, prm.screen.center(2), prm.screen.whiteColour);
+            Screen('DrawText', prm.screen.windowPtr, reportInstruction, prm.screen.center(1)-100, prm.screen.center(2)+50, prm.screen.whiteColour);
             Screen('Flip', prm.screen.windowPtr);
             KbWait();
             WaitSecs(prm.ITI);
