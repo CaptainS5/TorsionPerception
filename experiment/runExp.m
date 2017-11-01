@@ -101,6 +101,14 @@ try
             % initial welcome
             textBlock = ['Block ', num2str(blockN)];
             Screen('DrawText', prm.screen.windowPtr, textBlock, prm.screen.center(1)-80, prm.screen.center(2), prm.screen.whiteColour);
+            if info.reportStyle==-1
+                reportInstruction = 'Report LOWER';
+            elseif reportStyle==1
+                reportInstruction = 'Report HIGHER';
+            else
+                reportStyle = 'Wrong! Get experimenter.'
+            end
+            Screen('DrawText', prm.screen.windowPtr, reportInstruction, prm.screen.center(1)-100, prm.screen.center(2), prm.screen.whiteColour);
             Screen('Flip', prm.screen.windowPtr);
             KbWait();
             WaitSecs(prm.ITI);
@@ -124,6 +132,9 @@ try
                     % repeat this trial at the end of the block
                     makeUpN = makeUpN + 1;
                     trialMakeUp(makeUpN) = trialN;
+                    % feedback on the screen
+                    respText = 'Wrong Key';
+                    Screen('DrawText', prm.screen.windowPtr, respText, prm.screen.center(1)-80, prm.screen.center(2), prm.screen.whiteColour);
                 end
                 resp.RTms(tempN, 1) = rt*1000; % in ms
                 resp.trialIdx(tempN, 1) = trialN; % index for the condition used
