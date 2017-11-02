@@ -1,8 +1,8 @@
-% function runExp(inputParameter)
+function runExp()
 
 try
     clc; clear all; close all;
-    % global trigger;
+    global trigger    
     global prm disp resp info
     % prm--parameters, mostly defined in setParameters
     % disp--all parameters (some pre-arranged) in the experiment, each block,
@@ -121,6 +121,9 @@ try
                 end
                 % present the stimuli and recording response
                 [key rt] = runTrial(blockN, trialN); % display rotating grating and the flash
+                if info.eyeTracker==1
+                    trigger.stopRecording();
+                end
                 if strcmp(key, 'LeftArrow')
                     resp.choice(tempN, 1) = -1;
                 elseif strcmp(key, 'RightArrow')
@@ -177,11 +180,16 @@ try
     Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
     Screen('CloseAll')
     
-catch
-        Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
+catch expME
+    if info.eyeTracker==1
+        trigger.stopRecording();
+    end
+    disp('Error in runExp');
+    disp(expME.message);
+    Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
     Screen('CloseAll')
-    rethrow(lasterror)
+    %         rethrow(lasterror)
+    clear all;
+    return;
 end
-%
-%
-% end
+end

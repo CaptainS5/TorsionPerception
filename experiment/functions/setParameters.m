@@ -52,7 +52,7 @@ prm.rotation.randDuration = 0.5; % rotation time = base+-rand
 
 % block conditions
 prm.ITI = 0.2; % inter-trial interval
-prm.blockN = 10; % total number of blocks
+prm.blockN = 15; % total number of blocks
 prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)*length(prm.flash.displacement); % total number of combinations of conditions
 % conditions differ in: radial stimulus size; flash onset interval;
 % flash displacement

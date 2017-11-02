@@ -3,7 +3,7 @@
 % experiment and baseline data
 % Then save the data, and draw the plots
 
-% 10/24/2017, Xiuyun Wu
+% 11/01/2017, Xiuyun Wu
 
 % some (maybe) useful codes from the past...
 % arr = find(all(tabdata{:, 3:6}==cont(:,1:4),2));
@@ -12,13 +12,41 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-names = {'XW2' 'NI'};
-conditionNames = {'flashOnset', 'flashDisplaceLeft', 'initialDirection'}; % which conditions are different
-merged = 0; % whether initial direction is merged; 1=merged
+names = {'XW3' 'NI' 'MS'};
+merged = 1; % whether initial direction is merged; 1=merged
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
-myfittype = fittype('a*(1-exp(-s*(x-ic)))', 'independent', 'x');
-% myfittype = fittype('a*(1-exp(-(x/lambda).^(k)))', 'independent', 'x');
 loadData = 0; % whether get new fitting or using existing fitting
+howMany = 13;% include the first howMany trials for each condition*each initialDirection
+% using for pilot to see how many trials we need... the file name
+% would be 2*howMany as the total number of trials per condition (direction merged)
+% if not using this, set howMany to a negative number such as -1
+trialPerCon = 30; % trials per condition in the experiment
+threshold = 0.5; % for PSE
+fontSize = 15; % for plot
+
+% for fitting using Palamedes
+PF = @PAL_Logistic;  %Alternatives: PAL_Gumbel, PAL_Weibull,
+%PAL_Quick, PAL_logQuick,
+%PAL_CumulativeNormal, PAL_HyperbolicSecant
+%Threshold and Slope are free parameters, guess and lapse rate are fixed
+paramsFree = [1 1 0 1];  %1: free parameter, 0: fixed parameter
+%Parameter grid defining parameter space through which to perform a
+%brute-force search for values to be used as initial guesses in iterative
+%parameter search.
+searchGrid.alpha = -1.5:0.01:1.5; % threshold
+searchGrid.beta = -15:0.1:0; % slope
+searchGrid.gamma = 0;  % lower asymptote, guess rate, for 2AFC it's 0.5?...
+searchGrid.lambda = 0:0.01:0.1;  % upper asymptote (1-lambda), lapse rate, the probability of an incorrect response...
+
+if merged==1
+    conditionNames = {'flashOnset', 'flashDisplaceLeftMerged'}; % which conditions are different
+    conditionNamesBase = {'flashOnset', 'flashDisplaceLeft'}; % which conditions are different
+    mergeName = 'merged';
+else
+    conditionNames = {'flashOnset', 'flashDisplaceLeft', 'initialDirection'}; % which conditions are different
+    conditionNamesBase = conditionNames;
+    mergeName = 'notMerged';
+end
 
 % % load raw data collapsed
 % cd ..
@@ -29,10 +57,14 @@ loadData = 0; % whether get new fitting or using existing fitting
 
 dataPMFall = table(); % experiment
 dataPMFbaseAll = table(); % baseline
-for ii = 1:1%size(names, 2)
+for ii = 1:size(names, 2)
     % load raw data for each participant
     cd ..
-    load(['dataRaw_', names{ii}])
+    if howMany>0
+        load(['dataRaw', num2str(2*howMany), '_', names{ii}])
+    else
+        load(['dataRaw_', names{ii}])        
+    end
     load(['dataRawBase_', names{ii}])
     % back into the folder
     cd(folder)
@@ -42,12 +74,12 @@ for ii = 1:1%size(names, 2)
         dataPMF = table(); % experiment
         dataPMFbase = table(); % baseline
     else
-        if merged==1
-            load(['dataPMFmerged_', names{ii}]) % experiment
-            load(['dataPMFbaseMerged_', names{ii}]) % baseline
+        if howMany>0
+            load(['dataPMFbase', num2str(2*howMany), '_', names{ii}]) % baseline
+            load(['dataPMF', mergeName, num2str(2*howMany), '_', names{ii}]) % experiment
         else
-            load(['dataPMFnotMerged_', names{ii}]) % experiment
-            load(['dataPMFbaseNotMerged_', names{ii}]) % baseline
+            load(['dataPMFbase_', names{ii}]) % baseline
+            load(['dataPMF', mergeName, '_', names{ii}]) % experiment
         end
     end
     
@@ -59,7 +91,7 @@ for ii = 1:1%size(names, 2)
     % get the levels of each condition
     for jj = 1:size(conditionNames, 2)
         eval(['cons{jj} = unique(roundn(dataRaw.', conditionNames{jj}, ', roundN));']) % experiment
-        eval(['consBase{jj} = unique(roundn(dataRawBase.', conditionNames{jj}, ', roundN));']) % baseline
+        eval(['consBase{jj} = unique(roundn(dataRawBase.', conditionNamesBase{jj}, ', roundN));']) % baseline
     end
     xFit = min(unique(dataRaw.flashDisplaceLeft)):0.01:max(unique(dataRaw.flashDisplaceLeft));
     xFitBase = min(unique(dataRawBase.flashDisplaceLeft)):0.01:max(unique(dataRawBase.flashDisplaceLeft));
@@ -90,28 +122,44 @@ for ii = 1:1%size(names, 2)
                     idxAll = intersect(idxAll, idx);
                 end
                 if merged==1
-                    idx = find(dataOnset.perceivedLower(idxAll)==1);
+                    idx = find(dataOnset.perceivedLowerMerged(idxAll)==1);
                 else
                     idx = find(dataOnset.perceivedLowerNotMerged(idxAll)==1);
                 end
                 dataPMF.percentLeftLower(tempI, 1) = length(idx)/length(idxAll);
+                dataPMF.totalTrials(tempI,1) = length(idxAll);
                 
                 tempI = tempI+1;
             end
         end
         % draw plots
-        if merged==1 % modify later
-            %             % draw plots for each flash onset, initial direction merged
-            %             idx = find(dataPMF.flashOnset==cons{onsetIdx}(jj));
-            %             dataPlot = dataPMF(idx, :);
-            %
-            %             figure
-            %             scatter(dataPlot.flashDisplaceLeft, dataPlot.percentLeftLower, 'filled');
-            %             ylim([0, 1])
-            %             xlabel('Flash Displacement (left-right, dva)')
-            %             ylabel('Percentage of following current motion')
-            %             title(['flash onset ', num2str(12*cons{onsetIdx}(jj)), ' s'])
-            %             saveas(gca, [names{ii}, '_merged_onset', num2str(12*cons{onsetIdx}(jj)), '.pdf'])
+        if merged==1
+            figure
+            box off
+            % draw plots for each flash onset, initial direction merged
+            idx = find(dataPMF.flashOnset==cons{onsetIdx}(jj));
+            dataPlot = dataPMF(idx, :);
+            if loadData==0
+            [fitObj{jj} LL{jj} exitflag{jj}] = PAL_PFML_Fit(dataPlot.flashDisplaceLeftMerged, ...
+                dataPlot.totalTrials.*dataPlot.percentLeftLower, dataPlot.totalTrials, searchGrid, paramsFree, PF);
+            end
+            scatter(dataPlot.flashDisplaceLeftMerged, dataPlot.percentLeftLower, 'filled');
+            hold on
+            % fitted line
+            yFit = PAL_Logistic(fitObj{jj}, xFit);
+            plot(xFit, yFit, '-k')
+            % get the PSE
+            PSE(jj) = PAL_Logistic(fitObj{jj}, threshold, 'Inverse');
+           
+            ylim([0, 1])
+            xlabel('Flash Displacement (left-right, dva)')
+            ylabel('Percentage of of perceived left to be lower')
+            set(gca, 'FontSize', fontSize)
+            if howMany>0
+                title(['onset ', num2str(cons{onsetIdx}(jj)), ' s, ', num2str(2*howMany), ' trials'])
+            else
+                title(['onset ', num2str(cons{onsetIdx}(jj)), ' s, ', num2str(trialPerCon), ' trials'])
+            end
         else
             % draw plots for each flash onset, initial direction not merged
             figure
@@ -119,44 +167,50 @@ for ii = 1:1%size(names, 2)
             subplot(1, 2, 1) % initial clockwise
             idx = find(dataPMF.flashOnset==cons{onsetIdx}(jj) & dataPMF.initialDirection==1);
             dataPlot = dataPMF(idx, :);
-            [fitObj{jj, 1} gof{jj, 1}]= fit(dataPlot.flashDisplaceLeft, dataPlot.percentLeftLower, myfittype);
-            
+            if loadData==0
+            [fitObj{jj, 1} LL{jj, 1} exitflag{jj, 1}] = PAL_PFML_Fit(dataPlot.flashDisplaceLeft, ...
+                dataPlot.totalTrials.*dataPlot.percentLeftLower, dataPlot.totalTrials, searchGrid, paramsFree, PF);
+            end
             % raw data
             scatter(dataPlot.flashDisplaceLeft, dataPlot.percentLeftLower, 'filled');
             hold on
             % fitted line
-            plot(xFit, fitObj{jj, 1}.a*(1-exp(-fitObj{jj, 1}.s*(xFit-fitObj{jj, 1}.ic))), '-k')
-            %             plot(xFit, fitObj{jj, 1}.a*(1-exp(-(xFit/fitObj{jj, 1}.lambda).^fitObj{jj, 1}.k)), '-k')
+            yFit = PAL_Logistic(fitObj{jj, 1}, xFit);
+            plot(xFit, yFit, '-k')
             % get the PSE
-            PSE(jj, 1) = log(1-0.5/fitObj{jj, 1}.a)/(-fitObj{jj, 1}.s)+fitObj{jj, 1}.ic;
-            
+            PSE(jj, 1) = PAL_Logistic(fitObj{jj, 1}, threshold, 'Inverse');
+           
             ylim([0, 1])
             xlabel('Flash Displacement (left-right, dva)')
             ylabel('Percentage of perceived left to be lower')
             title([num2str(cons{onsetIdx}(jj)), 's initial clockwise'])
+            set(gca, 'FontSize', fontSize)
             
             subplot(1, 2, 2) % initial counterclockwise
             idx = find(dataPMF.flashOnset==cons{onsetIdx}(jj) & dataPMF.initialDirection==-1);
             dataPlot = dataPMF(idx, :);
-            [fitObj{jj, 2} gof{jj, 2}]= fit(dataPlot.flashDisplaceLeft, dataPlot.percentLeftLower, myfittype);
-            
+            if loadData==0
+            [fitObj{jj, 2} LL{jj, 2} exitflag{jj, 2}] = PAL_PFML_Fit(dataPlot.flashDisplaceLeft, ...
+                dataPlot.totalTrials.*dataPlot.percentLeftLower, dataPlot.totalTrials, searchGrid, paramsFree, PF);
+            end
             % raw data
             scatter(dataPlot.flashDisplaceLeft, dataPlot.percentLeftLower, 'filled');
             hold on
             % fitted line
-            plot(xFit, fitObj{jj, 2}.a*(1-exp(-fitObj{jj, 2}.s*(xFit-fitObj{jj, 2}.ic))), '-k')
-            % plot(xFit, fitObj{jj, 2}.a*(1-exp(-(xFit/fitObj{jj, 2}.lambda).^fitObj{jj, 2}.k)), '-k')
+            yFit = PAL_Logistic(fitObj{jj, 2}, xFit);
+            plot(xFit, yFit, '-k')
             
             % get the PSE
-            PSE(jj, 2) = log(1-0.5/fitObj{jj, 2}.a)/(-fitObj{jj, 2}.s)+fitObj{jj, 2}.ic;
+            PSE(jj, 2) = PAL_Logistic(fitObj{jj, 2}, threshold, 'Inverse');
             
             ylim([0, 1])
             xlabel('Flash Displacement (left-right, dva)')
             ylabel('Percentage of perceived left to be lower')
+            set(gca, 'FontSize', fontSize)
             title([num2str(cons{onsetIdx}(jj)), 's initial counterclockwise'])
-            
-            saveas(gca, [names{ii}, '_notMerged_onset', num2str(cons{onsetIdx}(jj)), '_fit.pdf'])
         end
+ 
+        saveas(gca, [names{ii}, '_', mergeName, '_onset', num2str(cons{onsetIdx}(jj)), '_fit.pdf'])
     end
     
     %% Baseline data, flash onset was not important and merged
@@ -168,77 +222,83 @@ for ii = 1:1%size(names, 2)
             dataPMFbase.sub(tempI, 1) = names(ii);
             idxAll = 1:size(dataRawBase, 1);
             for aa = 1:size(comb, 2)
-                eval(['dataPMFbase.', conditionNames{aa+1}, '(tempI, 1) = ', num2str(comb(tt, aa)), ';'])
-                eval(['idx = find(roundn(dataRawBase.', conditionNames{aa+1}, ', roundN)==', num2str(comb(tt, aa)), ');'])
+                eval(['dataPMFbase.', conditionNamesBase{aa+1}, '(tempI, 1) = ', num2str(comb(tt, aa)), ';'])
+                eval(['idx = find(roundn(dataRawBase.', conditionNamesBase{aa+1}, ', roundN)==', num2str(comb(tt, aa)), ');'])
                 idxAll = intersect(idxAll, idx);
             end
-            if merged==1
-                idx = find(dataRawBase.perceivedLower(idxAll)==1);
-            else
-                idx = find(dataRawBase.perceivedLowerNotMerged(idxAll)==1);
-            end
+            idx = find(dataRawBase.perceivedLower(idxAll)==1);
             dataPMFbase.percentLeftLower(tempI, 1) = length(idx)/length(idxAll);
+            dataPMFbase.totalTrials(tempI, 1) = length(idxAll);
             
             tempI = tempI+1;
         end
     end
     
-    % draw plots
-    if merged==1 % modify later
-        %             % draw plots for each flash onset, initial direction merged
-        %             idx = find(dataPMF.flashOnset==cons{onsetIdx}(jj));
-        %             dataPlot = dataPMF(idx, :);
-        %
-        %             figure
-        %             scatter(dataPlot.flashDisplaceLeft, dataPlot.percentLeftLower, 'filled');
-        %             ylim([0, 1])
-        %             xlabel('Flash Displacement (left-right, dva)')
-        %             ylabel('Percentage of following current motion')
-        %             title(['flash onset ', num2str(12*cons{onsetIdx}(jj)), ' s'])
-        %             saveas(gca, [names{ii}, '_merged_onset', num2str(12*cons{onsetIdx}(jj)), '.pdf'])
-    else
-        % draw plots for each flash onset, initial direction not merged
-        figure
-        box off
-        dataPlot = dataPMFbase;
-        [fitObjBase gofBase]= fit(dataPlot.flashDisplaceLeft, dataPlot.percentLeftLower, myfittype);
-        
-        % raw data
-        scatter(dataPlot.flashDisplaceLeft, dataPlot.percentLeftLower, 'filled');
-        hold on
-        % fitted line
-        plot(xFitBase, fitObjBase.a*(1-exp(-fitObjBase.s*(xFitBase-fitObjBase.ic))), '-k')
-        %         plot(xFit, fitObjBase.a*(1-exp(-(xFit/fitObjBase.lambda).^fitObjBase.k)), '-k')
-        % get the PSE
-        PSEbase = log(1-0.5/fitObjBase.a)/(-fitObjBase.s)+fitObjBase.ic;
-        
-        ylim([0, 1])
-        xlabel('Flash Displacement (left-right, dva)')
-        ylabel('Percentage of perceived left to be lower')
-        title(['PSE=', num2str(PSEbase(1))])
-        
-        saveas(gca, [names{ii}, '_notMerged_baseline_fit.pdf'])
-    end
-    
-    % plot for the fitted PSE of the experiment
+    % draw plots for baseline, initial direction merged
     figure
     box off
-    plot(cons{onsetIdx}, PSE(:, 1), '-b')
+    dataPlot = dataPMFbase;
+    if loadData==0
+    [fitObjBase LLBase exitflagBase] = PAL_PFML_Fit(dataPlot.flashDisplaceLeft, ...
+        dataPlot.totalTrials.*dataPlot.percentLeftLower, dataPlot.totalTrials, searchGrid, paramsFree, PF);
+    end
+    % raw data
+    scatter(dataPlot.flashDisplaceLeft, dataPlot.percentLeftLower, 'filled');
     hold on
-    plot(cons{onsetIdx}, PSE(:, 2), '-r')
-    plot(cons{onsetIdx}, repmat(PSEbase, size(cons{onsetIdx})), '--k')
-    legend({'Initial clockwise', 'Initial counterclockwise', 'baseline'}, 'box', 'off', 'Location', 'northwest')
+    % fitted line
+    yFitBase = PAL_Logistic(fitObjBase, xFitBase);
+    plot(xFitBase, yFitBase, '-k')
+    % get the PSE
+    PSEbase = PAL_Logistic(fitObjBase, threshold, 'Inverse');
+    
+    ylim([0, 1])
+    xlabel('Flash Displacement (left-right, dva)')
+    ylabel('Percentage of perceived left to be lower')
+    if howMany>0
+        title(['PSE=', num2str(PSEbase(1)), ', ', num2str(2*howMany),' trials'])
+    else
+        title(['PSE=', num2str(PSEbase(1)), ', ', num2str(trialPerCon),' trials'])
+    end
+    
+    saveas(gca, [names{ii}, '_baseline_fit.pdf'])
+    
+    % Plot for the fitted PSE of the experiment
+    figure
+    box off
+    if merged==1
+        plot(cons{onsetIdx}, PSE(:), '-r')
+        hold on
+        plot(cons{onsetIdx}, repmat(PSEbase, size(cons{onsetIdx})), '--k')
+        legend({'Initial clockwise (merged)', 'baseline'}, 'box', 'off', 'Location', 'northwest')
+    else
+        plot(cons{onsetIdx}, PSE(:, 1), '-b')
+        hold on
+        plot(cons{onsetIdx}, PSE(:, 2), '-r')
+        plot(cons{onsetIdx}, repmat(PSEbase, size(cons{onsetIdx})), '--k')
+        legend({'Initial clockwise', 'Initial counterclockwise', 'baseline'}, 'box', 'off', 'Location', 'northwest')
+    end
+%     ylim([-1 1])
     xlabel('Flash Onset (s)')
     ylabel('Point of subjective equality, left-right')
-    saveas(gca, [names{ii}, '_notMerged_PSE.pdf'])
+    set(gca, 'FontSize', fontSize)
+    if howMany>0
+        title([num2str(2*howMany), ' trials'])
+    else
+        title([num2str(trialPerCon), ' trials'])
+    end
     
+    saveas(gca, [names{ii}, '_', mergeName, '_PSE.pdf'])
+    
+    close all
+    
+    % save data
     if loadData==0
-        if merged==1
-            save(['dataPMFmerged_', names{ii}], 'dataPMF', 'fitObj', 'gof', 'PSE') % experiment
-            save(['dataPMFbaseMerged_', names{ii}], 'dataPMFbase', 'fitObjBase', 'gofBase', 'PSEbase') % baseline
+        if howMany>0
+            save(['dataPMFbase', num2str(2*howMany), '_', names{ii}], 'dataPMFbase', 'fitObjBase', 'LLBase', 'exitflagBase', 'PSEbase') % baseline
+            save(['dataPMF', mergeName, num2str(2*howMany), '_', names{ii}], 'dataPMF', 'fitObj', 'LL', 'exitflag', 'PSE') % experiment
         else
-            save(['dataPMFnotMerged_', names{ii}], 'dataPMF', 'fitObj', 'gof', 'PSE') % experiment
-            save(['dataPMFbaseNotMerged_', names{ii}], 'dataPMFbase', 'fitObjBase', 'gofBase', 'PSEbase') % baseline
+            save(['dataPMFbase_', names{ii}], 'dataPMFbase', 'fitObjBase', 'LLBase', 'exitflagBase', 'PSEbase') % baseline
+            save(['dataPMF', mergeName, '_', names{ii}], 'dataPMF', 'fitObj', 'LL', 'exitflag', 'PSE') % experiment
         end
     end
     %
@@ -251,11 +311,6 @@ for ii = 1:1%size(names, 2)
     %         dataPMFbaseAll = [dataPMFbaseAll; dataPMFbase];  % baseline
     %     end
 end
-% % collapsed data
-% if merged==1
-%     save(['dataPMFmerged_all', num2str(size(names, 2))], 'dataPMFall') % experiment
-%     save(['dataPMFbaseMerged_all', num2str(size(names, 2))], 'dataPMFbaseAll') % baseline
-% else
-%     save(['dataPMFnotMerged_all', num2str(size(names, 2))], 'dataPMFall') % experiment
-%     save(['dataPMFbaseNotMerged_all', num2str(size(names, 2))], 'dataPMFbaseAll') % baseline
-% end
+% % save collapsed data
+%     save(['dataPMF', mergeName, '_all', num2str(size(names, 2))], 'dataPMFall') % experiment
+%     save(['dataPMFbase', mergeName, '_all', num2str(size(names, 2))], 'dataPMFbaseAll') % baseline

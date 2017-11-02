@@ -1,6 +1,6 @@
 function [key rt] = runTrial(blockN, trialN)
 
-% global trigger;
+global trigger;
 global prm disp info
 
 % Initialization
@@ -70,6 +70,9 @@ flashDuration = round(sec2frm(prm.flash.duration));
 % prm.flash.colour = prm.screen.whiteColour;
 
 % start display
+if info.eyeTracker==1
+    trigger.startRecording();
+end
 for frameN = 1:rotationFrames
     if frameN<=rotationFrames/2 % first direction
         rotationAngle = rotationAngle + direction*prm.rotation.anglePerFrame;

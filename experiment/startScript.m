@@ -18,8 +18,8 @@ try
     global trigger;
     setupTrigger();
     while(true)
-        output = rotationSettingsGUI();
-        runExperiment(output);
+%         output = rotationSettingsGUI();
+        runExp();
         resetTriggerGUI;
         trigger.stopRecording();
     end

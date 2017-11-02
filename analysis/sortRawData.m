@@ -1,24 +1,28 @@
 % function sortRawData
 % Sorting raw data into long format, baseline in separate files
-% Merged different initial directions into clockwise: 
+% Merged different initial directions into clockwise:
 % clockwise right side = counterclockwise left side.
-% Under clockwise direction, positive=perceived left lower 
+% Under clockwise direction, positive=perceived left lower
 % (initialDirection*reportStyle*choice)
 
 % 10/24/2017 Xiuyun Wu
 clear all; close all; clc
 
 % basic setting
-names = {'XW2' 'NI'};
+names = {'XW3' 'NI' 'MS'};
 folder = pwd;
+howMany = 13; % include the first howMany trials for each condition*each initialDirection
+% using for pilot to see how many trials we need...
+% if not using this, set howMany to a negative number such as -1
+roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 
 dataRawAll = table();
 dataRawBaseAll = table();
 for ii = 1:size(names, 2)
-    % Read all raw data     
+    % Read all raw data
     cd ..
     % read Experiment data
-    cd(['data\', names{ii}]) 
+    cd(['data\', names{ii}])
     % get the filenames to load
     fileResp = dir('response*.mat');
     fileResp = struct2cell(fileResp);
@@ -26,8 +30,8 @@ for ii = 1:size(names, 2)
     dataRaw = table();
     for jj = 1:size(fileResp, 2)
         load(fileResp{1, jj})
-%         % ONLY for the initial pilot... still adjusting experimental codes...
-%         resp = resp{1, size(resp, 2)};
+        %         % ONLY for the initial pilot... still adjusting experimental codes...
+        %         resp = resp{1, size(resp, 2)};
         
         % regular processing below, first putting all data together
         if jj==1
@@ -37,7 +41,7 @@ for ii = 1:size(names, 2)
         end
     end
     % read Baseline data
-    cd(['baseline']) 
+    cd(['baseline'])
     % get the filenames to load
     fileResp = dir('response*.mat');
     fileResp = struct2cell(fileResp);
@@ -62,24 +66,51 @@ for ii = 1:size(names, 2)
     dataRawBase(dataRawBase.choice==0, :) = [];
     dataRawBase.sub = mat2cell(repmat(names{ii}, size(dataRawBase, 1), 1), ones(size(dataRawBase, 1), 1), length(names{ii})); % baseline
     
-%     % ONLY for the initial pilot...leftArrow=1, rightArrow=2; reportStyle = -1;
-%     dataRaw.reportStyle = repmat([-1], size(dataRaw, 1), 1);
-%     dataRaw.flashDisplaceLeft = dataRaw.flashDisplaceLeft*-1;
-%     dataRaw.choice(dataRaw.choice==1) = -1; % choose left
-%     dataRaw.choice(dataRaw.choice==2) = 1; % choose right
+    %     % ONLY for the initial pilot...leftArrow=1, rightArrow=2; reportStyle = -1;
+    %     dataRaw.reportStyle = repmat([-1], size(dataRaw, 1), 1);
+    %     dataRaw.flashDisplaceLeft = dataRaw.flashDisplaceLeft*-1;
+    %     dataRaw.choice(dataRaw.choice==1) = -1; % choose left
+    %     dataRaw.choice(dataRaw.choice==2) = 1; % choose right
     
-    dataRaw.perceivedLower = dataRaw.initialDirection.*dataRaw.reportStyle.*dataRaw.choice; % perception of the side being lower
+    dataRaw.flashDisplaceLeftMerged = dataRaw.flashDisplaceLeft.*dataRaw.initialDirection; % for merged direction
+    
+    dataRaw.perceivedLowerMerged = dataRaw.initialDirection.*dataRaw.reportStyle.*dataRaw.choice; % perception of the side being lower
     % 1: left lower; -1: right lower
     % this is merged direction, all initial direction assumed to be
     % clockwise
-    dataRawBase.perceivedLower = dataRawBase.initialDirection.*dataRawBase.reportStyle.*dataRawBase.choice; 
     
     dataRaw.perceivedLowerNotMerged = dataRaw.reportStyle.*dataRaw.choice; % perception of the side being lower
     % initial direction not merged, 1: left lower; -1: right lower
-    dataRawBase.perceivedLowerNotMerged = dataRawBase.reportStyle.*dataRawBase.choice; 
+    % for baseline, initial direction not important and merged...
+    dataRawBase.perceivedLower = dataRawBase.reportStyle.*dataRawBase.choice;
     
     % save data with each trials for each participant
-    save(['dataRaw_', names{ii}], 'dataRaw') % experiment    
+    if howMany>0 % delete the later trials, only for the experiment data
+        conditionNames = {'flashOnset', 'flashDisplaceLeft', 'initialDirection'};
+        for jj = 1:size(conditionNames, 2)
+            eval(['cons{jj} = unique(roundn(dataRaw.', conditionNames{jj}, ', roundN));']) % experiment
+        end
+        comb = cons{1};
+        nextConIdx = 2;
+        while nextConIdx<=size(conditionNames, 2)
+            comb = genCombinations(comb, cons{nextConIdx});
+            nextConIdx = nextConIdx+1;
+        end
+        
+        for tt = 1:size(comb, 1)
+            idxAll = 1:size(dataRaw, 1);
+            for aa = 1:size(comb, 2)
+                eval(['idx = find(roundn(dataRaw.', conditionNames{aa}, ', roundN)==', num2str(comb(tt, aa)), ');'])
+                idxAll = intersect(idxAll, idx); % all the indices for this condition
+            end
+%             length(idxAll)
+            dataRaw(idxAll(howMany+1:end), :) = []; % delete the trials
+        end
+        
+        save(['dataRaw', num2str(2*howMany), '_', names{ii}], 'dataRaw') % experiment
+    else
+        save(['dataRaw_', names{ii}], 'dataRaw') % experiment
+    end
     save(['dataRawBase_', names{ii}], 'dataRawBase') % baseline
     
     % collapse all data
