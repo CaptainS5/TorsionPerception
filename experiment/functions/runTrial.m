@@ -96,14 +96,18 @@ for frameN = 1:rotationFrames
         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectR);
     end
     
-    if frameN==rotationFrames/2+flashOnset
-        StimulusOnsetTime = GetSecs;
-%         Screen('Flip', prm.screen.windowPtr);
-        [VBLTimestamp StimulusOnsetTime FlipTimestamp Missed Beampos] = Screen('Flip', prm.screen.windowPtr);
-        break
-    else
+%     if frameN==rotationFrames/2+flashOnset
+%         StimulusOnsetTime = GetSecs;
+% %         Screen('Flip', prm.screen.windowPtr);
+%         [VBLTimestamp StimulusOnsetTime FlipTimestamp Missed Beampos] = Screen('Flip', prm.screen.windowPtr);
+% %         break
+%     else
         Screen('Flip', prm.screen.windowPtr);
-    end
+%     end
+end
+StimulusOffsetTime = GetSecs; % here is actually the offset time
+if info.eyeTracker==1
+    trigger.stopRecording();
 end
 
 % response instruction
@@ -123,8 +127,8 @@ while 1
     if keyIsDown
         %         if frameN>=rotationFrames/2+flashOnset
         key = KbName(keyCode);
-        rt = secs-StimulusOnsetTime;
-        StimulusOnsetTime = [];
+        rt = secs-StimulusOffsetTime;
+        StimulusOffsetTime = [];
         Screen('Flip', prm.screen.windowPtr);
         %         else
         %             key = KbName(keyCode);

@@ -1,26 +1,15 @@
 function startScript()
-clear;
+clc; clear all; close all;
 %start GUI
 
 %check whether there is a LogFiles folder on the same level as the
 %experiment folder
 try
-    dir(pwd,'..','LogFiles');
-catch
-    disp('');
-    disp('WARNING: There is no LogFiles folder on the same level as the experiment folder.');
-    disp('Log files will not be saved. Press a button to continue.');
-    input('Press ENTER to continue.')
-end
-
-
-try
     global trigger;
     setupTrigger();
     while(true)
-%         output = rotationSettingsGUI();
         runExp();
-        resetTriggerGUI;
+        resetTriggerGUI; % what's this?
         trigger.stopRecording();
     end
 catch ME

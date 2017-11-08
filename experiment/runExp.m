@@ -1,7 +1,7 @@
 function runExp()
 
 try
-    clc; clear all; close all;
+%     clc; clear all; close all; % don't clear the trigger already set up
     global trigger    
     global prm disp resp info
     % prm--parameters, mostly defined in setParameters
@@ -121,9 +121,6 @@ try
                 end
                 % present the stimuli and recording response
                 [key rt] = runTrial(blockN, trialN); % display rotating grating and the flash
-                if info.eyeTracker==1
-                    trigger.stopRecording();
-                end
                 if strcmp(key, 'LeftArrow')
                     resp.choice(tempN, 1) = -1;
                 elseif strcmp(key, 'RightArrow')

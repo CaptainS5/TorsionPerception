@@ -56,7 +56,7 @@ prm.blockN = 15; % total number of blocks
 prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)*length(prm.flash.displacement); % total number of combinations of conditions
 % conditions differ in: radial stimulus size; flash onset interval;
 % flash displacement
-prm.trialPerCondition = 30; % trial number per condition
+prm.trialPerCondition = 24; % trial number per condition
 prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
 
 end
