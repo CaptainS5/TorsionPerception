@@ -9,7 +9,7 @@ try
     setupTrigger();
     while(true)
         runExp();
-        resetTriggerGUI; % what's this?
+%         resetTriggerGUI; % what's this?
         trigger.stopRecording();
     end
 catch ME

@@ -47,24 +47,24 @@ flashLength = dva2pxl(prm.flash.length);
 ecc = dva2pxl(prm.flash.eccentricity+prm.grating.outerRadius(sizeN));
 if rand>=0.5 % change the location of the left flash
     disp{blockN}.sideDisplaced(trialN) = -1;
-flashRectL = [prm.screen.center(1)-ecc-flashLength, ...
-    prm.screen.center(2)-flashDisplacement-flashWidth/2, ...
-    prm.screen.center(1)-ecc, ...
-    prm.screen.center(2)-flashDisplacement+flashWidth/2]; % left
-flashRectR = [prm.screen.center(1)+ecc, ...
-    prm.screen.center(2)-flashWidth/2, ...
-    prm.screen.center(1)+ecc+flashLength, ...
-    prm.screen.center(2)+flashWidth/2]; % right
+    flashRectL = [prm.screen.center(1)-ecc-flashLength, ...
+        prm.screen.center(2)-flashDisplacement-flashWidth/2, ...
+        prm.screen.center(1)-ecc, ...
+        prm.screen.center(2)-flashDisplacement+flashWidth/2]; % left
+    flashRectR = [prm.screen.center(1)+ecc, ...
+        prm.screen.center(2)-flashWidth/2, ...
+        prm.screen.center(1)+ecc+flashLength, ...
+        prm.screen.center(2)+flashWidth/2]; % right
 else % change the location of the right flash
     disp{blockN}.sideDisplaced(trialN) = 1;
     flashRectL = [prm.screen.center(1)-ecc-flashLength, ...
-    prm.screen.center(2)-flashWidth/2, ...
-    prm.screen.center(1)-ecc, ...
-    prm.screen.center(2)+flashWidth/2]; % left
-flashRectR = [prm.screen.center(1)+ecc, ...
-    prm.screen.center(2)+flashDisplacement-flashWidth/2, ...
-    prm.screen.center(1)+ecc+flashLength, ...
-    prm.screen.center(2)+flashDisplacement+flashWidth/2]; % right
+        prm.screen.center(2)-flashWidth/2, ...
+        prm.screen.center(1)-ecc, ...
+        prm.screen.center(2)+flashWidth/2]; % left
+    flashRectR = [prm.screen.center(1)+ecc, ...
+        prm.screen.center(2)+flashDisplacement-flashWidth/2, ...
+        prm.screen.center(1)+ecc+flashLength, ...
+        prm.screen.center(2)+flashDisplacement+flashWidth/2]; % right
 end
 flashDuration = round(sec2frm(prm.flash.duration));
 % prm.flash.colour = prm.screen.whiteColour;
@@ -73,6 +73,7 @@ flashDuration = round(sec2frm(prm.flash.duration));
 if info.eyeTracker==1
     trigger.startRecording();
 end
+quitFlag=0;
 for frameN = 1:rotationFrames
     if frameN<=rotationFrames/2 % first direction
         rotationAngle = rotationAngle + direction*prm.rotation.anglePerFrame;
@@ -96,16 +97,39 @@ for frameN = 1:rotationFrames
         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectR);
     end
     
-%     if frameN==rotationFrames/2+flashOnset
-%         StimulusOnsetTime = GetSecs;
-% %         Screen('Flip', prm.screen.windowPtr);
-%         [VBLTimestamp StimulusOnsetTime FlipTimestamp Missed Beampos] = Screen('Flip', prm.screen.windowPtr);
-% %         break
-%     else
-        Screen('Flip', prm.screen.windowPtr);
-%     end
+    if frameN==rotationFrames/2+flashOnset
+        StimulusOnsetTime = GetSecs;
+        %         Screen('Flip', prm.screen.windowPtr);
+        [VBLTimestamp StimulusOnsetTime FlipTimestamp Missed Beampos] = Screen('Flip', prm.screen.windowPtr);
+    end
+    
+    % record response
+    if frameN>=rotationFrames/2+flashOnset+flashDuration
+        [keyIsDown, secs, keyCode, deltaSecs] = KbCheck();
+        if keyIsDown
+            %         if frameN>=rotationFrames/2+flashOnset
+            key = KbName(keyCode);
+            rt = secs-StimulusOnsetTime;
+            StimulusOnsetTime = [];
+            Screen('Flip', prm.screen.windowPtr);
+            %         else
+            %             key = KbName(keyCode);
+            %             rt = -1;
+            %         end
+            quitFlag = 1;
+            %     elseif frameN==rotationFrames
+            %         key = 'void';
+            %         rt = 0;
+        end
+    end
+    
+    Screen('Flip', prm.screen.windowPtr);
+    if quitFlag==1
+        break
+    end
+    %     end
 end
-StimulusOffsetTime = GetSecs; % here is actually the offset time
+% StimulusOffsetTime = GetSecs; % here is actually the offset time
 if info.eyeTracker==1
     trigger.stopRecording();
 end
@@ -121,24 +145,24 @@ end
 % Screen('DrawText', prm.screen.windowPtr, textResp, prm.screen.center(1)-200, prm.screen.center(2), prm.screen.whiteColour);
 Screen('Flip', prm.screen.windowPtr);
 
-% record response, won't continue until a response is recorded
-while 1
+% % record response, won't continue until a response is recorded
+while quitFlag==0
     [keyIsDown, secs, keyCode, deltaSecs] = KbCheck();
     if keyIsDown
         %         if frameN>=rotationFrames/2+flashOnset
         key = KbName(keyCode);
-        rt = secs-StimulusOffsetTime;
-        StimulusOffsetTime = [];
+        rt = secs-StimulusOnsetTime;
+        StimulusOnsetTime = [];
+        quitFlag = 1;
         Screen('Flip', prm.screen.windowPtr);
         %         else
         %             key = KbName(keyCode);
         %             rt = -1;
         %         end
-        break
+%         break
         %     elseif frameN==rotationFrames
         %         key = 'void';
         %         rt = 0;
     end
 end
-
 end

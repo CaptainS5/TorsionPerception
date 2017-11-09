@@ -1,8 +1,8 @@
 function runExp()
 
 try
-%     clc; clear all; close all; % don't clear the trigger already set up
-    global trigger    
+    %     clc; clear all; close all; % don't clear the trigger already set up
+    global trigger
     global prm disp resp info
     % prm--parameters, mostly defined in setParameters
     % disp--all parameters (some pre-arranged) in the experiment, each block,
@@ -31,7 +31,7 @@ try
     end
     mkdir(prm.fileName.folder)
     
-    if info.fromBlock==1
+    if info.block==1
         arrangeRandomization(info);
         save([prm.fileName.folder, '\Info_', info.fileNameTime], 'info')
     else
@@ -74,105 +74,129 @@ try
         Screen('FillRect', prm.screen.windowPtr, prm.grating.lightest); % fill background
         Screen('Flip', prm.screen.windowPtr);
         KbWait();
-%         clear KbCheck
-%         WaitSecs(0.2);
+        %         clear KbCheck
+        %         WaitSecs(0.2);
         
-%         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour); % fill background
-%         Screen('Flip', prm.screen.windowPtr);
-%         KbWait();        
+        %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour); % fill background
+        %         Screen('Flip', prm.screen.windowPtr);
+        %         KbWait();
     else
         % start the experiment
-        for blockN = info.fromBlock:info.toBlock
-            % setting up filenames
-            prm.fileName.disp = [prm.fileName.folder, '\display', num2str(blockN), '_', info.fileNameTime];
-            prm.fileName.resp = [prm.fileName.folder, '\response', num2str(blockN), '_', info.fileNameTime];
-            % initialize the randomization that will be made in each trial
-            disp{blockN}.direction = zeros(prm.trialPerBlock, 1);
-            disp{blockN}.initialAngle = zeros(prm.trialPerBlock, 1);
-            disp{blockN}.duration = zeros(prm.trialPerBlock, 1);
-            % initialize the response
-            resp = table(); % 1 = left, 2 = right
-            
-            trialN = 1; % the trial number to look up in random assignment
-            tempN = 1; % number of trials presented so far
-            trialMakeUp = [];
-            makeUpN = 0;
-            
-            % initial welcome
-            textBlock = ['Block ', num2str(blockN)];
-            Screen('DrawText', prm.screen.windowPtr, textBlock, prm.screen.center(1)-60, prm.screen.center(2), prm.screen.whiteColour);
-            if info.reportStyle==-1
-                reportInstruction = 'Report LOWER';
-            elseif info.reportStyle==1
-                reportInstruction = 'Report HIGHER';
-            else
-                reportStyle = 'Wrong! Get experimenter.'
+        %         for blockN = info.fromBlock:info.toBlock
+        blockN = info.block;
+        % setting up filenames
+        prm.fileName.disp = [prm.fileName.folder, '\display', num2str(blockN), '_', info.fileNameTime];
+        prm.fileName.resp = [prm.fileName.folder, '\response', num2str(blockN), '_', info.fileNameTime];
+        % initialize the randomization that will be made in each trial
+        disp{blockN}.direction = zeros(prm.trialPerBlock, 1);
+        disp{blockN}.initialAngle = zeros(prm.trialPerBlock, 1);
+        disp{blockN}.duration = zeros(prm.trialPerBlock, 1);
+        % initialize the response
+        resp = table(); % 1 = left, 2 = right
+        
+        trialN = 1; % the trial number to look up in random assignment
+        tempN = 1; % number of trials presented so far
+        trialMakeUp = [];
+        makeUpN = 0;
+        % calibration
+        if info.eyeTracker==1
+            try
+                startCalibration(prm.screen.monitorWidth, prm.screen.monitorHeight,...
+                    prm.screen.viewDistance, prm.screen.windowPtr, prm.screen.size);                
+            catch ME
+                msgString = getReport(ME);
+                disp(msgString);
+                disp('Calibration interrupted.');
             end
-            Screen('DrawText', prm.screen.windowPtr, reportInstruction, prm.screen.center(1)-100, prm.screen.center(2)+50, prm.screen.whiteColour);
-            Screen('Flip', prm.screen.windowPtr);
-            KbWait();
-            WaitSecs(prm.ITI);
-            
-            % run trials
-            while tempN<=prm.trialPerBlock+makeUpN
-                clear KbCheck
-                if tempN>prm.trialPerBlock
-                    trialN = trialMakeUp(tempN-prm.trialPerBlock);
-                end
-                % present the stimuli and recording response
-                [key rt] = runTrial(blockN, trialN); % display rotating grating and the flash
-                if strcmp(key, 'LeftArrow')
-                    resp.choice(tempN, 1) = -1;
-                elseif strcmp(key, 'RightArrow')
-                    resp.choice(tempN, 1) = 1;
-                    %             elseif strcmp(key, 'void') % no response
-                    %                 resp{blockN}.choice(trialN, 1) = 0;
-                else % wrong key
-                    resp.choice(tempN, 1) = 0;
-                    % repeat this trial at the end of the block
-                    makeUpN = makeUpN + 1;
-                    trialMakeUp(makeUpN) = trialN;
-                    % feedback on the screen
-                    respText = 'Wrong Key';
-                    Screen('DrawText', prm.screen.windowPtr, respText, prm.screen.center(1)-80, prm.screen.center(2), prm.screen.whiteColour);
-                end
-                resp.RTms(tempN, 1) = rt*1000; % in ms
-                resp.trialIdx(tempN, 1) = trialN; % index for the condition used
-                
-                % replicate the display parameters for each trial
-                resp.gratingRadiusIdx(tempN, 1) = disp{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
-                resp.flashOnset(tempN, 1) = disp{blockN}.flashOnset(trialN);
-                resp.flashDisplaceLeft(tempN, 1) = disp{blockN}.flashDisplaceLeft(trialN);
-                resp.initialDirection(tempN, 1) = disp{blockN}.initialDirection(trialN);
-                resp.initialAngle(tempN, 1) = disp{blockN}.initialAngle(trialN);
-                resp.duration(tempN, 1) = disp{blockN}.duration(trialN);
-                resp.sideDisplaced(tempN, 1) = disp{blockN}.sideDisplaced(trialN);
-                resp.reportStyle(tempN, 1) = info.reportStyle; % report lower or higher
-                
-                % save the response
-                save(prm.fileName.disp, 'disp');
-                save(prm.fileName.resp, 'resp');
-                
-                trialN = trialN+1;
-                tempN = tempN+1;
-                
-                % quit, only for debugging
-                if strcmp(key, 'q')
-                    break
-                end
-                
-                % ITI
-                Screen('Flip', prm.screen.windowPtr);
-                WaitSecs(prm.ITI);
+        end
+        HideCursor;
+        % initial welcome
+        textBlock = ['Block ', num2str(blockN)];
+        Screen('DrawText', prm.screen.windowPtr, textBlock, prm.screen.center(1)-60, prm.screen.center(2), prm.screen.whiteColour);
+        if info.reportStyle==-1
+            reportInstruction = 'Report LOWER';
+        elseif info.reportStyle==1
+            reportInstruction = 'Report HIGHER';
+        else
+            reportStyle = 'Wrong! Get experimenter.'
+        end
+        Screen('DrawText', prm.screen.windowPtr, reportInstruction, prm.screen.center(1)-100, prm.screen.center(2)+50, prm.screen.whiteColour);
+        Screen('Flip', prm.screen.windowPtr);
+        KbWait();
+        WaitSecs(prm.ITI);
+        
+        % run trials
+        while tempN<=prm.trialPerBlock+makeUpN
+            clear KbCheck
+            if tempN>prm.trialPerBlock
+                trialN = trialMakeUp(tempN-prm.trialPerBlock);
             end
+            % present the stimuli and recording response
+            [key rt] = runTrial(blockN, trialN); % display rotating grating and the flash
+            if strcmp(key, 'LeftArrow')
+                resp.choice(tempN, 1) = -1;
+            elseif strcmp(key, 'RightArrow')
+                resp.choice(tempN, 1) = 1;
+                %             elseif strcmp(key, 'void') % no response
+                %                 resp{blockN}.choice(trialN, 1) = 0;
+            else % wrong key
+                resp.choice(tempN, 1) = 0;
+                % repeat this trial at the end of the block
+                makeUpN = makeUpN + 1;
+                trialMakeUp(makeUpN) = trialN;
+                % feedback on the screen
+                respText = 'Wrong Key';
+                Screen('DrawText', prm.screen.windowPtr, respText, prm.screen.center(1)-80, prm.screen.center(2), prm.screen.whiteColour);
+            end
+            resp.RTms(tempN, 1) = rt*1000; % in ms
+            resp.trialIdx(tempN, 1) = trialN; % index for the condition used
+            
+            % replicate the display parameters for each trial
+            resp.gratingRadiusIdx(tempN, 1) = disp{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
+            resp.flashOnset(tempN, 1) = disp{blockN}.flashOnset(trialN);
+            resp.flashDisplaceLeft(tempN, 1) = disp{blockN}.flashDisplaceLeft(trialN);
+            resp.initialDirection(tempN, 1) = disp{blockN}.initialDirection(trialN);
+            resp.initialAngle(tempN, 1) = disp{blockN}.initialAngle(trialN);
+            resp.duration(tempN, 1) = disp{blockN}.duration(trialN);
+            resp.sideDisplaced(tempN, 1) = disp{blockN}.sideDisplaced(trialN);
+            resp.reportStyle(tempN, 1) = info.reportStyle; % report lower or higher
+            
+            % save the response
+            save(prm.fileName.disp, 'disp');
+            save(prm.fileName.resp, 'resp');
+            
+            trialN = trialN+1;
+            tempN = tempN+1;
+            
             % quit, only for debugging
             if strcmp(key, 'q')
                 break
             end
+            
+            % ITI
+            Screen('Flip', prm.screen.windowPtr);
+            WaitSecs(prm.ITI);
         end
+        %             % quit, only for debugging
+        %             if strcmp(key, 'q')
+        %                 break
+        %             end
+        %         end
     end
     prm.fileName.prm = [prm.fileName.folder, '\parameters_', info.fileNameTime];
     save(prm.fileName.prm, 'prm');
+    
+    % calibration again
+    if info.eyeTracker==1
+        try
+            startCalibration(prm.screen.monitorWidth, prm.screen.monitorHeight,...
+                prm.screen.viewDistance, prm.screen.windowPtr, prm.screen.size);
+        catch ME
+            msgString = getReport(ME);
+            disp(msgString);
+            disp('Calibration interrupted.');
+        end
+    end
     
     Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
     Screen('CloseAll')
