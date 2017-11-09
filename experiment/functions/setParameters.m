@@ -39,11 +39,10 @@ prm.flash.eccentricity = 3; % the inner edge of the flash to the outer edge of t
 % prm.flash.length = 1;
 % prm.flash.eccentricity = 0.5;
 prm.flash.duration = 0.06;
-prm.flash.onsetInterval = [0];
-% prm.flash.onsetInterval = [-0.6 -0.3 0 0.3 0.6]; % time of flash relative to the reversal, within 1 sec
-% prm.flash.displacement = [0 0 0 0 0]/60;
-prm.flash.displacement = [0]/60;
-% prm.flash.displacement = [-30 -20 -10 0 10 20 30]/60; % possible displacement of the left flash compared to the right;
+% prm.flash.onsetInterval = [0];
+prm.flash.onsetInterval = [-0.6 -0.3 0 0.3 0.6]; % time of flash relative to the reversal, within 1 sec
+% prm.flash.displacement = [0]/60;
+prm.flash.displacement = [-30 -20 -10 0 10 20 30]/60; % possible displacement of the left flash compared to the right;
 % in the experiment randomly the left/right flash will be moved, while the
 % other remains horizontal
 prm.flash.colour = 88; % measured about 34.5 cd/m^2
@@ -55,11 +54,11 @@ prm.rotation.randDuration = 0.5; % rotation time = base+-rand
 
 % block conditions
 prm.ITI = 0.5; % inter-trial interval
-prm.blockN = 2; % total number of blocks
+prm.blockN = 12; % total number of blocks
 prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)*length(prm.flash.displacement); % total number of combinations of conditions
 % conditions differ in: radial stimulus size; flash onset interval;
 % flash displacement
-prm.trialPerCondition = 2; % trial number per condition
+prm.trialPerCondition = 24; % trial number per condition
 prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
 
 end

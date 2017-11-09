@@ -7,8 +7,9 @@ clc; clear all; close all;
 try
     global trigger;
     setupTrigger();
+    currentBlock = 12;
     while(true)
-        runExp();
+        currentBlock = runExp(currentBlock); % baseline: block 0; experiment: block 1
 %         resetTriggerGUI; % what's this?
         trigger.stopRecording();
     end

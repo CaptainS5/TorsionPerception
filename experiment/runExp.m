@@ -1,5 +1,5 @@
-function runExp()
-
+function currentBlock = runExp(currentBlock)
+% currentBlock=1;
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
     global trigger
@@ -14,7 +14,10 @@ try
     
     setParameters;
     prm.pwd = pwd;
-    info = getInfo;
+    info = getInfo(currentBlock);
+    if info.expType==1
+        currentBlock = currentBlock + 1;
+    end
     
     % creating saving path and filenames
     if info.expType==0 % for baseline

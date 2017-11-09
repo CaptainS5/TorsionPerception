@@ -1,6 +1,7 @@
 function startCalibration(screenWidth, screenHeight, screenDistance, windowPointer, screenSize)
 
 global trigger;
+global prm;
 
 
 % HideCursor;
@@ -26,8 +27,11 @@ display.pixelRatioWidthPerHeight = (screenWidth/display.widthInPixel)/(screenHei
 display.screenWidthInDegree = 360/pi * atan(screenWidth/(2*screenDistance));
 display.pixelPerDegree = display.widthInPixel / display.screenWidthInDegree;
 
-tenDegreeHorizontal = 10 * display.pixelPerDegree;
-tenDegreeVertical = 10 * display.pixelPerDegree * display.pixelRatioWidthPerHeight;
+% tenDegreeHorizontal = 10 * display.pixelPerDegree;
+% tenDegreeVertical = 10 * display.pixelPerDegree * display.pixelRatioWidthPerHeight;
+
+tenDegreeHorizontal = (prm.grating.outerRadius+prm.flash.eccentricity+prm.flash.length/2) * display.pixelPerDegree; % center of the flash
+tenDegreeVertical = prm.grating.outerRadius * display.pixelPerDegree * display.pixelRatioWidthPerHeight; % edge of the grating
 
 %Fill background
 Screen('FillRect', display.windowPointer, grey);
