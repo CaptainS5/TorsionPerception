@@ -18,15 +18,15 @@ else
     direction = -1; % counterclockwise
 end
 rotationAngle = rand*360 - direction*prm.rotation.anglePerFrame;
-% randomly decide the duration of rotations in this trial
-if rand>=0.5
-    rotationFrames = 2*floor(sec2frm(prm.rotation.baseDuration+prm.rotation.randDuration));
-else
-    rotationFrames = 2*floor(sec2frm(prm.rotation.baseDuration-prm.rotation.randDuration));
-end
+% % randomly decide the duration of rotations in this trial
+% if rand>=0.5
+%     rotationFrames = 2*floor(sec2frm(prm.rotation.baseDuration+prm.rotation.randDuration));
+% else
+%     rotationFrames = 2*floor(sec2frm(prm.rotation.baseDuration-prm.rotation.randDuration));
+% end
 disp{blockN}.initialDirection(trialN) = direction;
 disp{blockN}.initialAngle(trialN) = rotationAngle;
-disp{blockN}.duration(trialN) = rotationFrames/prm.screen.refreshRate;
+% disp{blockN}.duration(trialN) = rotationFrames/prm.screen.refreshRate;
 
 % rest of the set ups
 % fixation set up
@@ -74,59 +74,71 @@ if info.eyeTracker==1
     trigger.startRecording();
 end
 quitFlag=0;
-for frameN = 1:rotationFrames
-    if frameN<=rotationFrames/2 % first direction
-        rotationAngle = rotationAngle + direction*prm.rotation.anglePerFrame;
-    else % second direction, after reversal
-        rotationAngle = rotationAngle - direction*prm.rotation.anglePerFrame;
-    end
+for frameN = 1:flashOnset+flashDuration % No Reversal; Reversal--rotationFrames
+    %     if frameN<=rotationFrames/2 % first direction
+    rotationAngle = rotationAngle + direction*prm.rotation.anglePerFrame;
+    %     else % second direction, after reversal
+    %         rotationAngle = rotationAngle - direction*prm.rotation.anglePerFrame;
+    %     end
     if rotationAngle > 360
         rotationAngle = rotationAngle - 360;
     end
-    
-    % draw rotating grating
-    if info.expType==1 % for baseline
+
+    if info.expType==1 % experiment
+        % draw rotating grating
         Screen('DrawTexture', prm.screen.windowPtr, prm.grating.tex{sizeN}, [], [], rotationAngle)
+    else % baseline
+        % draw fixation
+        Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
+        Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
     end
-    % draw fixation
-    Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
-    Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
     % draw flash
-    if frameN>=rotationFrames/2+flashOnset && frameN<=rotationFrames/2+flashOnset+flashDuration
+    % No Reversal
+    if frameN>=flashOnset
         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectL);
         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectR);
     end
+    %     % Reversal
+    %     if frameN>=rotationFrames/2+flashOnset && frameN<=rotationFrames/2+flashOnset+flashDuration
+    %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectL);
+    %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectR);
+    %     end
     
-    if frameN==rotationFrames/2+flashOnset
+    %     % Reversal
+    %     if frameN==rotationFrames/2+flashOnset
+    % No Reversal
+    if frameN==flashOnset
         StimulusOnsetTime = GetSecs;
         %         Screen('Flip', prm.screen.windowPtr);
         [VBLTimestamp StimulusOnsetTime FlipTimestamp Missed Beampos] = Screen('Flip', prm.screen.windowPtr);
     end
     
-    % record response
-    if frameN>=rotationFrames/2+flashOnset+flashDuration
-        [keyIsDown, secs, keyCode, deltaSecs] = KbCheck();
-        if keyIsDown
-            %         if frameN>=rotationFrames/2+flashOnset
-            key = KbName(keyCode);
-            rt = secs-StimulusOnsetTime;
-            StimulusOnsetTime = [];
-            Screen('Flip', prm.screen.windowPtr);
-            %         else
-            %             key = KbName(keyCode);
-            %             rt = -1;
-            %         end
-            quitFlag = 1;
-            %     elseif frameN==rotationFrames
-            %         key = 'void';
-            %         rt = 0;
-        end
-    end
+    %     % record response
+    %     if frameN>=rotationFrames/2+flashOnset+flashDuration
+    %         [keyIsDown, secs, keyCode, deltaSecs] = KbCheck();
+    %         if keyIsDown
+    %             %         if frameN>=rotationFrames/2+flashOnset
+    %             key = KbName(keyCode);
+    %             rt = secs-StimulusOnsetTime;
+    %             StimulusOnsetTime = [];
+    %             Screen('Flip', prm.screen.windowPtr);
+    %             %         else
+    %             %             key = KbName(keyCode);
+    %             %             rt = -1;
+    %             %         end
+    % %             % display of motion after flash offset
+    % %             quitFlag = 1;
+    %             %     elseif frameN==rotationFrames
+    %             %         key = 'void';
+    %             %         rt = 0;
+    %         end
+    %     end
     
     Screen('Flip', prm.screen.windowPtr);
-    if quitFlag==1
-        break
-    end
+    %     % display of motion after flash offset
+    %     if quitFlag==1
+    %         break
+    %     end
     %     end
 end
 % StimulusOffsetTime = GetSecs; % here is actually the offset time
@@ -154,12 +166,16 @@ while quitFlag==0
         rt = secs-StimulusOnsetTime;
         StimulusOnsetTime = [];
         quitFlag = 1;
+        % draw fixation
+        Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
+        Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
+        
         Screen('Flip', prm.screen.windowPtr);
         %         else
         %             key = KbName(keyCode);
         %             rt = -1;
         %         end
-%         break
+        %         break
         %     elseif frameN==rotationFrames
         %         key = 'void';
         %         rt = 0;

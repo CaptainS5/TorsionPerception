@@ -177,8 +177,8 @@ try
             end
             
             % ITI
-            Screen('Flip', prm.screen.windowPtr);
-            WaitSecs(prm.ITI);
+%             Screen('Flip', prm.screen.windowPtr);
+            WaitSecs(prm.ITI+0.2*rand);
         end
         %             % quit, only for debugging
         %             if strcmp(key, 'q')

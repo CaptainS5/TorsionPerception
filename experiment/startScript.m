@@ -7,7 +7,7 @@ clc; clear all; close all;
 try
     global trigger;
     setupTrigger();
-    currentBlock = 12;
+    currentBlock = 1;
     while(true)
         currentBlock = runExp(currentBlock); % baseline: block 0; experiment: block 1
 %         resetTriggerGUI; % what's this?
