@@ -1,4 +1,4 @@
-function currentBlock = runExp(currentBlock)
+function currentBlock = runExp(currentBlock, rStyle)
 % currentBlock=1;
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
@@ -14,7 +14,7 @@ try
     
     setParameters;
     prm.pwd = pwd;
-    info = getInfo(currentBlock);
+    info = getInfo(currentBlock, rStyle);
     if info.expType==1
         currentBlock = currentBlock + 1;
     end
@@ -177,8 +177,8 @@ try
             end
             
             % ITI
-%             Screen('Flip', prm.screen.windowPtr);
-            WaitSecs(prm.ITI+0.2*rand);
+            Screen('Flip', prm.screen.windowPtr);
+            WaitSecs(prm.ITI);
         end
         %             % quit, only for debugging
         %             if strcmp(key, 'q')

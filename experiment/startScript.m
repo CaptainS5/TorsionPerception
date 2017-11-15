@@ -8,8 +8,13 @@ try
     global trigger;
     setupTrigger();
     currentBlock = 1;
+    rStyle = -1;
+       
     while(true)
-        currentBlock = runExp(currentBlock); % baseline: block 0; experiment: block 1
+        if currentBlock>6
+            rStyle = -1*rStyle;
+        end
+        currentBlock = runExp(currentBlock, rStyle); % baseline: block 0; experiment: block 1
 %         resetTriggerGUI; % what's this?
         trigger.stopRecording();
     end

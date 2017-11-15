@@ -74,6 +74,13 @@ if info.eyeTracker==1
     trigger.startRecording();
 end
 quitFlag=0;
+
+% draw fixation
+Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
+Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
+Screen('Flip', prm.screen.windowPtr);
+WaitSecs(0.6+rand*0.2);
+
 for frameN = 1:flashOnset+flashDuration % No Reversal; Reversal--rotationFrames
     %     if frameN<=rotationFrames/2 % first direction
     rotationAngle = rotationAngle + direction*prm.rotation.anglePerFrame;
@@ -166,10 +173,10 @@ while quitFlag==0
         rt = secs-StimulusOnsetTime;
         StimulusOnsetTime = [];
         quitFlag = 1;
-        % draw fixation
-        Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
-        Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
-        
+%         % draw fixation
+%         Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
+%         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
+%         
         Screen('Flip', prm.screen.windowPtr);
         %         else
         %             key = KbName(keyCode);
