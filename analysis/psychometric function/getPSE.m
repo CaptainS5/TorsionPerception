@@ -12,15 +12,15 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-names = {'XW3' 'NI' 'MS'};
-merged = 1; % whether initial direction is merged; 1=merged
+names = {'XWp0'};
+merged = 0; % whether initial direction is merged; 1=merged
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 loadData = 0; % whether get new fitting or using existing fitting
-howMany = 13;% include the first howMany trials for each condition*each initialDirection
+howMany = -12;% include the first howMany trials for each condition*each initialDirection
 % using for pilot to see how many trials we need... the file name
 % would be 2*howMany as the total number of trials per condition (direction merged)
 % if not using this, set howMany to a negative number such as -1
-trialPerCon = 30; % trials per condition in the experiment
+trialPerCon = 24; % trials per condition in the experiment
 threshold = 0.5; % for PSE
 fontSize = 15; % for plot
 
@@ -33,8 +33,8 @@ paramsFree = [1 1 0 1];  %1: free parameter, 0: fixed parameter
 %Parameter grid defining parameter space through which to perform a
 %brute-force search for values to be used as initial guesses in iterative
 %parameter search.
-searchGrid.alpha = -1.5:0.01:1.5; % threshold
-searchGrid.beta = -15:0.1:0; % slope
+searchGrid.alpha = -3.5:0.01:1; % threshold
+searchGrid.beta = -20:0.1:0; % slope
 searchGrid.gamma = 0;  % lower asymptote, guess rate, for 2AFC it's 0.5?...
 searchGrid.lambda = 0:0.01:0.1;  % upper asymptote (1-lambda), lapse rate, the probability of an incorrect response...
 
@@ -183,7 +183,7 @@ for ii = 1:size(names, 2)
             ylim([0, 1])
             xlabel('Flash Displacement (left-right, dva)')
             ylabel('Percentage of perceived left to be lower')
-            title([num2str(cons{onsetIdx}(jj)), 's initial clockwise'])
+            title([num2str(cons{onsetIdx}(jj)), 's clockwise'])
             set(gca, 'FontSize', fontSize)
             
             subplot(1, 2, 2) % initial counterclockwise
@@ -207,7 +207,7 @@ for ii = 1:size(names, 2)
             xlabel('Flash Displacement (left-right, dva)')
             ylabel('Percentage of perceived left to be lower')
             set(gca, 'FontSize', fontSize)
-            title([num2str(cons{onsetIdx}(jj)), 's initial counterclockwise'])
+            title([num2str(cons{onsetIdx}(jj)), 's counterclockwise'])
         end
  
         saveas(gca, [names{ii}, '_', mergeName, '_onset', num2str(cons{onsetIdx}(jj)), '_fit.pdf'])
@@ -257,27 +257,27 @@ for ii = 1:size(names, 2)
     if howMany>0
         title(['PSE=', num2str(PSEbase(1)), ', ', num2str(2*howMany),' trials'])
     else
-        title(['PSE=', num2str(PSEbase(1)), ', ', num2str(trialPerCon),' trials'])
+        title(['PSE=', num2str(PSEbase(1))])
     end
     
     saveas(gca, [names{ii}, '_baseline_fit.pdf'])
     
-    % Plot for the fitted PSE of the experiment
+    %% Plot for the fitted PSE of the experiment
     figure
     box off
     if merged==1
         plot(cons{onsetIdx}, PSE(:), '-r')
         hold on
         plot(cons{onsetIdx}, repmat(PSEbase, size(cons{onsetIdx})), '--k')
-        legend({'Initial clockwise (merged)', 'baseline'}, 'box', 'off', 'Location', 'northwest')
+        legend({'Clockwise (merged)', 'baseline'}, 'box', 'off', 'Location', 'northwest')
     else
         plot(cons{onsetIdx}, PSE(:, 1), '-b')
         hold on
         plot(cons{onsetIdx}, PSE(:, 2), '-r')
         plot(cons{onsetIdx}, repmat(PSEbase, size(cons{onsetIdx})), '--k')
-        legend({'Initial clockwise', 'Initial counterclockwise', 'baseline'}, 'box', 'off', 'Location', 'northwest')
+        legend({'Clockwise', 'Counterclockwise', 'baseline'}, 'box', 'off', 'Location', 'northwest')
     end
-%     ylim([-1 1])
+    ylim([-0.55 0.2])
     xlabel('Flash Onset (s)')
     ylabel('Point of subjective equality, left-right')
     set(gca, 'FontSize', fontSize)

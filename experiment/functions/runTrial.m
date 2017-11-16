@@ -5,7 +5,7 @@ global prm disp info
 
 % Initialization
 % fill the background
-Screen('FillRect', prm.screen.windowPtr, prm.screen.blackColour); % fill background
+Screen('FillRect', prm.screen.windowPtr, prm.screen.backgroundColour); % fill background
 
 % different in each trial
 sizeN = disp{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
@@ -75,11 +75,11 @@ if info.eyeTracker==1
 end
 quitFlag=0;
 
-% draw fixation
+% draw fixation at the beginning of each trial
 Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
 Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
 Screen('Flip', prm.screen.windowPtr);
-WaitSecs(0.6+rand*0.2);
+WaitSecs(prm.fixation.durationBase+rand*prm.fixation.durationJitter);
 
 for frameN = 1:flashOnset+flashDuration % No Reversal; Reversal--rotationFrames
     %     if frameN<=rotationFrames/2 % first direction

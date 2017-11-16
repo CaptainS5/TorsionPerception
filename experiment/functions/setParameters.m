@@ -19,6 +19,9 @@ prm.screen.monitorHeight = 27.3;
 prm.fixation.ringRadius = 0.5; % in dva
 prm.fixation.dotRadius = 0.15; % in dva
 prm.fixation.colour = []; % fixation colour, currently set in generateRotationGrating.m
+prm.fixation.durationBase = 0.6;
+prm.fixation.durationJitter = 0.2;
+% fixation duration before each block is base+rand*jitter
 
 % rotating grating stimulus
 prm.grating.outerRadius = 23.6/2; % [8.9, 23.6, 47.2]/2; % in degree of visual angle (dva)
@@ -40,7 +43,7 @@ prm.flash.eccentricity = 3; % the inner edge of the flash to the outer edge of t
 % prm.flash.length = 1;
 % prm.flash.eccentricity = 0.5;
 prm.flash.duration = 0.06;
-prm.flash.onsetInterval = [0.3 0.6 0.9 1.2 1.5]; % no reversal, motion duration before flash
+prm.flash.onsetInterval = [0.35 0.7 1.05 1.4 1.75]; % no reversal, motion duration before flash
 % prm.flash.onsetInterval = [0];
 % prm.flash.onsetInterval = [-0.6 -0.3 0 0.3 0.6]; % time of flash relative to the reversal, within 1 sec
 % prm.flash.displacement = [0]/60;

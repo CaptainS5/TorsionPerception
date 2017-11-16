@@ -13,7 +13,9 @@ prm.screen.whichscreen = max(Screen('Screens'));
 prm.screen.blackColour = BlackIndex(prm.screen.windowPtr);
 prm.screen.whiteColour = WhiteIndex(prm.screen.windowPtr);
 
-Screen('FillRect', prm.screen.windowPtr, prm.screen.blackColour);
+prm.screen.backgroundColour = prm.screen.whiteColour/6;
+
+Screen('FillRect', prm.screen.windowPtr, prm.screen.prm.screen.backgroundColour);
 Priority(MaxPriority(prm.screen.windowPtr));
 Screen('Flip', prm.screen.windowPtr);
 

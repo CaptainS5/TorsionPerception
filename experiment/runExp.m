@@ -40,7 +40,7 @@ try
     else
         load([prm.fileName.folder, '\randomAssignment_', info.subID{1}])
     end
-    openScreen;
+    openScreen; % modify background color here
     % Gamma correction
     load('lut527.mat')
     % Make a backup copy of original LUT into origLUT.
@@ -105,7 +105,7 @@ try
         if info.eyeTracker==1
             try
                 startCalibration(prm.screen.monitorWidth, prm.screen.monitorHeight,...
-                    prm.screen.viewDistance, prm.screen.windowPtr, prm.screen.size);                
+                    prm.screen.viewDistance, prm.screen.windowPtr, prm.screen.size);
             catch ME
                 msgString = getReport(ME);
                 disp(msgString);
@@ -156,11 +156,12 @@ try
             
             % replicate the display parameters for each trial
             resp.gratingRadiusIdx(tempN, 1) = disp{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
+            resp.gratingRadius(tempN, 1) = prm.grating.outerRadius(disp{blockN}.gratingRadiusIdx(trialN)); % actual value of the grating outer radius
             resp.flashOnset(tempN, 1) = disp{blockN}.flashOnset(trialN);
             resp.flashDisplaceLeft(tempN, 1) = disp{blockN}.flashDisplaceLeft(trialN);
             resp.initialDirection(tempN, 1) = disp{blockN}.initialDirection(trialN);
             resp.initialAngle(tempN, 1) = disp{blockN}.initialAngle(trialN);
-            resp.duration(tempN, 1) = disp{blockN}.duration(trialN);
+            %             resp.duration(tempN, 1) = disp{blockN}.duration(trialN);
             resp.sideDisplaced(tempN, 1) = disp{blockN}.sideDisplaced(trialN);
             resp.reportStyle(tempN, 1) = info.reportStyle; % report lower or higher
             
