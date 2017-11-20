@@ -1,4 +1,4 @@
-function [] = updateText(trial, pursuit, torsion, logData, fig)
+function [] = updateText(trial, torsion, logData, fig)
 
 screenSize = get(0,'ScreenSize');
 

@@ -1,7 +1,7 @@
-function [key rt] = runTrial(blockN, trialN)
+function [key rt] = runTrial(blockN, trialN, tempN)
 
 global trigger;
-global prm disp info
+global prm disp info resp
 
 % Initialization
 % fill the background
@@ -79,7 +79,8 @@ quitFlag=0;
 Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
 Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
 Screen('Flip', prm.screen.windowPtr);
-WaitSecs(prm.fixation.durationBase+rand*prm.fixation.durationJitter);
+resp.fixationDuration(tempN, 1) = prm.fixation.durationBase+rand*prm.fixation.durationJitter;
+WaitSecs(resp.fixationDuration(tempN, 1));
 
 for frameN = 1:flashOnset+flashDuration % No Reversal; Reversal--rotationFrames
     %     if frameN<=rotationFrames/2 % first direction
@@ -149,9 +150,6 @@ for frameN = 1:flashOnset+flashDuration % No Reversal; Reversal--rotationFrames
     %     end
 end
 % StimulusOffsetTime = GetSecs; % here is actually the offset time
-if info.eyeTracker==1
-    trigger.stopRecording();
-end
 
 % response instruction
 % if info.reportStyle==-1
@@ -167,6 +165,9 @@ Screen('Flip', prm.screen.windowPtr);
 % % record response, won't continue until a response is recorded
 while quitFlag==0
     [keyIsDown, secs, keyCode, deltaSecs] = KbCheck();
+    if info.eyeTracker==1 && secs-StimulusOnsetTime<=prm.recording.stopDuration % stop recording after a certain duration after offset
+        trigger.stopRecording();
+    end
     if keyIsDown
         %         if frameN>=rotationFrames/2+flashOnset
         key = KbName(keyCode);

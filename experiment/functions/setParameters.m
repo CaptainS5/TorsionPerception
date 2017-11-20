@@ -57,6 +57,8 @@ prm.rotation.freq = 0.4; % in Hz
 % prm.rotation.baseDuration = 2.25; % the baseline of rotation in one interval
 % prm.rotation.randDuration = 0.5; % rotation time = base+-rand
 
+prm.recording.stopDuration = 0.2; % stop recording after a certain duration after offset
+
 % block conditions
 prm.ITI = 0.2; % inter-trial interval
 prm.blockN = 12; % total number of blocks

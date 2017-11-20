@@ -1,8 +1,14 @@
 %% make sure that the trial number is not out of bound
-if currentTrial > header.trialsPerBlock
-    currentTrial = header.trialsPerBlock;
-elseif currentTrial < 1
-    currentTrial = 1;
+% if currentTrial > header.trialsPerBlock
+%     currentTrial = header.trialsPerBlock;
+% elseif currentTrial < 1
+%     currentTrial = 1;
+% end
+
+%% skip invalid trials
+if logData.choice==0
+    trial.valid = 0;
+    return
 end
 
 %% setup trial
@@ -26,6 +32,7 @@ trial = setupTrial(data, header, logData, currentTrial);
 % pursuit = analyzePursuit(trial, pursuit);
 
 %% analyze torsion
+pursuit.onset = trial.stim_onset; % the frame to start torsion analysis
 [torsion, trial] = analyzeTorsion(trial, pursuit);
 
 % for i = 1:length(trial.saccades.T.onsets)
@@ -33,22 +40,22 @@ trial = setupTrial(data, header, logData, currentTrial);
 %     saccades.T_saccades = [saccades.T_saccades; entry];
 % end
 
-for i = 1:length(trial.saccades.X.onsets)
-    xPosition = trial.frames.X_filt(trial.saccades.X.onsets(i));
-    yPosition = trial.frames.Y_filt(trial.saccades.X.onsets(i));
-    stimXPosition = trial.frames.S(trial.saccades.X.onsets(i));
-    stimYPosition = 0;
-    horizontalError = xPosition-stimXPosition;
-    verticalError = yPosition-stimYPosition;
-    posError = sqrt((horizontalError.^2 + verticalError.^2));
-    entry = [double(trial.log.subject)...
-        double(trial.log.eye)...
-        double(trial.log.block)...
-        double(trial.log.number)...
-        double(trial.log.natural)...
-        double(posError)];
-    positionError = [positionError; entry];
-end
+% for i = 1:length(trial.saccades.X.onsets)
+%     xPosition = trial.frames.X_filt(trial.saccades.X.onsets(i));
+%     yPosition = trial.frames.Y_filt(trial.saccades.X.onsets(i));
+%     stimXPosition = trial.frames.S(trial.saccades.X.onsets(i));
+%     stimYPosition = 0;
+%     horizontalError = xPosition-stimXPosition;
+%     verticalError = yPosition-stimYPosition;
+%     posError = sqrt((horizontalError.^2 + verticalError.^2));
+%     entry = [double(trial.log.subject)...
+%         double(trial.log.eye)...
+%         double(trial.log.block)...
+%         double(trial.log.number)...
+%         double(trial.log.natural)...
+%         double(posError)];
+%     positionError = [positionError; entry];
+% end
 
 %% analyze Listings Plane
 % try

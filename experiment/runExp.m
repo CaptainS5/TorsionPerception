@@ -135,7 +135,9 @@ try
                 trialN = trialMakeUp(tempN-prm.trialPerBlock);
             end
             % present the stimuli and recording response
-            [key rt] = runTrial(blockN, trialN); % display rotating grating and the flash
+            [key rt] = runTrial(blockN, trialN, tempN); % display rotating grating and the flash
+            % trialN is the index for looking up in display; 
+            % tempN is the actual trial number, including invalid trials
             if strcmp(key, 'LeftArrow')
                 resp.choice(tempN, 1) = -1;
             elseif strcmp(key, 'RightArrow')
