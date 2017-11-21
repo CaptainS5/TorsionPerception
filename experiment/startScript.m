@@ -7,12 +7,14 @@ clc; clear all; close all;
 try
     global trigger;
     setupTrigger();
-    currentBlock = 2;
-    rStyle = -1;
+    currentBlock = 8;
+    rStyleDefault = 1;
        
     while(true)
-        if currentBlock>6
-            rStyle = -1*rStyle;
+        if currentBlock<=6
+            rStyle = rStyleDefault;
+        else
+            rStyle = -1*rStyleDefault;
         end
         currentBlock = runExp(currentBlock, rStyle); % baseline: block 0; experiment: block 1
 %         resetTriggerGUI; % what's this?

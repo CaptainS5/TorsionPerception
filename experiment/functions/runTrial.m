@@ -163,13 +163,19 @@ end
 Screen('Flip', prm.screen.windowPtr);
 
 % % record response, won't continue until a response is recorded
+recordFlag=0;
 while quitFlag==0
     [keyIsDown, secs, keyCode, deltaSecs] = KbCheck();
-    if info.eyeTracker==1 && secs-StimulusOnsetTime<=prm.recording.stopDuration % stop recording after a certain duration after offset
+    if info.eyeTracker==1 && secs-StimulusOnsetTime>=prm.recording.stopDuration && recordFlag==0 % stop recording after a certain duration after offset
         trigger.stopRecording();
+        recordFlag = 1;
     end
     if keyIsDown
         %         if frameN>=rotationFrames/2+flashOnset
+        if info.eyeTracker==1 && recordFlag==0 % stop recording after a certain duration after offset
+            trigger.stopRecording();
+            recordFlag = 1;
+        end
         key = KbName(keyCode);
         rt = secs-StimulusOnsetTime;
         StimulusOnsetTime = [];
