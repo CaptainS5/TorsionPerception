@@ -13,7 +13,7 @@ prm.screen.monitorWidth = 36.8; % horizontal dimension of viewable screen (cm)
 prm.screen.monitorHeight = 27.3;
 
 % display settings
-% prm.backgroundColour = []; % dark background, currently not in use
+% prm.backgroundColour = []; % dark background, currently set in openScreen
 
 % fixation
 prm.fixation.ringRadius = 0.5; % in dva
@@ -50,7 +50,7 @@ prm.flash.onsetInterval = [0.35 0.7 1.05 1.4 1.75]; % no reversal, motion durati
 prm.flash.displacement = [-30 -20 -10 0 10 20 30]/60; % possible displacement of the left flash compared to the right;
 % in the experiment randomly the left/right flash will be moved, while the
 % other remains horizontal
-prm.flash.colour = 88; % measured about 34.5 cd/m^2
+prm.flash.colour = 255; % 88 measured about 34.5 cd/m^2
 
 % rotation control
 prm.rotation.freq = 0.4; % in Hz

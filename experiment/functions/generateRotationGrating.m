@@ -28,18 +28,21 @@ theta((X==0 & Y==0)) = 0;
 % img(rho<=ratio & rho>=ratio/outerRadius*innerRadius) = sin(theta(rho<=ratio & rho>=ratio/outerRadius*innerRadius) * freq + phi)/2*ratio + avgLum;
 img(rho<=contrast & rho>=contrast/outerRadius*innerRadius) = sin(theta(rho<=contrast & rho>=contrast/outerRadius*innerRadius) * freq + phi)/2*contrast + avgLum;
 imgReal = img(rho<=contrast & rho>=contrast/outerRadius*innerRadius); % effective area of the image
+
+img = img*255;
+img(rho>contrast | rho<contrast/outerRadius*innerRadius) = prm.screen.backgroundColour; % the same as the background colour
 % figure
 % imshow(img)
 
-% adding transparency
-trans = zeros(2*outerRadius);
-trans(rho<=contrast & rho>=contrast/outerRadius*innerRadius) = 1;
+% % adding transparency
+% trans = zeros(2*outerRadius);
+% trans(rho<=contrast & rho>=contrast/outerRadius*innerRadius) = 1;
 
 % imgGrating = img;
-imgGrating(:, :, 1) = img*255;
-imgGrating(:, :, 2) = trans;
+imgGrating(:, :, 1) = img;
+% imgGrating(:, :, 2) = trans;
 
 prm.grating.lightest = max(imgReal(:)*255);
 prm.grating.darkest = min(imgReal(:)*255);
 
-end
+% end

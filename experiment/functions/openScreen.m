@@ -15,7 +15,7 @@ prm.screen.whiteColour = WhiteIndex(prm.screen.windowPtr);
 
 prm.screen.backgroundColour = prm.screen.whiteColour/6;
 
-Screen('FillRect', prm.screen.windowPtr, prm.screen.prm.screen.backgroundColour);
+Screen('FillRect', prm.screen.windowPtr, prm.screen.backgroundColour);
 Priority(MaxPriority(prm.screen.windowPtr));
 Screen('Flip', prm.screen.windowPtr);
 

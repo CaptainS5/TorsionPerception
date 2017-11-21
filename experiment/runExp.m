@@ -1,5 +1,5 @@
 function currentBlock = runExp(currentBlock, rStyle)
-% currentBlock=1;
+% currentBlock=1; rStyle = -1;
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
     global trigger
@@ -217,4 +217,4 @@ catch expME
     clear all;
     return;
 end
-end
+% end
