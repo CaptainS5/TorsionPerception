@@ -5,7 +5,7 @@ startFrame = 1;
 endFrame = trial.length;
 
 timeInMs = [350 700 1050 1400 1750];
-tickStep = (2000/5)/(length(timeInMs)-1);x
+tickStep = (2000/5)/(length(timeInMs)-1); %?...
 %% position plot
 % subplot(2,3,1,'replace');
 % 

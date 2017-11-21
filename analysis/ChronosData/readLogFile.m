@@ -14,6 +14,8 @@ function [header,logData] = readLogFile(block, selectedLogFile, experimentFolder
 %   header:             header information from the log file
 %   logData:            data about trial parameters (speed, direction,...)
 
+%% for debug...
+% experimentFolder = standardPaths.log;
 
 %% Part1
 % Determine the number of trials per block.
@@ -74,7 +76,7 @@ logData.initialAngle = allData{9};
 logData.duration = allData{10};
 logData.sideDisplaced = allData{11};
 logData.reportStyle = allData{12};
-% logData.fixationDuration = allData{1};
+logData.fixationDuration = allData{1};
 
 % rightNatural = ~logData.translationalDirection & ~logData.rotationalDirection;
 % leftNatural  = logData.translationalDirection & logData.rotationalDirection;
@@ -94,4 +96,4 @@ logData.reportStyle = allData{12};
 
 fclose('all');
 
-end
+% end

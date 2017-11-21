@@ -1,11 +1,11 @@
-function [ torsion, trial ] = analyzeTorsion(trial, pursuit)
+% function [ torsion, trial ] = analyzeTorsion(trial, pursuit)
 
 startFrame = pursuit.onset;
 endFrame = trial.stim_offset; % - ms2frames(60);
 
 %% mark slowPhases (1 if slowphase, 0 otherwise)
 trial.quickphaseFrames = false(trial.length,1); % what's this for?... defined in removeSaccade.m
-slowPhases = ~trial.quickphaseFrames; %?
+slowPhases = ~trial.quickphaseFrames; %
 slowPhases(1:startFrame) = 0;
 slowPhases(endFrame+1:end) = 0;
 
@@ -64,5 +64,5 @@ torsion.slowPhases.totalAngleCCW = sum(abs(torsion.slowPhases.angleCCW));
 % trial.saccades.T_CW.offsetPositions = trial.frames.T_filt(trial.saccades.T_CW.offsets)';
 
 
-end
+% end
 

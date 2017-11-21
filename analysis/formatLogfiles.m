@@ -6,7 +6,7 @@
 clear all; close all; clc
 
 % basic setting
-names = {'XWp0'};
+names = {'XWp1'};
 folder = pwd;
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 
@@ -43,7 +43,7 @@ for ii = 1:size(names, 2)
         fprintf(fileID, ['SubjectID: ' num2str(ii) '\n']);
         fprintf(fileID, ['Experiment: ' blockNstr '\n']);
         fprintf(fileID, datestr(now, 'yyyy_mmmm_dd_HH:MM:SS.FFF\n'));
-        fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s \n',...
+        fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s %s \n',...
             resp.Properties.VariableNames{:});
         
         for tt = 1:size(resp, 1) 

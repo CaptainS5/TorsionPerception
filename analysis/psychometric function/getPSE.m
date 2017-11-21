@@ -12,8 +12,8 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-names = {'XWp0'};
-merged = 0; % whether initial direction is merged; 1=merged
+names = {'XWp1'};
+merged = 1; % whether initial direction is merged; 1=merged
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 loadData = 0; % whether get new fitting or using existing fitting
 howMany = -12;% include the first howMany trials for each condition*each initialDirection
@@ -277,7 +277,7 @@ for ii = 1:size(names, 2)
         plot(cons{onsetIdx}, repmat(PSEbase, size(cons{onsetIdx})), '--k')
         legend({'Clockwise', 'Counterclockwise', 'baseline'}, 'box', 'off', 'Location', 'northwest')
     end
-    ylim([-0.55 0.2])
+    ylim([-0.5 0.3])
     xlabel('Flash Onset (s)')
     ylabel('Point of subjective equality, left-right')
     set(gca, 'FontSize', fontSize)
