@@ -1,4 +1,4 @@
-function [] = updatePlots(trial, torsion, data)
+function [] = updatePlots(trial, torsion, pursuit, data)
 
 startFrame = 1;
 % endFrame = min(trial.length, 400);

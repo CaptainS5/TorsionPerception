@@ -53,7 +53,7 @@ header.subjectID = textscan(fid, '%*s %d %*[^\n]',1);
 header.subjectID = header.subjectID{1};
 header.experiment = textscan(fid, '%*s %d %*[^\n]',1);
 header.experiment = header.experiment{1};
-% header.trialsPerBlock = currentBlockSize;
+header.trialsPerBlock = 70; %currentBlockSize;
 
 %skip 2 lines
 textscan(fid, '%*[^\n]', 2);
@@ -69,11 +69,11 @@ logData.choice = allData{2};
 logData.RT = allData{3};
 logData.trialIdx = allData{4};
 logData.gratingRadiusIdx = allData{5};
-logData.flashOnset = allData{6};
-logData.flashDisplaceLeft = allData{7};
-logData.initialDirection = allData{8};
-logData.initialAngle = allData{9};
-logData.duration = allData{10};
+logData.gratingRadius = allData{6};
+logData.flashOnset = allData{7};
+logData.flashDisplaceLeft = allData{8};
+logData.initialDirection = allData{9};
+logData.initialAngle = allData{10};
 logData.sideDisplaced = allData{11};
 logData.reportStyle = allData{12};
 logData.fixationDuration = allData{1};

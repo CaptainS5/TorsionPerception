@@ -1,4 +1,4 @@
-% function [ torsion, trial ] = analyzeTorsion(trial, pursuit)
+function [ torsion, trial ] = analyzeTorsion(trial, pursuit)
 
 startFrame = pursuit.onset;
 endFrame = trial.stim_offset; % - ms2frames(60);
