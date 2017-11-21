@@ -20,23 +20,23 @@ function [header,logData] = readLogFile(block, selectedLogFile, experimentFolder
 % Thus we know where one block ends and the next one starts.
 
 path = fullfile(experimentFolder,selectedLogFile); % added Exp7 on July 2, MS / deleted again on July 4th. Need to find better solution
+% 
+% fid = fopen(path);
+% 
+% % skip 2 lines
+% textscan(fid, '%*[^\n]', 2);
+% 
+% blocksAndTrials = textscan(fid, '%s %d %*[^\n]'); % just block... named as "Experiment"...
+% blocks = blocksAndTrials{2};
+% trials = blocksAndTrials{2};
+% trialsDiff = diff(trials);
+% trialsDiff = [trialsDiff; -1]; %this is just a helper 
+% blockNumbers = blocks(trialsDiff<0);
+% blockSizes = trials(trialsDiff<0);
 
-fid = fopen(path);
+% currentBlockSize = blockSizes(blockNumbers==block);
 
-% skip 5 lines
-textscan(fid, '%*[^\n]', 5);
-
-blocksAndTrials = textscan(fid, '%d %d %*[^\n]');
-blocks = blocksAndTrials{1};
-trials = blocksAndTrials{2};
-trialsDiff = diff(trials);
-trialsDiff = [trialsDiff; -1]; %this is just a helper 
-blockNumbers = blocks(trialsDiff<0);
-blockSizes = trials(trialsDiff<0);
-
-currentBlockSize = blockSizes(blockNumbers==block);
-
-fclose(fid);
+% fclose(fid);
 
 %% Part2
 % Read data from log files and store it in the following two structures
@@ -51,46 +51,46 @@ header.subjectID = textscan(fid, '%*s %d %*[^\n]',1);
 header.subjectID = header.subjectID{1};
 header.experiment = textscan(fid, '%*s %d %*[^\n]',1);
 header.experiment = header.experiment{1};
-header.trialsPerBlock = currentBlockSize;
+% header.trialsPerBlock = currentBlockSize;
 
 %skip 2 lines
 textscan(fid, '%*[^\n]', 2);
 
-skipLines = sum(blockSizes(blockNumbers<block)); %skip lines of previous blocks
-textscan(fid, '%*[^\n]', skipLines);
+% skipLines = sum(blockSizes(blockNumbers<block)); %skip lines of previous blocks
+% textscan(fid, '%*[^\n]', skipLines);
 
-allData = textscan(fid, '%d %d %d %d %d %d %f %f %d %d %f %f %d %*[^\n]',currentBlockSize);
+allData = textscan(fid, '%f %d %f %d %d %f %f %d %f %d %d %d %*[^\n]');
 
 logData.fileName = selectedLogFile;
 logData.block = block;
-logData.trial = allData{2};
-logData.translationalDirection = allData{3};
-logData.rotationalDirection = allData{4};
-logData.randomSpeed = allData{5};
-logData.decision = allData{6};
-logData.circleDiameter = allData{7};
-logData.horizontalSpeed = allData{8};
-logData.rotationalSpeed = allData{9};
+logData.choice = allData{2};
+logData.RT = allData{3};
+logData.trialIdx = allData{4};
+logData.gratingRadiusIdx = allData{5};
+logData.flashOnset = allData{6};
+logData.flashDisplaceLeft = allData{7};
+logData.initialDirection = allData{8};
+logData.initialAngle = allData{9};
 logData.duration = allData{10};
-logData.multiplier = allData{11};
-logData.dotsDiameter = allData{12};
-logData.dotsNumber = allData{13};
+logData.sideDisplaced = allData{11};
+logData.reportStyle = allData{12};
+% logData.fixationDuration = allData{1};
 
-rightNatural = ~logData.translationalDirection & ~logData.rotationalDirection;
-leftNatural  = logData.translationalDirection & logData.rotationalDirection;
+% rightNatural = ~logData.translationalDirection & ~logData.rotationalDirection;
+% leftNatural  = logData.translationalDirection & logData.rotationalDirection;
+% 
+% logData.natural = rightNatural | leftNatural;
 
-logData.natural = rightNatural | leftNatural;
+% decisionFaster = strcmp(logData.decision,'faster');
+% decisionSlower = strcmp(logData.decision,'slower');
+% 
+% isFaster = logData.randomSpeed > 0;
+% isSlower = ismember(logData.randomSpeed,-20:-1);
 
-decisionFaster = strcmp(logData.decision,'faster');
-decisionSlower = strcmp(logData.decision,'slower');
-
-isFaster = logData.randomSpeed > 0;
-isSlower = ismember(logData.randomSpeed,-20:-1);
-
-isFasterCorrect = isFaster & decisionFaster;
-isSlowerCorrect = isSlower & decisionSlower;
-
-logData.decisionCorrect = isFasterCorrect | isSlowerCorrect;
+% isFasterCorrect = isFaster & decisionFaster;
+% isSlowerCorrect = isSlower & decisionSlower;
+% 
+% logData.decisionCorrect = isFasterCorrect | isSlowerCorrect;
 
 fclose('all');
 

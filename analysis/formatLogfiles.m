@@ -28,6 +28,31 @@ for ii = 1:size(names, 2)
                 load(fileResp{1, jj})
             end
         end
+        if strcmp(fileResp{1, jj}(10), '_')
+            blockNstr = ['0' fileResp{1, jj}(9)];
+            fileResp{1, jj} = [fileResp{1, jj}(1:8) '0' fileResp{1, jj}(9:end)];
+        else
+            blockNstr = fileResp{1, jj}(9:10);
+        end
+        
+        fileName = fileResp{1, jj}(1:(end-4));
+        filePath = fullfile(pwd, fileName);
+        fileID = fopen(filePath, 'a');
+        % print headers
+        fprintf(fileID, ['ExperimentID: 0\n']);
+        fprintf(fileID, ['SubjectID: ' num2str(ii) '\n']);
+        fprintf(fileID, ['Experiment: ' blockNstr '\n']);
+        fprintf(fileID, datestr(now, 'yyyy_mmmm_dd_HH:MM:SS.FFF\n'));
+        fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s \n',...
+            resp.Properties.VariableNames{:});
+        
+        for tt = 1:size(resp, 1) 
+        % print trial data
+        fprintf(fileID, '%0.3f %d %0.3f %d %d %0.3f %0.2f %d %0.2f %0.3f %d %d \n',...
+            resp{tt, 1:end});        
+        end
+        fclose(fileID);
+        
         jj = jj+1;
     end
     

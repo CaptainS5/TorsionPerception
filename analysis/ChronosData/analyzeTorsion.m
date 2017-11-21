@@ -1,13 +1,13 @@
 function [ torsion, trial ] = analyzeTorsion(trial, pursuit)
 
 startFrame = pursuit.onset;
-endFrame = trial.stim_offset - ms2frames(200);
+endFrame = trial.stim_offset; % - ms2frames(60);
 
 %% mark slowPhases (1 if slowphase, 0 otherwise)
-slowPhases = ~trial.quickphaseFrames;
+trial.quickphaseFrames = false(trial.length,1); % what's this for?... defined in removeSaccade.m
+slowPhases = ~trial.quickphaseFrames; %?
 slowPhases(1:startFrame) = 0;
 slowPhases(endFrame+1:end) = 0;
-
 
 %% find slowphase onsets/offsets and direction
 temp = diff(slowPhases);
@@ -54,14 +54,14 @@ torsion.slowPhases.totalAngleCW = sum(abs(torsion.slowPhases.angleCW));
 torsion.slowPhases.totalAngleCCW = sum(abs(torsion.slowPhases.angleCCW));
 
 %% calculate torsional position at onset and offset of each torsional saccade (quickphase)
-trial.saccades.T.onsetPositions = trial.frames.T_filt(trial.saccades.T.onsets)';
-trial.saccades.T.offsetPositions = trial.frames.T_filt(trial.saccades.T.offsets)';
-
-trial.saccades.T_CCW.onsetPositions = trial.frames.T_filt(trial.saccades.T_CCW.onsets)';
-trial.saccades.T_CCW.offsetPositions = trial.frames.T_filt(trial.saccades.T_CCW.offsets)';
-
-trial.saccades.T_CW.onsetPositions = trial.frames.T_filt(trial.saccades.T_CW.onsets)';
-trial.saccades.T_CW.offsetPositions = trial.frames.T_filt(trial.saccades.T_CW.offsets)';
+% trial.saccades.T.onsetPositions = trial.frames.T_filt(trial.saccades.T.onsets)';
+% trial.saccades.T.offsetPositions = trial.frames.T_filt(trial.saccades.T.offsets)';
+% 
+% trial.saccades.T_CCW.onsetPositions = trial.frames.T_filt(trial.saccades.T_CCW.onsets)';
+% trial.saccades.T_CCW.offsetPositions = trial.frames.T_filt(trial.saccades.T_CCW.offsets)';
+% 
+% trial.saccades.T_CW.onsetPositions = trial.frames.T_filt(trial.saccades.T_CW.onsets)';
+% trial.saccades.T_CW.offsetPositions = trial.frames.T_filt(trial.saccades.T_CW.offsets)';
 
 
 end

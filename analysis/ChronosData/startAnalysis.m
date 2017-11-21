@@ -43,7 +43,7 @@ assignin('base', 'listboxLogFiles', listboxLogFiles);
 assignin('base', 'listboxDataFiles', listboxDataFiles);
 
 buttons.startButton = uicontrol(fig,'string','start','Position',[540,50,60,30],'callback',...
-    'selectedLogFile = readListBoxSelection(listboxLogFiles);selectedDataFile = readListBoxSelection(listboxDataFiles);selectedBlock = str2num(selectedDataFile{1}(16:17));runManualAnalysis;');
+    'selectedLogFile = readListBoxSelection(listboxLogFiles);selectedDataFile = readListBoxSelection(listboxDataFiles);selectedBlock = str2num(selectedDataFile{1}(9:10));runManualAnalysis;');
 
 buttons.autoButton = uicontrol(fig,'string','auto','Position',[540,100,60,30],'callback',...
     'selectedLogFile = readListBoxSelection(listboxLogFiles);selectedDataFiles = readListBoxSelection(listboxDataFiles);runAutoAnalysis;');
