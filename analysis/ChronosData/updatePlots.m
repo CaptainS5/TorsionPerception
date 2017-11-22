@@ -80,7 +80,7 @@ tickStep = (2000/5)/(length(timeInMs)-1); %?...
 
 %% torsion plot
 % subplot(2,3,2,'replace');
-subplot(1,3,1,'replace');
+subplot(1,2,1,'replace');
 
 axis([startFrame endFrame -5 5]);
 %change frames to ms
@@ -120,7 +120,7 @@ end
 
 %% torsion velocity plot
 % subplot(2,3,5,'replace');
-subplot(1,3,2,'replace');
+subplot(1,2,2,'replace');
 axis([startFrame endFrame -20 20]);
 %change frames to ms
 set(gca,'Xtick',startFrame:tickStep:endFrame,'XTickLabel',timeInMs);
@@ -144,38 +144,38 @@ line([startFrame endFrame], [0 0],'Color','k','LineStyle',':');
 
 %% onset plot
 % subplot(2,3,3,'replace');
-subplot(1,3,3,'replace');
-
-axis([startFrame endFrame -5 5]);
-%change frames to ms
-set(gca,'Xtick',startFrame:tickStep:endFrame,'XTickLabel',timeInMs);
-
-hold on;
-xlabel('Time(ms)', 'fontsize', 12);
-ylabel('Torsion (degree)', 'fontsize', 12);
-
-plot(startFrame:endFrame,trial.frames.T_filt(startFrame:endFrame));
-
-plot(trial.saccades.T.onsets,trial.frames.T_filt(trial.saccades.T.onsets),'g*');
-plot(trial.saccades.T.offsets,trial.frames.T_filt(trial.saccades.T.offsets),'k*');
-
-% plot segment quality
-plot([trial.stim_onset trial.stim_offset], [0.7 0.7],'Color','k','LineStyle',':');
-plot(startFrame:endFrame,data.segmentsCorrelation(startFrame+data.startFrames(trial.number):endFrame+data.startFrames(trial.number),1),'b:');
-plot(startFrame:endFrame,data.segmentsCorrelation(startFrame+data.startFrames(trial.number):endFrame+data.startFrames(trial.number),2),'r:');
-plot(startFrame:endFrame,data.segmentsCorrelation(startFrame+data.startFrames(trial.number):endFrame+data.startFrames(trial.number),3),'g:');
-plot(startFrame:endFrame,data.segmentsCorrelation(startFrame+data.startFrames(trial.number):endFrame+data.startFrames(trial.number),4),'m:');
-
-% plot(pursuit.onset,trial.frames.T_filt(pursuit.onset),'r:+');
-
-line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle',':');
-line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle',':');
-
-
-
-if sum(trial.lostTframes) > 0
-   plot(startFrame:endFrame, double(trial.lostTframes(startFrame:endFrame)+3), 'r');
-end
+% subplot(1,3,3,'replace');
+% 
+% axis([startFrame endFrame -5 5]);
+% %change frames to ms
+% set(gca,'Xtick',startFrame:tickStep:endFrame,'XTickLabel',timeInMs);
+% 
+% hold on;
+% xlabel('Time(ms)', 'fontsize', 12);
+% ylabel('Torsion (degree)', 'fontsize', 12);
+% 
+% plot(startFrame:endFrame,trial.frames.T_filt(startFrame:endFrame));
+% 
+% plot(trial.saccades.T.onsets,trial.frames.T_filt(trial.saccades.T.onsets),'g*');
+% plot(trial.saccades.T.offsets,trial.frames.T_filt(trial.saccades.T.offsets),'k*');
+% 
+% % plot segment quality
+% plot([trial.stim_onset trial.stim_offset], [0.7 0.7],'Color','k','LineStyle',':');
+% plot(startFrame:endFrame,data.segmentsCorrelation(startFrame+data.startFrames(trial.number):endFrame+data.startFrames(trial.number),1),'b:');
+% plot(startFrame:endFrame,data.segmentsCorrelation(startFrame+data.startFrames(trial.number):endFrame+data.startFrames(trial.number),2),'r:');
+% plot(startFrame:endFrame,data.segmentsCorrelation(startFrame+data.startFrames(trial.number):endFrame+data.startFrames(trial.number),3),'g:');
+% plot(startFrame:endFrame,data.segmentsCorrelation(startFrame+data.startFrames(trial.number):endFrame+data.startFrames(trial.number),4),'m:');
+% 
+% % plot(pursuit.onset,trial.frames.T_filt(pursuit.onset),'r:+');
+% 
+% line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle',':');
+% line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle',':');
+% 
+% 
+% 
+% if sum(trial.lostTframes) > 0
+%    plot(startFrame:endFrame, double(trial.lostTframes(startFrame:endFrame)+3), 'r');
+% end
 
 
 %new

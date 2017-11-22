@@ -39,19 +39,19 @@ torsion.slowPhases.peakVelocity = nanmax(abs(trial.frames.DT_slowphases(torsion.
 torsion.gain = abs(nanmean(trial.frames.DT_slowphases)/double(trial.log.rotationalSpeed));
 
 %% calculate slow phase parameters (angles, duration, speed)
-torsion.slowPhases.angle = trial.frames.T_filt(torsion.slowPhases.offsets) - trial.frames.T_filt(torsion.slowPhases.onsets);
-torsion.slowPhases.angleCW = torsion.slowPhases.angle(torsion.slowPhases.angle > 0);
-torsion.slowPhases.angleCCW = torsion.slowPhases.angle(torsion.slowPhases.angle <= 0);
-torsion.slowPhases.duration = torsion.slowPhases.offsets - torsion.slowPhases.onsets;
-
-torsion.slowPhases.speed = NaN(1,length(torsion.slowPhases.onsets));
-for i = 1:length(torsion.slowPhases.onsets)
-    torsion.slowPhases.speed(i) = nanmean(abs(trial.frames.DT_filt(torsion.slowPhases.onsets(i):torsion.slowPhases.offsets(i))));
-end
-
-torsion.slowPhases.totalAngle = sum(abs(torsion.slowPhases.angle));
-torsion.slowPhases.totalAngleCW = sum(abs(torsion.slowPhases.angleCW));
-torsion.slowPhases.totalAngleCCW = sum(abs(torsion.slowPhases.angleCCW));
+% torsion.slowPhases.angle = trial.frames.T_filt(torsion.slowPhases.offsets) - trial.frames.T_filt(torsion.slowPhases.onsets);
+% torsion.slowPhases.angleCW = torsion.slowPhases.angle(torsion.slowPhases.angle > 0);
+% torsion.slowPhases.angleCCW = torsion.slowPhases.angle(torsion.slowPhases.angle <= 0);
+% torsion.slowPhases.duration = torsion.slowPhases.offsets - torsion.slowPhases.onsets;
+% 
+% torsion.slowPhases.speed = NaN(1,length(torsion.slowPhases.onsets));
+% for i = 1:length(torsion.slowPhases.onsets)
+%     torsion.slowPhases.speed(i) = nanmean(abs(trial.frames.DT_filt(torsion.slowPhases.onsets(i):torsion.slowPhases.offsets(i))));
+% end
+% 
+% torsion.slowPhases.totalAngle = sum(abs(torsion.slowPhases.angle));
+% torsion.slowPhases.totalAngleCW = sum(abs(torsion.slowPhases.angleCW));
+% torsion.slowPhases.totalAngleCCW = sum(abs(torsion.slowPhases.angleCCW));
 
 %% calculate torsional position at onset and offset of each torsional saccade (quickphase)
 % trial.saccades.T.onsetPositions = trial.frames.T_filt(trial.saccades.T.onsets)';
