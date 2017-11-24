@@ -7,7 +7,7 @@ clc; clear all; close all;
 try
     global trigger;
     setupTrigger();
-    currentBlock = 8;
+    currentBlock = 9;
     rStyleDefault = 1;
        
     while(true)

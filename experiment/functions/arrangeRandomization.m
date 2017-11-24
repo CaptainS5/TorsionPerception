@@ -51,4 +51,4 @@ trialsBlock = repmat(cons, copyN, 1);
 
 save([prm.fileName.folder, '\randomAssignment_', info.subID{1}], 'disp')
 
-end
+% end

@@ -150,7 +150,7 @@ try
                 makeUpN = makeUpN + 1;
                 trialMakeUp(makeUpN) = trialN;
                 % feedback on the screen
-                respText = 'Wrong Key';
+                respText = 'Invalid Key';
                 Screen('DrawText', prm.screen.windowPtr, respText, prm.screen.center(1)-80, prm.screen.center(2), prm.screen.whiteColour);
             end
             resp.RTms(tempN, 1) = rt*1000; % in ms
