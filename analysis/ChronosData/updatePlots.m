@@ -4,7 +4,8 @@ startFrame = 1;
 % endFrame = min(trial.length, 400);
 endFrame = trial.length;
 
-timeInMs = [350 700 1050 1400 1750];
+sampleRate = evalin('base','sampleRate');
+timeInMs = linspace(0, trial.length*1000/sampleRate, 10); 
 tickStep = (2000/5)/(length(timeInMs)-1); %?...
 %% position plot
 % subplot(2,3,1,'replace');
@@ -104,8 +105,8 @@ plot(startFrame:endFrame,trial.frames.T_filt(startFrame:endFrame));
 % 
 % plot(pursuit.onset,trial.frames.T_filt(pursuit.onset),'r:+');
 
-line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle',':');
-line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle',':');
+line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle','--');
+line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle','--');
 
 
 
@@ -137,8 +138,8 @@ plot(trial.frames.DT_slowphases,'g:');
 % 
 % plot(pursuit.onset,trial.frames.DT_filt(pursuit.onset),'r:+');
 
-line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle',':');
-line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle',':');
+line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle','--');
+line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle','--');
 
 line([startFrame endFrame], [0 0],'Color','k','LineStyle',':');
 

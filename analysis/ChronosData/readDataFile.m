@@ -1,5 +1,5 @@
 function [data] = readDataFile(selectedDataFile, experimentFolder)
-
+% experimentFolder = [folder{:} '\' subject '\chronos']; % for debug
 %% Part1: read number of segments
 %Open Data file
 path = fullfile(experimentFolder,selectedDataFile);
@@ -30,12 +30,12 @@ data.totalFrames = triggeredFrames + nonTriggeredFrames;
 
 
 recordedBlocks = textscan(fid, '%*s%*s%*s%*s%*s %d %*[^\n]', 1);
-recordedBlocks = recordedBlocks{1}-1; %-1 because the first recorded block is the calibration block
+recordedBlocks = recordedBlocks{1}; %% ???-1 because the first recorded block is the calibration block
 notRecordedBlocks = textscan(fid, '%*s%*s%*s%*s%*s %d %*[^\n]', 1);
 notRecordedBlocks = notRecordedBlocks{1};
 
 %skip line ("--blocks recorded--" and calibration block line)
-textscan(fid, '%*[^\n]', 2);
+textscan(fid, '%*[^\n]', 1); % original was 2--but what calibration??? calibration is in separate file!!!
 
 %% Part3: read start frames and end frames
 
@@ -58,17 +58,17 @@ textscan(fid, '%*[^\n]', 1);
 textscan(fid, '%*[^\n]', notRecordedBlocks);
 
 % skip 2 lines
-textscan(fid, '%*[^\n]', 2);
+textscan(fid, '%*[^\n]', 2); 
 
 % setup format for lines of data
 format = '%d %f %f %f';
 
 for i = 1:numberOfSegments
-    format = [format '%f %f']; %add two floats for each segment for torsion value and torsion correlation
+    format = [format ' %f %f']; %add two floats for each segment for torsion value and torsion correlation
 end
 
 % read every single data frame
-frameData = textscan(fid, format,data.totalFrames);
+frameData = textscan(fid, format, data.totalFrames);
 %
 %
 data.segments = ones(data.totalFrames,numberOfSegments);
@@ -118,4 +118,4 @@ verticalData(data.lostYframes) = 0;
 data.Y = verticalData;
 
 fclose('all');
-end
+% end

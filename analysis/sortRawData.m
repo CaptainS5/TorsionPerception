@@ -9,7 +9,7 @@
 clear all; close all; clc
 
 % basic setting
-names = {'XWp1'};
+names = {'NIp2'};
 folder = pwd;
 howMany = -13; % include the first howMany trials for each condition*each initialDirection
 % using for pilot to see how many trials we need...

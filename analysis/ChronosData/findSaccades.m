@@ -1,9 +1,13 @@
 function [onsets, offsets, isMax] = findSaccades(stim_onset, stim_offset, speed, acceleration, threshold, stimulusSpeed)
 %% How this algorithm works:
 
-
-
-
+% % debug
+% stim_onset = trial.stim_onset;
+% stim_offset = trial.stim_offset;
+% speed = trial.frames.DX_filt;
+% acceleration = trial.frames.DDX_filt;
+% threshold = 20;
+% stimulusSpeed = 0;
 
 %% set up
 startFrame = stim_onset;
@@ -77,4 +81,4 @@ isMax(earlyOnsets) = [];
 
 
 
-end
+% end

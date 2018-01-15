@@ -6,7 +6,7 @@
 clear all; close all; clc
 
 % basic setting
-names = {'XWp1'};
+names = {'JFp2'};
 folder = pwd;
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 
@@ -35,7 +35,7 @@ for ii = 1:size(names, 2)
             blockNstr = fileResp{1, jj}(9:10);
         end
         
-        fileName = fileResp{1, jj}(1:(end-4));
+        fileName = fileResp{1, jj}(1:(11+size(names{ii}, 2)));
         filePath = fullfile(pwd, fileName);
         fileID = fopen(filePath, 'a');
         % print headers

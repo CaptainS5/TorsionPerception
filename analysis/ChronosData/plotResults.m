@@ -1,4 +1,4 @@
 if trial.valid==1
     updatePlots(trial, torsion, pursuit, data);
-%     updateText(trial, pursuit, torsion, logData, fig);
+    updateText(trial, torsion, logData, fig);
 end

@@ -5,6 +5,8 @@ function openScreen
 
 global prm 
 
+Screen('Preference', 'SkipSyncTests', 1);
+
 % open window
 prm.screen.whichscreen = max(Screen('Screens'));
 [prm.screen.windowPtr, prm.screen.size] = Screen('OpenWindow', prm.screen.whichscreen);

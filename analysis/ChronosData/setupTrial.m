@@ -30,8 +30,8 @@ trial.lostYframes = data.lostYframes(trial.startFrame:trial.endFrame);
 trial.lostTframes = data.lostTframes(trial.startFrame:trial.endFrame);
 
 %% calculate stim_onset and stim_offset
-trial.stim_onset = ms2frames(logData.fixationDuration*1000);                          
-trial.stim_offset = trial.stim_onset + ms2frames(logData.flashOnset*1000+60);     
+trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000);                          
+trial.stim_offset = trial.stim_onset + ms2frames(logData.flashOnset(currentTrial)*1000+60);     
 trial.length = length(trial.startFrame:trial.endFrame);
 
 %% read log data
@@ -42,6 +42,7 @@ trial.log.eye = data.eye;
 % trial.log.number = logData.trial(currentTrial);
 trial.log.rotationalDirection = logData.initialDirection(currentTrial);
 trial.log.rotationalSpeed = 0.4*360;
+trial.log.flashOnset = logData.flashOnset(currentTrial);
 % trial.log.translationalDirection = logData.translationalDirection(currentTrial);
 % trial.log.rotationalDirection = logData.rotationalDirection(currentTrial);
 % trial.log.rotationalSpeed = ((double(logData.randomSpeed(currentTrial))+100)/100)*logData.rotationalSpeed(currentTrial);
@@ -69,7 +70,7 @@ trial.log.rotationalSpeed = 0.4*360;
 % sampleRate = evalin('base','sampleRate');
 % trial.frames.DS = diff(trial.frames.S)*sampleRate;
 % trial.frames.DS = [trial.frames.DS; NaN];
-
+% 
 % trial.stimulusMeanVelocity = nanmean(trial.frames.DS(trial.stim_onset:trial.stim_offset));
 %% set start and end frame to 1:length
 trial.startFrame = 1;

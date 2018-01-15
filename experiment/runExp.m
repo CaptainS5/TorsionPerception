@@ -1,5 +1,5 @@
-function currentBlock = runExp(currentBlock, rStyle)
-% currentBlock=1; rStyle = -1;
+% function currentBlock = runExp(currentBlock, rStyle)
+clear all; close all; clc; currentBlock=1; rStyle = -1; % debugging
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
     global trigger
@@ -41,12 +41,12 @@ try
         load([prm.fileName.folder, '\randomAssignment_', info.subID{1}])
     end
     openScreen; % modify background color here
-    % Gamma correction
-    load('lut527.mat')
-    % Make a backup copy of original LUT into origLUT.
-    originalLUT=Screen('ReadNormalizedGammaTable', prm.screen.whichscreen);
-    save('originalLUT.mat', 'originalLUT');
-    Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, lut527);
+%     % Gamma correction
+%     load('lut527.mat')
+%     % Make a backup copy of original LUT into origLUT.
+%     originalLUT=Screen('ReadNormalizedGammaTable', prm.screen.whichscreen);
+%     save('originalLUT.mat', 'originalLUT');
+%     Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, lut527);
     
     % Key
     KbCheck;
@@ -56,14 +56,23 @@ try
     
     %     generate texture for the rotating grating
     for ii = 1:size(prm.grating.outerRadius, 2)
-        imgGrating = generateRotationGrating(round(dva2pxl(prm.grating.outerRadius(ii))), ...
+        % rotation stimuli
+        imgGrating = generateRotationStimuli(round(dva2pxl(prm.grating.outerRadius(ii))), ...
             round(dva2pxl(prm.grating.innerRadius)), prm.grating.freq, 0, prm.grating.contrast, prm.grating.averageLum);
         % outer radius, inner radius, frequency, phase, contrast, average luminance
         prm.grating.tex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgGrating);
+        
+        % flash dots, vertically aligned
+        imgFlash = generateFlashTexture(round(dva2pxl(prm.grating.outerRadius(ii))), ...
+            round(dva2pxl(prm.grating.innerRadius)), round(dva2pxl(prm.flash.radius)), ...
+            [255 0 0 255], prm.flash.axis, imgGrating);
+        % gratingOuterRadius, gratingInnerRadius, flashRadius, color
+        % (RGB 0-255q), axis (0-horizontal, 1-vertical)
+        prm.flash.tex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgFlash);
     end
     prm.fixation.colour = prm.grating.lightest;
     % calculate angle per frame for display
-    prm.rotation.anglePerFrame = prm.rotation.freq*360/prm.screen.refreshRate; % in degree
+    prm.rotation.anglePerFrame = prm.rotation.freq/prm.screen.refreshRate; % in degree
     % set up folders, files and running paras
     
     if strcmp(info.subID{1}, 'luminance')
@@ -138,9 +147,11 @@ try
             [key rt] = runTrial(blockN, trialN, tempN); % display rotating grating and the flash
             % trialN is the index for looking up in display; 
             % tempN is the actual trial number, including invalid trials
-            if strcmp(key, 'LeftArrow')
+            %             if strcmp(key, 'LeftArrow')
+            if strcmp(key, 'z') % counterclockwise
                 resp.choice(tempN, 1) = -1;
-            elseif strcmp(key, 'RightArrow')
+            elseif strcmp(key, '/') % clockwise
+                %             elseif strcmp(key, 'RightArrow')
                 resp.choice(tempN, 1) = 1;
                 %             elseif strcmp(key, 'void') % no response
                 %                 resp{blockN}.choice(trialN, 1) = 0;
@@ -204,7 +215,7 @@ try
         end
     end
     
-    Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
+%     Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
     Screen('CloseAll')
     
 catch expME
@@ -213,7 +224,7 @@ catch expME
     end
     disp('Error in runExp');
     disp(expME.message);
-    Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
+%     Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
     Screen('CloseAll')
     %         rethrow(lasterror)
     clear all;
