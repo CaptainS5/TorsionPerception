@@ -41,12 +41,12 @@ try
         load([prm.fileName.folder, '\randomAssignment_', info.subID{1}])
     end
     openScreen; % modify background color here
-%     % Gamma correction
-%     load('lut527.mat')
-%     % Make a backup copy of original LUT into origLUT.
-%     originalLUT=Screen('ReadNormalizedGammaTable', prm.screen.whichscreen);
-%     save('originalLUT.mat', 'originalLUT');
-%     Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, lut527);
+    % Gamma correction
+    load('lut527.mat')
+    % Make a backup copy of original LUT into origLUT.
+    originalLUT=Screen('ReadNormalizedGammaTable', prm.screen.whichscreen);
+    save('originalLUT.mat', 'originalLUT');
+    Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, lut527);
     
     % Key
     KbCheck;
@@ -54,10 +54,10 @@ try
     
     HideCursor;
     
-    %     generate texture for the rotating grating
+    %     generate textures for the stimuli
     for ii = 1:size(prm.grating.outerRadius, 2)
         % rotation stimuli
-        imgGrating = generateRotationStimuli(round(dva2pxl(prm.grating.outerRadius(ii))), ...
+        imgGrating = generateRotationTexture(round(dva2pxl(prm.grating.outerRadius(ii))), ...
             round(dva2pxl(prm.grating.innerRadius)), prm.grating.freq, 0, prm.grating.contrast, prm.grating.averageLum);
         % outer radius, inner radius, frequency, phase, contrast, average luminance
         prm.grating.tex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgGrating);
@@ -65,11 +65,18 @@ try
         % flash dots, vertically aligned
         imgFlash = generateFlashTexture(round(dva2pxl(prm.grating.outerRadius(ii))), ...
             round(dva2pxl(prm.grating.innerRadius)), round(dva2pxl(prm.flash.radius)), ...
-            [255 0 0 255], prm.flash.axis, imgGrating);
+            prm.flash.colour, prm.flash.axis, imgGrating);
         % gratingOuterRadius, gratingInnerRadius, flashRadius, color
-        % (RGB 0-255q), axis (0-horizontal, 1-vertical)
+        % (RGB 0-255), axis (0-horizontal, 1-vertical)
         prm.flash.tex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgFlash);
     end
+    % texture for the adjustment response, initial position vertical
+    imgResp = generateRespTexture(round(dva2pxl(prm.grating.outerRadius(ii))), ...
+            round(dva2pxl(prm.grating.innerRadius)), round(dva2pxl(prm.flash.radius)), ...
+            prm.flash.colour);
+        % gratingOuterRadius, gratingInnerRadius, flashRadius, color (RGB 0-255)
+    prm.resp.tex = Screen('MakeTexture', prm.screen.windowPtr, imgResp);
+    
     prm.fixation.colour = prm.grating.lightest;
     % calculate angle per frame for display
     prm.rotation.anglePerFrame = prm.rotation.freq/prm.screen.refreshRate; % in degree
@@ -100,8 +107,9 @@ try
         prm.fileName.disp = [prm.fileName.folder, '\display', num2str(blockN), '_', info.fileNameTime];
         prm.fileName.resp = [prm.fileName.folder, '\response', num2str(blockN), '_', info.fileNameTime];
         % initialize the randomization that will be made in each trial
-        disp{blockN}.direction = zeros(prm.trialPerBlock, 1);
+%         disp{blockN}.initialDirection = zeros(prm.trialPerBlock, 1);
         disp{blockN}.initialAngle = zeros(prm.trialPerBlock, 1);
+        disp{blockN}.reversalAngle = zeros(prm.trialPerBlock, 1);
         disp{blockN}.duration = zeros(prm.trialPerBlock, 1);
         % initialize the response
         resp = table(); % 1 = left, 2 = right
@@ -174,7 +182,8 @@ try
             resp.flashDisplaceLeft(tempN, 1) = disp{blockN}.flashDisplaceLeft(trialN);
             resp.initialDirection(tempN, 1) = disp{blockN}.initialDirection(trialN);
             resp.initialAngle(tempN, 1) = disp{blockN}.initialAngle(trialN);
-            %             resp.duration(tempN, 1) = disp{blockN}.duration(trialN);
+            resp.reversalAngle(tempN, 1) = disp{blockN}.reversalAngle(trialN);
+%             resp.duration(tempN, 1) = disp{blockN}.duration(trialN);
             resp.sideDisplaced(tempN, 1) = disp{blockN}.sideDisplaced(trialN);
             resp.reportStyle(tempN, 1) = info.reportStyle; % report lower or higher
             
@@ -215,7 +224,7 @@ try
         end
     end
     
-%     Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
+    Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
     Screen('CloseAll')
     
 catch expME
@@ -224,7 +233,7 @@ catch expME
     end
     disp('Error in runExp');
     disp(expME.message);
-%     Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
+    Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
     Screen('CloseAll')
     %         rethrow(lasterror)
     clear all;

@@ -5,19 +5,21 @@ function arrangeRandomization(info)
 
 global prm disp
 
-varNames = {'gratingRadiusIdx', 'flashOnset', 'flashDisplaceLeft'};
+varNames = {'gratingRadiusIdx', 'flashOnset', 'flashDisplaceLeft', 'initialDirection', 'rotationSpeed'};
 
 %% Each block has the same trials, just different in order
 copyN = prm.trialPerCondition/prm.blockN; % number of trials for each condition in each block
 cons = genCombinations([1:length(prm.grating.outerRadius)]', prm.flash.onsetInterval');
 cons = genCombinations(cons, prm.flash.displacement');
+cons = genCombinations(cons, prm.rotation.initialDirection');
+cons = genCombinations(cons, prm.rotation.freq');
 trialsBlock = repmat(cons, copyN, 1);
 
 % assign to each block
     for ii = 1:prm.blockN
         tempI = randperm(size(trialsBlock, 1));
         % assign to the final parameter
-        disp{ii} = table(trialsBlock(tempI, 1), trialsBlock(tempI, 2), trialsBlock(tempI, 3), 'VariableNames', varNames);
+        disp{ii} = table(trialsBlock(tempI, 1), trialsBlock(tempI, 2), trialsBlock(tempI, 3), trialsBlock(tempI, 4), trialsBlock(tempI, 5), 'VariableNames', varNames);
     end
 
 %% All blocks together, then randomly assign into each block; each block is different in trials

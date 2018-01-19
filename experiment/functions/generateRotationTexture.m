@@ -1,4 +1,4 @@
-function imgGrating = generateRotationStimuli(outerRadius, innerRadius, freq, phi, contrast, avgLum)
+function imgGrating = generateRotationTexture(outerRadius, innerRadius, freq, phi, contrast, avgLum)
 % generate the matrix of the rotating stimuli in square wave
 
 % radius of the grating, in pixels
