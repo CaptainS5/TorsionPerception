@@ -203,25 +203,30 @@ key = [];
 rt = [];
 [x0, y0, buttons0, focus0, valuators0, valinfo0] = GetMouse(prm.screen.windowPtr);
 while quitFlag==0
-%     % response window
-%     if info.eyeTracker==1 && secs-StimulusOnsetTime>=prm.recording.stopDuration && recordFlag==0 % stop recording after a certain duration after offset
-%         trigger.stopRecording();
-%         recordFlag = 1;
-%     end
-% for quitting at any timr
-[keyIsDown, secs, keyCode, deltaSecs] = KbCheck();
-if keyIsDown
-    key = KbName(keyCode);
-    break
-end
+    %     % response window
+    %     if info.eyeTracker==1 && secs-StimulusOnsetTime>=prm.recording.stopDuration && recordFlag==0 % stop recording after a certain duration after offset
+    %         trigger.stopRecording();
+    %         recordFlag = 1;
+    %     end
+    % for quitting at any timr
+    [keyIsDown, secs, keyCode, deltaSecs] = KbCheck();
+    if keyIsDown
+        key = KbName(keyCode);
+        break
+    end
     %% mouse response
-        % display the stimuli, random starting angle
-        if isempty(x) % the first loop, random angle
-            respAngle = 45; %360*rand;
-        else % changing the angle of the next loop according to the change in mouse position
-            % show the cursor; put it at the start angle everytime then calculate angle based on cursor location 
-
+    % display the stimuli, random starting angle
+    if isempty(x) % the first loop, random angle
+        % show the cursor; put it at the start angle everytime
+        respAngle = 45; %360*rand;
+            SetMouse(prm.screen.size(3)/2+cos((90-respAngle)/180*pi)*ecc, ...
+                prm.screen.size(4)/2+sin((90-respAngle)/180*pi)*ecc, ...
+                prm.screen.windowPtr);
+            ShowCursor();
+        else % changing the angle of the next loop according to the cursor position
+            respAngle = 90-atan2(y-prm.screen.size(4)/2, x-prm.screen.size(3)/2)/pi*180;
         end
+        
         if respAngle>360
             respAngle = respAngle-360;
         elseif respAngle<0
@@ -272,6 +277,8 @@ end
 %     end
 %     %% end of button response
 end
+
+HideCursor();
 
 if info.eyeTracker==1 
     trigger.stopRecording();
