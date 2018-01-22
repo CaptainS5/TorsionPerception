@@ -3,9 +3,9 @@ clear all; close all; clc; currentBlock=1; rStyle = -1; % debugging
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
     global trigger
-    global prm disp resp info
+    global prm display resp info
     % prm--parameters, mostly defined in setParameters
-    % disp--all parameters (some pre-arranged) in the experiment, each block,
+    % display--all parameters (some pre-arranged) in the experiment, each block,
     % trial by trial
     % resp--the response, each block, trial by trial, what actually was
     % presented, including trials with invalid response/loss of fixation etc.
@@ -107,10 +107,10 @@ try
         prm.fileName.disp = [prm.fileName.folder, '\display', num2str(blockN), '_', info.fileNameTime];
         prm.fileName.resp = [prm.fileName.folder, '\response', num2str(blockN), '_', info.fileNameTime];
         % initialize the randomization that will be made in each trial
-%         disp{blockN}.initialDirection = zeros(prm.trialPerBlock, 1);
-        disp{blockN}.initialAngle = zeros(prm.trialPerBlock, 1);
-        disp{blockN}.reversalAngle = zeros(prm.trialPerBlock, 1);
-        disp{blockN}.duration = zeros(prm.trialPerBlock, 1);
+%         display{blockN}.initialDirection = zeros(prm.trialPerBlock, 1);
+        display{blockN}.initialAngle = zeros(prm.trialPerBlock, 1);
+        display{blockN}.reversalAngle = zeros(prm.trialPerBlock, 1);
+        display{blockN}.duration = zeros(prm.trialPerBlock, 1);
         % initialize the response
         resp = table(); % 1 = left, 2 = right
         
@@ -156,39 +156,39 @@ try
             % trialN is the index for looking up in display; 
             % tempN is the actual trial number, including invalid trials
             %             if strcmp(key, 'LeftArrow')
-            if strcmp(key, 'z') % counterclockwise
-                resp.choice(tempN, 1) = -1;
-            elseif strcmp(key, '/') % clockwise
-                %             elseif strcmp(key, 'RightArrow')
-                resp.choice(tempN, 1) = 1;
-                %             elseif strcmp(key, 'void') % no response
-                %                 resp{blockN}.choice(trialN, 1) = 0;
-            else % wrong key
-                resp.choice(tempN, 1) = 0;
-                % repeat this trial at the end of the block
-                makeUpN = makeUpN + 1;
-                trialMakeUp(makeUpN) = trialN;
-                % feedback on the screen
-                respText = 'Invalid Key';
-                Screen('DrawText', prm.screen.windowPtr, respText, prm.screen.center(1)-80, prm.screen.center(2), prm.screen.whiteColour);
-            end
-            resp.RTms(tempN, 1) = rt*1000; % in ms
+%             if strcmp(key, 'z') % counterclockwise
+%                 resp.choice(tempN, 1) = -1;
+%             elseif strcmp(key, '/') % clockwise
+%                 %             elseif strcmp(key, 'RightArrow')
+%                 resp.choice(tempN, 1) = 1;
+%                 %             elseif strcmp(key, 'void') % no response
+%                 %                 resp{blockN}.choice(trialN, 1) = 0;
+%             else % wrong key
+%                 resp.choice(tempN, 1) = 0;
+%                 % repeat this trial at the end of the block
+%                 makeUpN = makeUpN + 1;
+%                 trialMakeUp(makeUpN) = trialN;
+%                 % feedback on the screen
+%                 respText = 'Invalid Key';
+%                 Screen('DrawText', prm.screen.windowPtr, respText, prm.screen.center(1)-80, prm.screen.center(2), prm.screen.whiteColour);
+%             end
+%             resp.RTms(tempN, 1) = rt*1000; % in ms
             resp.trialIdx(tempN, 1) = trialN; % index for the condition used
             
             % replicate the display parameters for each trial
-            resp.gratingRadiusIdx(tempN, 1) = disp{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
-            resp.gratingRadius(tempN, 1) = prm.grating.outerRadius(disp{blockN}.gratingRadiusIdx(trialN)); % actual value of the grating outer radius
-            resp.flashOnset(tempN, 1) = disp{blockN}.flashOnset(trialN);
-            resp.flashDisplaceLeft(tempN, 1) = disp{blockN}.flashDisplaceLeft(trialN);
-            resp.initialDirection(tempN, 1) = disp{blockN}.initialDirection(trialN);
-            resp.initialAngle(tempN, 1) = disp{blockN}.initialAngle(trialN);
-            resp.reversalAngle(tempN, 1) = disp{blockN}.reversalAngle(trialN);
-%             resp.duration(tempN, 1) = disp{blockN}.duration(trialN);
-            resp.sideDisplaced(tempN, 1) = disp{blockN}.sideDisplaced(trialN);
+            resp.gratingRadiusIdx(tempN, 1) = display{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
+            resp.gratingRadius(tempN, 1) = prm.grating.outerRadius(display{blockN}.gratingRadiusIdx(trialN)); % actual value of the grating outer radius
+            resp.flashOnset(tempN, 1) = display{blockN}.flashOnset(trialN);
+            resp.flashDisplaceLeft(tempN, 1) = display{blockN}.flashDisplaceLeft(trialN);
+            resp.initialDirection(tempN, 1) = display{blockN}.initialDirection(trialN);
+            resp.initialAngle(tempN, 1) = display{blockN}.initialAngle(trialN);
+            resp.reversalAngle(tempN, 1) = display{blockN}.reversalAngle(trialN);
+%             resp.duration(tempN, 1) = display{blockN}.duration(trialN);
+            resp.sideDisplaced(tempN, 1) = display{blockN}.sideDisplaced(trialN);
             resp.reportStyle(tempN, 1) = info.reportStyle; % report lower or higher
             
             % save the response
-            save(prm.fileName.disp, 'disp');
+            save(prm.fileName.disp, 'display');
             save(prm.fileName.resp, 'resp');
             
             trialN = trialN+1;
@@ -236,7 +236,7 @@ catch expME
     Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
     Screen('CloseAll')
     %         rethrow(lasterror)
-    clear all;
+%     clear all;
     return;
 end
 % end

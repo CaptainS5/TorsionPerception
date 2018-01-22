@@ -1,9 +1,9 @@
 function arrangeRandomization(info)
-% randomly design the conditions for each trial in disp
+% randomly design the conditions for each trial in display
 % each cell is a table of conditions for each block
 % each block has the same trials, just different in order
 
-global prm disp
+global prm display
 
 varNames = {'gratingRadiusIdx', 'flashOnset', 'flashDisplaceLeft', 'initialDirection', 'rotationSpeed'};
 
@@ -19,7 +19,7 @@ trialsBlock = repmat(cons, copyN, 1);
     for ii = 1:prm.blockN
         tempI = randperm(size(trialsBlock, 1));
         % assign to the final parameter
-        disp{ii} = table(trialsBlock(tempI, 1), trialsBlock(tempI, 2), trialsBlock(tempI, 3), trialsBlock(tempI, 4), trialsBlock(tempI, 5), 'VariableNames', varNames);
+        display{ii} = table(trialsBlock(tempI, 1), trialsBlock(tempI, 2), trialsBlock(tempI, 3), trialsBlock(tempI, 4), trialsBlock(tempI, 5), 'VariableNames', varNames);
     end
 
 %% All blocks together, then randomly assign into each block; each block is different in trials
@@ -48,9 +48,9 @@ trialsBlock = repmat(cons, copyN, 1);
 %         % corresponding idx of trial no. in idxR
 %         idx = (ii-1)*prm.trialPerBlock+1:ii*prm.trialPerBlock;
 %         % assign to the final parameter
-%         disp{ii} = table(gratingRadiusIdx(idxR(idx)), flashOnset(idxR(idx)), flashDisplaceLeft(idxR(idx)), 'VariableNames', varNames);
+%         display{ii} = table(gratingRadiusIdx(idxR(idx)), flashOnset(idxR(idx)), flashDisplaceLeft(idxR(idx)), 'VariableNames', varNames);
 %     end
 
-save([prm.fileName.folder, '\randomAssignment_', info.subID{1}], 'disp')
+save([prm.fileName.folder, '\randomAssignment_', info.subID{1}], 'display')
 
 % end

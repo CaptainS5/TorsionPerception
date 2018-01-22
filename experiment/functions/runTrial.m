@@ -1,24 +1,24 @@
 function [key rt] = runTrial(blockN, trialN, tempN)
 
 global trigger;
-global prm disp info resp
+global prm display info resp
 
 % Initialization
 % fill the background
 Screen('FillRect', prm.screen.windowPtr, prm.screen.backgroundColour); % fill background
 
 % different in each trial
-sizeN = disp{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
-speedIdx = find(prm.rotation.freq==disp{blockN}.rotationSpeed(trialN));
-flashOnset = round(sec2frm(disp{blockN}.flashOnset(trialN)));
-flashDisplacement = dva2pxl(disp{blockN}.flashDisplaceLeft(trialN));
+sizeN = display{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
+speedIdx = find(prm.rotation.freq==display{blockN}.rotationSpeed(trialN));
+flashOnset = round(sec2frm(display{blockN}.flashOnset(trialN)));
+flashDisplacement = dva2pxl(display{blockN}.flashDisplaceLeft(trialN));
 % % randomly decide the initial direction and angle of the grating
 % if rand>=0.5
 %     direction = 1; % clockwise
 % else
 %     direction = -1; % counterclockwise
 % end
-direction = disp{blockN}.initialDirection(trialN);
+direction = display{blockN}.initialDirection(trialN);
 % rotationAngle = rand*360 - direction*prm.rotation.anglePerFrame;
 if rand>=0.5
     rotationAngle = 0 - direction*prm.rotation.anglePerFrame(speedIdx)*(1+flashOnset);
@@ -33,8 +33,8 @@ initialAngle = rotationAngle; % for presentation of the markers
 %     rotationFrames = 2*round(sec2frm(prm.rotation.baseDuration-prm.rotation.randDuration));
 % end
 rotationFrames = 2*round(sec2frm(prm.rotation.baseDuration(speedIdx)));
-disp{blockN}.initialAngle(trialN) = rotationAngle;
-disp{blockN}.duration(trialN) = rotationFrames/prm.screen.refreshRate;
+display{blockN}.initialAngle(trialN) = rotationAngle;
+display{blockN}.duration(trialN) = rotationFrames/prm.screen.refreshRate;
 
 % rest of the set ups
 % fixation set up
@@ -55,7 +55,7 @@ flashWidth = round(dva2pxl(prm.flash.width));
 flashLength = dva2pxl(prm.flash.length);
 ecc = dva2pxl(prm.flash.eccentricity+prm.grating.outerRadius(sizeN));
 if rand>=0.5 % change the location of the left flash, or counterclockwise when vertical
-    disp{blockN}.sideDisplaced(trialN) = -1;
+    display{blockN}.sideDisplaced(trialN) = -1;
     % bar flash
     flashRectL = [prm.screen.center(1)-ecc-flashLength, ...
         prm.screen.center(2)-flashDisplacement-flashWidth/2, ...
@@ -66,7 +66,7 @@ if rand>=0.5 % change the location of the left flash, or counterclockwise when v
         prm.screen.center(1)+ecc+flashLength, ...
         prm.screen.center(2)+flashWidth/2]; % right or bottom
 else % change the location of the right flash, or clockwise when vertical
-    disp{blockN}.sideDisplaced(trialN) = 1; 
+    display{blockN}.sideDisplaced(trialN) = 1; 
     % bar flash
     flashRectL = [prm.screen.center(1)-ecc-flashLength, ...
         prm.screen.center(2)-flashWidth/2, ...
@@ -107,7 +107,7 @@ for frameN = 1:(rotationFrames+flashOnset+flashDuration) % Reversal--rotationFra
 
     if rotationAngle > 360
         rotationAngle = rotationAngle - 360;
-    elseif rotationAngle < -360
+    elseif rotationAngle < 0
         rotationAngle = rotationAngle + 360;
     end
 
@@ -144,7 +144,7 @@ for frameN = 1:(rotationFrames+flashOnset+flashDuration) % Reversal--rotationFra
         [VBLTimestamp StimulusOnsetTime FlipTimestamp Missed Beampos] = Screen('Flip', prm.screen.windowPtr);
         
 %         pause;
-        disp{blockN}.reversalAngle(trialN) = rotationAngle;
+        display{blockN}.reversalAngle(trialN) = rotationAngle;
     end
 
 %     % record response
@@ -199,6 +199,8 @@ Screen('Flip', prm.screen.windowPtr);
 
 buttons = [];
 x = [];
+key = [];
+rt = [];
 [x0, y0, buttons0, focus0, valuators0, valinfo0] = GetMouse(prm.screen.windowPtr);
 while quitFlag==0
 %     % response window
@@ -206,26 +208,28 @@ while quitFlag==0
 %         trigger.stopRecording();
 %         recordFlag = 1;
 %     end
+% for quitting at any timr
+[keyIsDown, secs, keyCode, deltaSecs] = KbCheck();
+if keyIsDown
+    key = KbName(keyCode);
+    break
+end
     %% mouse response
         % display the stimuli, random starting angle
         if isempty(x) % the first loop, random angle
-            respAngle = 90; %360*rand;
+            respAngle = 45; %360*rand;
         else % changing the angle of the next loop according to the change in mouse position
-            % just...arbitrarily 
-            if x>x0
-                respAngle = respAngle-1;
-            else
-                respAngle = respAngle+1;
-            end
+            % show the cursor; put it at the start angle everytime then calculate angle based on cursor location 
+
         end
         if respAngle>360
             respAngle = respAngle-360;
-        elseif respAngl<-360
+        elseif respAngle<0
             respAngle = respAngle+360;
         end
-        Screen('DrawTexture', prm.screen.windowPtr, prm.resp.tex{1}, [], [], respAngle);
+        Screen('DrawTexture', prm.screen.windowPtr, prm.resp.tex, [], [], respAngle);
         Screen('Flip', prm.screen.windowPtr);        
-      
+
         if ~isempty(x)
             x0 = x; % record "old" position
             y0 = y;
@@ -234,6 +238,7 @@ while quitFlag==0
         [x, y, buttons, focus, valuators, valinfo] = GetMouse(prm.screen.windowPtr);       
 
         if any(buttons) % record the last mouse position
+%             rt = Get
             resp.reportAngle(tempN, 1) = respAngle;
             quitFlag = 1;
         end 
