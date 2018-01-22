@@ -66,7 +66,7 @@ if rand>=0.5 % change the location of the left flash, or counterclockwise when v
         prm.screen.center(1)+ecc+flashLength, ...
         prm.screen.center(2)+flashWidth/2]; % right or bottom
 else % change the location of the right flash, or clockwise when vertical
-    display{blockN}.sideDisplaced(trialN) = 1; 
+    display{blockN}.sideDisplaced(trialN) = 1;
     % bar flash
     flashRectL = [prm.screen.center(1)-ecc-flashLength, ...
         prm.screen.center(2)-flashWidth/2, ...
@@ -96,21 +96,21 @@ resp.fixationDuration(tempN, 1) = prm.fixation.durationBase+rand*prm.fixation.du
 WaitSecs(resp.fixationDuration(tempN, 1));
 
 for frameN = 1:(rotationFrames+flashOnset+flashDuration) % Reversal--rotationFrames, motion stops when presenting flash
-
+    
     if frameN<=rotationFrames/2+flashOnset % first direction
         rotationAngle = rotationAngle + direction*prm.rotation.anglePerFrame(speedIdx);
-%     elseif frameN==rotationFrames/2+flashOnset
-%         rotationAngle = initialAngle + direction*prm.rotation.anglePerFrame + direction*90; % force it to stop at vertical
+        %     elseif frameN==rotationFrames/2+flashOnset
+        %         rotationAngle = initialAngle + direction*prm.rotation.anglePerFrame + direction*90; % force it to stop at vertical
     elseif frameN>rotationFrames/2+flashOnset+flashDuration % second direction, after reversal
         rotationAngle = rotationAngle - direction*prm.rotation.anglePerFrame(speedIdx);
     end
-
+    
     if rotationAngle > 360
         rotationAngle = rotationAngle - 360;
     elseif rotationAngle < 0
         rotationAngle = rotationAngle + 360;
     end
-
+    
     if info.expType==1 % experiment
         % draw rotating grating
         Screen('DrawTexture', prm.screen.windowPtr, prm.grating.tex{sizeN}, [], [], rotationAngle);
@@ -125,7 +125,7 @@ for frameN = 1:(rotationFrames+flashOnset+flashDuration) % Reversal--rotationFra
     %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectL);
     %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectR);
     %     end
-
+    
     % Reversal
     if frameN>=rotationFrames/2+flashOnset && frameN<=rotationFrames/2+flashOnset+flashDuration
         %         % bar flash
@@ -134,53 +134,53 @@ for frameN = 1:(rotationFrames+flashOnset+flashDuration) % Reversal--rotationFra
         % dots flash -- how the hell can I get the transparency?????
         Screen('DrawTexture', prm.screen.windowPtr, prm.flash.tex{sizeN}, [], [], rotationAngle, [], 1);
     end
-
+    
     % Reversal
     if frameN==rotationFrames/2+flashOnset
         %     % No Reversal
         %     if frameN==flashOnset
-%         StimulusOnsetTime = GetSecs;
+        %         StimulusOnsetTime = GetSecs;
         %         Screen('Flip', prm.screen.windowPtr);
         [VBLTimestamp StimulusOnsetTime FlipTimestamp Missed Beampos] = Screen('Flip', prm.screen.windowPtr);
         
-%         pause;
+        %         pause;
         display{blockN}.reversalAngle(trialN) = rotationAngle;
     end
-
-%     % record response
-%     if frameN>=rotationFrames/2+flashOnset+flashDuration        
-%         %% button response
-%         clear KbCheck
-%         [keyIsDown, secs, keyCode, deltaSecs] = KbCheck();
-%         if keyIsDown
-%             %         if frameN>=rotationFrames/2+flashOnset
-%             key = KbName(keyCode);
-%             rt = secs-StimulusOnsetTime;
-%             StimulusOnsetTime = [];
-% %             Screen('Flip', prm.screen.windowPtr);
-%             %         else
-%             %             key = KbName(keyCode);
-%             %             rt = -1;
-%             %         end
-%             % display of motion after flash offset
-%             quitFlag = 1;
-%             recordFlag = 1;
-%             %     elseif frameN==rotationFrames
-%             %         key = 'void';
-%             %         rt = 0;
-%         end
-%         %% end of button response
-%     end
+    
+    %     % record response
+    %     if frameN>=rotationFrames/2+flashOnset+flashDuration
+    %         %% button response
+    %         clear KbCheck
+    %         [keyIsDown, secs, keyCode, deltaSecs] = KbCheck();
+    %         if keyIsDown
+    %             %         if frameN>=rotationFrames/2+flashOnset
+    %             key = KbName(keyCode);
+    %             rt = secs-StimulusOnsetTime;
+    %             StimulusOnsetTime = [];
+    % %             Screen('Flip', prm.screen.windowPtr);
+    %             %         else
+    %             %             key = KbName(keyCode);
+    %             %             rt = -1;
+    %             %         end
+    %             % display of motion after flash offset
+    %             quitFlag = 1;
+    %             recordFlag = 1;
+    %             %     elseif frameN==rotationFrames
+    %             %         key = 'void';
+    %             %         rt = 0;
+    %         end
+    %         %% end of button response
+    %     end
     Screen('Flip', prm.screen.windowPtr);
-%     if frameN==1 || frameN==rotationFrames/2+flashDuration || frameN == rotationFrames+flashDuration
-%         pause;
-%         rotationAngle
-%     end
-
-%     % display of motion after flash offset
-%     if quitFlag==1
-%         break
-%     end
+    %     if frameN==1 || frameN==rotationFrames/2+flashDuration || frameN == rotationFrames+flashDuration
+    %         pause;
+    %         rotationAngle
+    %     end
+    
+    %     % display of motion after flash offset
+    %     if quitFlag==1
+    %         break
+    %     end
 end
 % end
 % StimulusOffsetTime = GetSecs; % here is actually the offset time
@@ -218,69 +218,69 @@ while quitFlag==0
     % display the stimuli, random starting angle
     if isempty(x) % the first loop, random angle
         % show the cursor; put it at the start angle everytime
-        respAngle = 45; %360*rand;
-            SetMouse(prm.screen.size(3)/2+cos((90-respAngle)/180*pi)*ecc, ...
-                prm.screen.size(4)/2+sin((90-respAngle)/180*pi)*ecc, ...
-                prm.screen.windowPtr);
-            ShowCursor();
-        else % changing the angle of the next loop according to the cursor position
-            respAngle = 90-atan2(y-prm.screen.size(4)/2, x-prm.screen.size(3)/2)/pi*180;
-        end
-        
-        if respAngle>360
-            respAngle = respAngle-360;
-        elseif respAngle<0
-            respAngle = respAngle+360;
-        end
-        Screen('DrawTexture', prm.screen.windowPtr, prm.resp.tex, [], [], respAngle);
-        Screen('Flip', prm.screen.windowPtr);        
-
-        if ~isempty(x)
-            x0 = x; % record "old" position
-            y0 = y;
-        end
-        % get new mouse position
-        [x, y, buttons, focus, valuators, valinfo] = GetMouse(prm.screen.windowPtr);       
-
-        if any(buttons) % record the last mouse position
-%             rt = Get
-            resp.reportAngle(tempN, 1) = respAngle;
-            quitFlag = 1;
-        end 
+        respAngle = 360*rand;
+        SetMouse(prm.screen.size(3)/2+cos((respAngle-90)/180*pi)*ecc, ...
+            prm.screen.size(4)/2+sin((respAngle-90)/180*pi)*ecc, ...
+            prm.screen.windowPtr);
+    else % changing the angle of the next loop according to the cursor position
+        respAngle = atan2(y-prm.screen.size(4)/2, x-prm.screen.size(3)/2)/pi*180-90;
+    end
+%             ShowCursor('CrossHair',  prm.screen.windowPtr); % draw a text instead, which you can control thr color...
+    if respAngle>360
+        respAngle = respAngle-360;
+    elseif respAngle<0
+        respAngle = respAngle+360;
+    end
+    Screen('DrawTexture', prm.screen.windowPtr, prm.resp.tex, [], [], respAngle);
+    Screen('DrawText', prm.screen.windowPtr, '+', x0, y0, prm.screen.blackColour);
+    Screen('Flip', prm.screen.windowPtr);
+    
+    if ~isempty(x)
+        x0 = x; % record "old" position
+        y0 = y;
+    end
+    % get new mouse position
+    [x, y, buttons, focus, valuators, valinfo] = GetMouse(prm.screen.windowPtr);
+    
+    if any(buttons) % record the last mouse position
+        %             rt = Get
+        resp.reportAngle(tempN, 1) = respAngle;
+        quitFlag = 1;
+    end
     %% end of mouse response
-        
-%     %% button response
-%         [keyIsDown, secs, keyCode, deltaSecs] = KbCheck();
-%     if keyIsDown
-%         %         if frameN>=rotationFrames/2+flashOnset
-%         if info.eyeTracker==1 && recordFlag==0 % stop recording after a certain duration after offset
-%             trigger.stopRecording();
-%             recordFlag = 1;
-%         end
-%         key = KbName(keyCode);
-%         rt = secs-StimulusOnsetTime;
-%         StimulusOnsetTime = [];
-%         quitFlag = 1;
-%         %         % draw fixation
-%         %         Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
-%         %         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
-%         %
-% %         Screen('Flip', prm.screen.windowPtr);
-%         %         else
-%         %             key = KbName(keyCode);
-%         %             rt = -1;
-%         %         end
-%         %         break
-%         %     elseif frameN==rotationFrames
-%         %         key = 'void';
-%         %         rt = 0;
-%     end
-%     %% end of button response
+    
+    %     %% button response
+    %         [keyIsDown, secs, keyCode, deltaSecs] = KbCheck();
+    %     if keyIsDown
+    %         %         if frameN>=rotationFrames/2+flashOnset
+    %         if info.eyeTracker==1 && recordFlag==0 % stop recording after a certain duration after offset
+    %             trigger.stopRecording();
+    %             recordFlag = 1;
+    %         end
+    %         key = KbName(keyCode);
+    %         rt = secs-StimulusOnsetTime;
+    %         StimulusOnsetTime = [];
+    %         quitFlag = 1;
+    %         %         % draw fixation
+    %         %         Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
+    %         %         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
+    %         %
+    % %         Screen('Flip', prm.screen.windowPtr);
+    %         %         else
+    %         %             key = KbName(keyCode);
+    %         %             rt = -1;
+    %         %         end
+    %         %         break
+    %         %     elseif frameN==rotationFrames
+    %         %         key = 'void';
+    %         %         rt = 0;
+    %     end
+    %     %% end of button response
 end
 
-HideCursor();
+% HideCursor();
 
-if info.eyeTracker==1 
+if info.eyeTracker==1
     trigger.stopRecording();
     recordFlag = 1;
 end
