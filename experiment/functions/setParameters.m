@@ -44,12 +44,11 @@ prm.flash.length = 6;
 % circle in flash grab
 prm.flash.radius = 2.5/2;
 
-prm.flash.axis = 0; % 0-horizontal, 1-vertical--this is the firt location
-% if want reversal vertically, use 0
+prm.flash.axis = 1; % 0-horizontal, 1-vertical--this is the reversal location
 prm.flash.eccentricity = 0; % the inner edge of the flash to the outer edge of the rotating stimulus, 1.3-58
 prm.flash.duration = 0.047;
 % prm.flash.onsetInterval = [0.35 0.7 1.05 1.4 1.75]; % no reversal, motion duration before flash
-prm.flash.onsetInterval = [-0.2 -0.1 0 0.1 0.2];
+prm.flash.onsetInterval = [0];
 % prm.flash.onsetInterval = [-0.6 -0.3 0 0.3 0.6]; % time of flash relative to the reversal, within 1 sec
 prm.flash.displacement = [0]/60;
 % prm.flash.displacement = [-30 -20 -10 0 10 20 30]/60; % possible displacement of the left flash compared to the right;
@@ -60,9 +59,9 @@ prm.flash.respColour = [0 0 0]; % RGB in 0-255 range
 % prm.flash.colour = 255; % 88 measured about 34.5 cd/m^2
 
 % rotation control
-prm.rotation.freq = [180]; % in degrees out of a cycle (360 in total)/s
-prm.rotation.baseDuration = 90./prm.rotation.freq; % the baseline of rotation in one interval, s
-% prm.rotation.randDuration = 0.5; % rotation time = base+-rand
+prm.rotation.freq = [120 140 160 180 200]; % in degrees out of a cycle (360 in total)/s
+prm.rotation.beforeDuration = 90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
+prm.rotation.afterDuration = 90./prm.rotation.freq(3); % prm.rotation.randDuration = 0.5; % rotation time = base+-rand
 prm.rotation.initialDirection = [-1 1]; % -1 is counterclockwise, 1 is clockwise
 
 prm.recording.stopDuration = 0.2; % stop recording after a certain duration after flash onset
@@ -75,7 +74,7 @@ prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)
     length(prm.rotation.freq); % total number of combinations of conditions
 % conditions differ in: radial stimulus size; flash onset interval;
 % flash displacement
-prm.trialPerCondition = 30; % trial number per condition
+prm.trialPerCondition = 25; % trial number per condition
 prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
 
 end

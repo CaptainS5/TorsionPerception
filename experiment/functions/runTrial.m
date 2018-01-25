@@ -19,11 +19,13 @@ flashDisplacement = dva2pxl(display{blockN}.flashDisplaceLeft(trialN));
 %     direction = -1; % counterclockwise
 % end
 direction = display{blockN}.initialDirection(trialN);
+rotationFramesBefore = round(sec2frm(prm.rotation.beforeDuration));
+rotationFramesAfter = round(sec2frm(prm.rotation.afterDuration));
 % rotationAngle = rand*360 - direction*prm.rotation.anglePerFrame;
 if rand>=0.5
-    rotationAngle = 0 - direction*prm.rotation.anglePerFrame(speedIdx)*(1+flashOnset);
+    rotationAngle = 0 - direction*prm.rotation.anglePerFrame(speedIdx)*(1+rotationFramesBefore+flashOnset);
 else
-    rotationAngle = 180 - direction*prm.rotation.anglePerFrame(speedIdx)*(1+flashOnset);
+    rotationAngle = 180 - direction*prm.rotation.anglePerFrame(speedIdx)*(1+rotationFramesBefore+flashOnset);
 end
 initialAngle = rotationAngle; % for presentation of the markers
 % % randomly decide the duration of rotations in this trial
@@ -32,9 +34,9 @@ initialAngle = rotationAngle; % for presentation of the markers
 % else
 %     rotationFrames = 2*round(sec2frm(prm.rotation.baseDuration-prm.rotation.randDuration));
 % end
-rotationFrames = 2*round(sec2frm(prm.rotation.baseDuration(speedIdx)));
 display{blockN}.initialAngle(trialN) = rotationAngle;
-display{blockN}.duration(trialN) = rotationFrames/prm.screen.refreshRate;
+display{blockN}.durationBefore(trialN) = rotationFramesBefore/prm.screen.refreshRate;
+display{blockN}.durationAfter(trialN) = rotationFramesAfter/prm.screen.refreshRate;
 
 % rest of the set ups
 % fixation set up
@@ -95,13 +97,13 @@ Screen('Flip', prm.screen.windowPtr);
 resp.fixationDuration(tempN, 1) = prm.fixation.durationBase+rand*prm.fixation.durationJitter;
 WaitSecs(resp.fixationDuration(tempN, 1));
 
-for frameN = 1:(rotationFrames+flashOnset+flashDuration) % Reversal--rotationFrames, motion stops when presenting flash
+for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuration) % Reversal--rotationFrames, motion stops when presenting flash
     
-    if frameN<=rotationFrames/2+flashOnset % first direction
+    if frameN<=rotationFramesBefore+flashOnset % first direction
         rotationAngle = rotationAngle + direction*prm.rotation.anglePerFrame(speedIdx);
         %     elseif frameN==rotationFrames/2+flashOnset
         %         rotationAngle = initialAngle + direction*prm.rotation.anglePerFrame + direction*90; % force it to stop at vertical
-    elseif frameN>rotationFrames/2+flashOnset+flashDuration % second direction, after reversal
+    elseif frameN>rotationFramesBefore+flashOnset+flashDuration % second direction, after reversal
         rotationAngle = rotationAngle - direction*prm.rotation.anglePerFrame(speedIdx);
     end
     
@@ -127,7 +129,7 @@ for frameN = 1:(rotationFrames+flashOnset+flashDuration) % Reversal--rotationFra
     %     end
     
     % Reversal
-    if frameN>=rotationFrames/2+flashOnset && frameN<=rotationFrames/2+flashOnset+flashDuration
+    if frameN>=rotationFramesBefore+flashOnset && frameN<=rotationFramesBefore+flashOnset+flashDuration
         %         % bar flash
         %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectL);
         %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectR);
@@ -136,7 +138,7 @@ for frameN = 1:(rotationFrames+flashOnset+flashDuration) % Reversal--rotationFra
     end
     
     % Reversal
-    if frameN==rotationFrames/2+flashOnset
+    if frameN==rotationFramesBefore+flashOnset
         %     % No Reversal
         %     if frameN==flashOnset
         %         StimulusOnsetTime = GetSecs;
@@ -219,11 +221,11 @@ while quitFlag==0
     if isempty(x) % the first loop, random angle
         % show the cursor; put it at the start angle everytime
         respAngle = 180*rand;
-        SetMouse(prm.screen.size(3)/2+cos(respAngle/180*pi)*ecc, ...
-            prm.screen.size(4)/2+sin(respAngle/180*pi)*ecc, ...
+        SetMouse(prm.screen.size(3)/2+cos((respAngle-90)/180*pi)*ecc, ...
+            prm.screen.size(4)/2+sin((respAngle-90)/180*pi)*ecc, ...
             prm.screen.windowPtr);
     else % changing the angle of the next loop according to the cursor position
-        respAngle = atan2(y-prm.screen.size(4)/2, x-prm.screen.size(3)/2)/pi*180;
+        respAngle = atan2(y-prm.screen.size(4)/2, x-prm.screen.size(3)/2)/pi*180+90;
     end
 %             ShowCursor('CrossHair',  prm.screen.windowPtr); % draw a text instead, which you can control thr color...
     if respAngle>180

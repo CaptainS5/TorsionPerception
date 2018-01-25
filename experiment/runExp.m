@@ -1,5 +1,5 @@
-% function currentBlock = runExp(currentBlock, rStyle)
-clear all; close all; clc; currentBlock=1; rStyle = -1; % debugging
+function currentBlock = runExp(currentBlock, rStyle)
+% clear all; close all; clc; currentBlock=1; rStyle = -1; % debugging
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
     global trigger
@@ -11,7 +11,7 @@ try
     % presented, including trials with invalid response/loss of fixation etc.
     addpath(genpath(pwd))
     AssertOpenGL;
-    
+
     setParameters;
     prm.pwd = pwd;
     info = getInfo(currentBlock, rStyle);
@@ -40,6 +40,7 @@ try
     else
         load([prm.fileName.folder, '\randomAssignment_', info.subID{1}])
     end
+
     openScreen; % modify background color here
     % Gamma correction
     load('lut527.mat')
@@ -173,19 +174,20 @@ try
 %                 Screen('DrawText', prm.screen.windowPtr, respText, prm.screen.center(1)-80, prm.screen.center(2), prm.screen.whiteColour);
 %             end
 %             resp.RTms(tempN, 1) = rt*1000; % in ms
-            resp.trialIdx(tempN, 1) = trialN; % index for the condition used
+%             resp.trialIdx(tempN, 1) = trialN; % index for the condition used
             
             % replicate the display parameters for each trial
-            resp.gratingRadiusIdx(tempN, 1) = display{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
+%             resp.gratingRadiusIdx(tempN, 1) = display{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
             resp.gratingRadius(tempN, 1) = prm.grating.outerRadius(display{blockN}.gratingRadiusIdx(trialN)); % actual value of the grating outer radius
             resp.flashOnset(tempN, 1) = display{blockN}.flashOnset(trialN);
-            resp.flashDisplaceLeft(tempN, 1) = display{blockN}.flashDisplaceLeft(trialN);
+%             resp.flashDisplaceLeft(tempN, 1) = display{blockN}.flashDisplaceLeft(trialN);
             resp.initialDirection(tempN, 1) = display{blockN}.initialDirection(trialN);
             resp.initialAngle(tempN, 1) = display{blockN}.initialAngle(trialN);
             resp.reversalAngle(tempN, 1) = display{blockN}.reversalAngle(trialN);
-%             resp.duration(tempN, 1) = display{blockN}.duration(trialN);
-            resp.sideDisplaced(tempN, 1) = display{blockN}.sideDisplaced(trialN);
-            resp.reportStyle(tempN, 1) = info.reportStyle; % report lower or higher
+            resp.durationBefore(tempN, 1) = display{blockN}.durationBefore(trialN);
+            resp.durationAfter(tempN, 1) = display{blockN}.durationAfter(trialN);
+%             resp.sideDisplaced(tempN, 1) = display{blockN}.sideDisplaced(trialN);
+%             resp.reportStyle(tempN, 1) = info.reportStyle; % report lower or higher
             
             % save the response
             save(prm.fileName.disp, 'display');
