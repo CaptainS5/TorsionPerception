@@ -9,14 +9,14 @@
 clear all; close all; clc
 
 % basic setting
-names = {'NIp2'};
+names = {'testXW'};
 folder = pwd;
 howMany = -13; % include the first howMany trials for each condition*each initialDirection
 % using for pilot to see how many trials we need...
 % if not using this, set howMany to a negative number such as -1
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
-trialPerBlock = 70; % ignore unfinished blocks
-trialPerBlockBase = 70; % ignore unfinished blocks
+trialPerBlock = 60; % ignore unfinished blocks
+trialPerBlockBase = 60; % ignore unfinished blocks
 
 dataRawAll = table();
 dataRawBaseAll = table();
@@ -43,50 +43,50 @@ for ii = 1:size(names, 2)
             end
         end
     end
-    % read Baseline data
-    cd(['baseline'])
-    % get the filenames to load
-    fileResp = dir('response*.mat');
-    fileResp = struct2cell(fileResp);
-    % load raw data into dataRawBase
-    dataRawBase = table();
-    for jj = 1:size(fileResp, 2)
-        load(fileResp{1, jj})
-        if size(resp, 1)>=trialPerBlockBase
-            % regular processing below, first putting all data together
-            if jj==1
-                dataRawBase = resp;
-            else
-                dataRawBase = [dataRawBase; resp];
-            end
-        end
-    end
+%     % read Baseline data
+%     cd(['baseline'])
+%     % get the filenames to load
+%     fileResp = dir('response*.mat');
+%     fileResp = struct2cell(fileResp);
+%     % load raw data into dataRawBase
+%     dataRawBase = table();
+%     for jj = 1:size(fileResp, 2)
+%         load(fileResp{1, jj})
+%         if size(resp, 1)>=trialPerBlockBase
+%             % regular processing below, first putting all data together
+%             if jj==1
+%                 dataRawBase = resp;
+%             else
+%                 dataRawBase = [dataRawBase; resp];
+%             end
+%         end
+%     end
     
     % Go to the analysis file to save the processed data
     cd(folder)
     % delete invalid trials
-    dataRaw(dataRaw.choice==0, :) = [];
+%     dataRaw(dataRaw.choice==0, :) = [];
     dataRaw.sub = mat2cell(repmat(names{ii}, size(dataRaw, 1), 1), ones(size(dataRaw, 1), 1), length(names{ii})); % experiment
-    dataRawBase(dataRawBase.choice==0, :) = [];
-    dataRawBase.sub = mat2cell(repmat(names{ii}, size(dataRawBase, 1), 1), ones(size(dataRawBase, 1), 1), length(names{ii})); % baseline
-    
+%     dataRawBase(dataRawBase.choice==0, :) = [];
+%     dataRawBase.sub = mat2cell(repmat(names{ii}, size(dataRawBase, 1), 1), ones(size(dataRawBase, 1), 1), length(names{ii})); % baseline
+
     %     % ONLY for the initial pilot...leftArrow=1, rightArrow=2; reportStyle = -1;
     %     dataRaw.reportStyle = repmat([-1], size(dataRaw, 1), 1);
     %     dataRaw.flashDisplaceLeft = dataRaw.flashDisplaceLeft*-1;
     %     dataRaw.choice(dataRaw.choice==1) = -1; % choose left
     %     dataRaw.choice(dataRaw.choice==2) = 1; % choose right
     
-    dataRaw.flashDisplaceLeftMerged = dataRaw.flashDisplaceLeft.*dataRaw.initialDirection; % for merged direction
+%     dataRaw.flashDisplaceLeftMerged = dataRaw.flashDisplaceLeft.*dataRaw.initialDirection; % for merged direction
     
-    dataRaw.perceivedLowerMerged = dataRaw.initialDirection.*dataRaw.reportStyle.*dataRaw.choice; % perception of the side being lower
+%     dataRaw.perceivedLowerMerged = dataRaw.initialDirection.*dataRaw.reportStyle.*dataRaw.choice; % perception of the side being lower
     % 1: left lower; -1: right lower
     % this is merged direction, all initial direction assumed to be
     % clockwise
     
-    dataRaw.perceivedLowerNotMerged = dataRaw.reportStyle.*dataRaw.choice; % perception of the side being lower
+%     dataRaw.perceivedLowerNotMerged = dataRaw.reportStyle.*dataRaw.choice; % perception of the side being lower
     % initial direction not merged, 1: left lower; -1: right lower
     % for baseline, initial direction not important and merged...
-    dataRawBase.perceivedLower = dataRawBase.reportStyle.*dataRawBase.choice;
+%     dataRawBase.perceivedLower = dataRawBase.reportStyle.*dataRawBase.choice;
     
     % save data with each trials for each participant
     if howMany>0 % delete the later trials, only for the experiment data
@@ -115,15 +115,15 @@ for ii = 1:size(names, 2)
     else
         save(['dataRaw_', names{ii}], 'dataRaw') % experiment
     end
-    save(['dataRawBase_', names{ii}], 'dataRawBase') % baseline
+%     save(['dataRawBase_', names{ii}], 'dataRawBase') % baseline
     
     % collapse all data
     if ii==1
         dataRawAll = dataRaw; % experiment
-        dataRawBaseAll = dataRawBase; % baseline
+%         dataRawBaseAll = dataRawBase; % baseline
     else
         dataRawAll = [dataRawAll; dataRaw]; % experiment
-        dataRawBaseAll = [dataRawBaseAll; dataRawBase]; % baseline
+%         dataRawBaseAll = [dataRawBaseAll; dataRawBase]; % baseline
     end
     
 end

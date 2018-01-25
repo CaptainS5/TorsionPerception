@@ -1,4 +1,4 @@
-function img = generateRespTexture(gratingOuterRadius, gratingInnerRadius, flashRadius, color)
+function img = generateRespTexture(gratingOuterRadius, gratingInnerRadius, flashRadius, color, axis)
 % generate the matrix of the flash dots on the rotating stimuli
 
 % radius of the grating and the flash, in pixels
@@ -16,8 +16,13 @@ coordinateCVonvert = linspace(-gratingOuterRadius, gratingOuterRadius, 2*grating
 
 % coordinates of the dots, marking by 1
 coor = zeros(2*gratingOuterRadius);
-coor(sqrt(X.^2+(Y-gratingOuterRadius+flashRadius).^2) <= flashRadius) = 1;
-coor(sqrt(X.^2+(Y+gratingOuterRadius-flashRadius).^2) <= flashRadius) = 1;
+if axis==0 % horizontal at first
+    coor(sqrt((X-gratingOuterRadius+flashRadius).^2+Y.^2) <= flashRadius) = 1;
+    coor(sqrt((X+gratingOuterRadius-flashRadius).^2+Y.^2) <= flashRadius) = 1;
+elseif axis==1 % vertical at first
+    coor(sqrt(X.^2+(Y-gratingOuterRadius+flashRadius).^2) <= flashRadius) = 1;
+    coor(sqrt(X.^2+(Y+gratingOuterRadius-flashRadius).^2) <= flashRadius) = 1;
+end
 coor(sqrt(X.^2+Y.^2)<=gratingOuterRadius & sqrt(X.^2+Y.^2)>=gratingInnerRadius & coor~=1) = 2;
 
 % add color 

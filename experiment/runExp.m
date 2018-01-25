@@ -73,7 +73,7 @@ try
     % texture for the adjustment response, initial position vertical
     imgResp = generateRespTexture(round(dva2pxl(prm.grating.outerRadius(ii))), ...
             round(dva2pxl(prm.grating.innerRadius)), round(dva2pxl(prm.flash.radius)), ...
-            prm.flash.respColour);
+            prm.flash.respColour, prm.flash.axis);
         % gratingOuterRadius, gratingInnerRadius, flashRadius, color (RGB 0-255)
     prm.resp.tex = Screen('MakeTexture', prm.screen.windowPtr, imgResp);
     

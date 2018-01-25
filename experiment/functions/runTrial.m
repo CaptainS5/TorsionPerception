@@ -105,10 +105,10 @@ for frameN = 1:(rotationFrames+flashOnset+flashDuration) % Reversal--rotationFra
         rotationAngle = rotationAngle - direction*prm.rotation.anglePerFrame(speedIdx);
     end
     
-    if rotationAngle > 360
-        rotationAngle = rotationAngle - 360;
+    if rotationAngle > 180
+        rotationAngle = rotationAngle - 180;
     elseif rotationAngle < 0
-        rotationAngle = rotationAngle + 360;
+        rotationAngle = rotationAngle + 180;
     end
     
     if info.expType==1 % experiment
@@ -218,18 +218,18 @@ while quitFlag==0
     % display the stimuli, random starting angle
     if isempty(x) % the first loop, random angle
         % show the cursor; put it at the start angle everytime
-        respAngle = 360*rand;
-        SetMouse(prm.screen.size(3)/2+cos((respAngle-90)/180*pi)*ecc, ...
-            prm.screen.size(4)/2+sin((respAngle-90)/180*pi)*ecc, ...
+        respAngle = 180*rand;
+        SetMouse(prm.screen.size(3)/2+cos(respAngle/180*pi)*ecc, ...
+            prm.screen.size(4)/2+sin(respAngle/180*pi)*ecc, ...
             prm.screen.windowPtr);
     else % changing the angle of the next loop according to the cursor position
-        respAngle = atan2(y-prm.screen.size(4)/2, x-prm.screen.size(3)/2)/pi*180-90;
+        respAngle = atan2(y-prm.screen.size(4)/2, x-prm.screen.size(3)/2)/pi*180;
     end
 %             ShowCursor('CrossHair',  prm.screen.windowPtr); % draw a text instead, which you can control thr color...
-    if respAngle>360
-        respAngle = respAngle-360;
+    if respAngle>180
+        respAngle = respAngle-180;
     elseif respAngle<0
-        respAngle = respAngle+360;
+        respAngle = respAngle+180;
     end
     Screen('DrawTexture', prm.screen.windowPtr, prm.resp.tex, [], [], respAngle);
     Screen('DrawText', prm.screen.windowPtr, '+', x0, y0, prm.screen.blackColour);

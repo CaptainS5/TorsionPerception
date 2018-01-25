@@ -11,7 +11,7 @@ prm.screen.viewDistance = 30; % 57.29 cm corresponds to 1cm on screen as 1 dva
 prm.screen.monitorWidth = 36.8; % horizontal dimension of viewable screen (cm)
 % 29.4 for the laptop; 36.8 for the lab computer in X527
 prm.screen.monitorHeight = 27.3;
-% ? for the laptop; 27.3 for the lab computer in X527
+% 16.5 for the laptop; 27.3 for the lab computer in X527
 
 % display settings
 % prm.backgroundColour = []; % dark background, currently set in openScreen
@@ -63,7 +63,7 @@ prm.flash.respColour = [0 0 0]; % RGB in 0-255 range
 prm.rotation.freq = [180]; % in degrees out of a cycle (360 in total)/s
 prm.rotation.baseDuration = 90./prm.rotation.freq; % the baseline of rotation in one interval, s
 % prm.rotation.randDuration = 0.5; % rotation time = base+-rand
-prm.rotation.initialDirection = [-1 1]; %
+prm.rotation.initialDirection = [-1 1]; % -1 is counterclockwise, 1 is clockwise
 
 prm.recording.stopDuration = 0.2; % stop recording after a certain duration after flash onset
 
