@@ -35,6 +35,7 @@ prm.grating.contrast = 0.25; % measured to be about 0.985 (max-min)/(max+min);
 % 0.99 corresponds to actual 0.9876, quite stable...
 % and even 0.989 measures actual around 0.979, so...
 prm.grating.averageLum = 0.5; %1-prm.grating.contrast/2; % average luminance of the grating
+prm.grating.respColour = [100 100 100];
 
 % flash
 % bar in FDE
@@ -48,17 +49,18 @@ prm.flash.axis = 0; % 0-horizontal, 1-vertical--this is the firt location
 prm.flash.eccentricity = 0; % the inner edge of the flash to the outer edge of the rotating stimulus, 1.3-58
 prm.flash.duration = 0.047;
 % prm.flash.onsetInterval = [0.35 0.7 1.05 1.4 1.75]; % no reversal, motion duration before flash
-prm.flash.onsetInterval = [-0.15 -0.075 0 0.075 0.15];
+prm.flash.onsetInterval = [-0.2 -0.1 0 0.1 0.2];
 % prm.flash.onsetInterval = [-0.6 -0.3 0 0.3 0.6]; % time of flash relative to the reversal, within 1 sec
 prm.flash.displacement = [0]/60;
 % prm.flash.displacement = [-30 -20 -10 0 10 20 30]/60; % possible displacement of the left flash compared to the right;
 % in the experiment randomly the left/right flash will be moved, while the
 % other remains horizontal
 prm.flash.colour = [255 0 0]; % RGB in 0-255 range
+prm.flash.respColour = [0 0 0]; % RGB in 0-255 range
 % prm.flash.colour = 255; % 88 measured about 34.5 cd/m^2
 
 % rotation control
-prm.rotation.freq = [135 200]; % in degrees out of a cycle (360 in total)/s
+prm.rotation.freq = [180]; % in degrees out of a cycle (360 in total)/s
 prm.rotation.baseDuration = 90./prm.rotation.freq; % the baseline of rotation in one interval, s
 % prm.rotation.randDuration = 0.5; % rotation time = base+-rand
 prm.rotation.initialDirection = [-1 1]; %
@@ -67,13 +69,13 @@ prm.recording.stopDuration = 0.2; % stop recording after a certain duration afte
 
 % block conditions
 prm.ITI = 0.2; % inter-trial interval
-prm.blockN = 1; % total number of blocks
+prm.blockN = 5; % total number of blocks
 prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
     length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
     length(prm.rotation.freq); % total number of combinations of conditions
 % conditions differ in: radial stimulus size; flash onset interval;
 % flash displacement
-prm.trialPerCondition = 24; % trial number per condition
+prm.trialPerCondition = 30; % trial number per condition
 prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
 
 end

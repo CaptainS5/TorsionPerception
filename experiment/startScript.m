@@ -7,10 +7,13 @@ clc; clear all; close all;
 try
     global trigger;
     setupTrigger();
-    currentBlock = 9;
+    currentBlock = 1;
     rStyleDefault = 1;
        
     while(true)
+        if currentBlock>5
+            break
+        end
         if currentBlock<=6
             rStyle = rStyleDefault;
         else

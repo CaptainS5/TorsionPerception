@@ -18,11 +18,13 @@ coordinateCVonvert = linspace(-gratingOuterRadius, gratingOuterRadius, 2*grating
 coor = zeros(2*gratingOuterRadius);
 coor(sqrt(X.^2+(Y-gratingOuterRadius+flashRadius).^2) <= flashRadius) = 1;
 coor(sqrt(X.^2+(Y+gratingOuterRadius-flashRadius).^2) <= flashRadius) = 1;
+coor(sqrt(X.^2+Y.^2)<=gratingOuterRadius & sqrt(X.^2+Y.^2)>=gratingInnerRadius & coor~=1) = 2;
 
 % add color 
 for ii = 1:3
     imgTemp = img(:, :, ii);
     imgTemp = imgTemp.*coor*color(ii);
+    imgTemp(coor==2) = prm.grating.respColour(ii);
     imgTemp(coor==0) = prm.screen.backgroundColour;
     img(:, :, ii) = imgTemp;
 end
