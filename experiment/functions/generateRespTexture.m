@@ -8,8 +8,8 @@ function img = generateRespTexture(gratingOuterRadius, gratingInnerRadius, flash
 % Xiuyun Wu 01/13/2018
 global prm
 % debugging
-% gratingOuterRadius = 200; gratingInnerRadius = 20;  flashRadius = 50; color = [255 0 0]; prm.screen.backgroundColour = 127; 
-
+% gratingOuterRadius = 400; gratingInnerRadius = 0;  flashRadius = 50; color = [0 0 0]; axis = 1; prm.screen.backgroundColour = 127; 
+% prm.grating.respColour = [100 100 100];
 img = ones(2*gratingOuterRadius, 2*gratingOuterRadius, 3); % RGB planes
 coordinateCVonvert = linspace(-gratingOuterRadius, gratingOuterRadius, 2*gratingOuterRadius);
 [X, Y] = meshgrid(coordinateCVonvert,-coordinateCVonvert);

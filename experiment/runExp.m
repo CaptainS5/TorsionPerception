@@ -1,5 +1,5 @@
-function currentBlock = runExp(currentBlock, rStyle)
-% clear all; close all; clc; currentBlock=1; rStyle = -1; % debugging
+% function currentBlock = runExp(currentBlock, rStyle)
+clear all; close all; clc; currentBlock=1; rStyle = -1; % debugging
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
     global trigger
@@ -22,10 +22,11 @@ try
     % creating saving path and filenames
     if info.expType==0 % for baseline
         prm.blockN = 1; % total number of blocks
-        prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)*length(prm.flash.displacement); % total number of combinations of conditions
-        % conditions differ in: radial stimulus size; flash onset interval;
+        prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
+            length(prm.flash.displacement)*length(prm.rotation.initialDirection); 
+        % total number of combinations of conditions
         % flash displacement
-        prm.trialPerCondition = 2; % trial number per condition
+        prm.trialPerCondition = 30; % trial number per condition
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         
         prm.fileName.folder = ['data\', info.subID{1}, '\baseline'];
@@ -80,7 +81,7 @@ try
     
     prm.fixation.colour = prm.grating.lightest;
     % calculate angle per frame for display
-    prm.rotation.anglePerFrame = prm.rotation.freq/prm.screen.refreshRate; % in degree
+    prm.rotation.anglePerFrame = prm.rotation.freq./prm.screen.refreshRate; % in degree
     % set up folders, files and running paras
     
     if strcmp(info.subID{1}, 'luminance')
@@ -186,6 +187,7 @@ try
             resp.reversalAngle(tempN, 1) = display{blockN}.reversalAngle(trialN);
             resp.durationBefore(tempN, 1) = display{blockN}.durationBefore(trialN);
             resp.durationAfter(tempN, 1) = display{blockN}.durationAfter(trialN);
+            resp.rotationSpeed(tempN, 1) = display{blockN}.rotationSpeed(trialN);
 %             resp.sideDisplaced(tempN, 1) = display{blockN}.sideDisplaced(trialN);
 %             resp.reportStyle(tempN, 1) = info.reportStyle; % report lower or higher
             

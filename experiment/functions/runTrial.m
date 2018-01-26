@@ -10,7 +10,8 @@ Screen('FillRect', prm.screen.windowPtr, prm.screen.backgroundColour); % fill ba
 % different in each trial
 sizeN = display{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
 speedIdx = find(prm.rotation.freq==display{blockN}.rotationSpeed(trialN));
-flashOnset = round(sec2frm(display{blockN}.flashOnset(trialN)));
+% flashOnset = round(sec2frm(display{blockN}.flashOnset(trialN)));
+flashOnset = round(sec2frm(0.4*rand-0.2)); % random duration within -200 to 200ms
 flashDisplacement = dva2pxl(display{blockN}.flashDisplaceLeft(trialN));
 % % randomly decide the initial direction and angle of the grating
 % if rand>=0.5
@@ -249,6 +250,7 @@ while quitFlag==0
         resp.reportAngle(tempN, 1) = respAngle;
         quitFlag = 1;
     end
+    buttons = [];
     %% end of mouse response
     
     %     %% button response

@@ -12,7 +12,7 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-names = {'testXW'};
+names = {'testXW1'};
 merged = 1; % whether initial direction is merged; 1=merged
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 % loadData = 0; % whether get new fitting or using existing fitting
@@ -24,12 +24,13 @@ trialPerCon = 30; % trials per condition in the experiment
 fontSize = 15; % for plot
 
 if merged==1
-    conditionNames = {'flashOnset'}; % which conditions are different
-    conditionNamesBase = {'flashOnset'}; % which conditions are different
+    conditionNames = {'rotationSpeed'}; 
+%     conditionNames = {'flashOnset'}; % which conditions are different
+%     conditionNamesBase = {'flashOnset'}; % which conditions are different
     mergeName = 'merged';
 else
     conditionNames = {'flashOnset', 'initialDirection'}; % which conditions are different
-    conditionNamesBase = conditionNames;
+%     conditionNamesBase = conditionNames;
     mergeName = 'notMerged';
 end
 
@@ -68,24 +69,25 @@ for ii = 1:size(names, 2)
     %% Experiment data, flash onset is important
     data = dataRaw;
     for tt = 1:size(data, 1)
-        % only for the first pilot testXW
-        if data.reportAngle(tt) > 180
-            data.reportAngle(tt) = data.reportAngle(tt)-180;
-        end
-        data.reversalAngle(tt) = data.reversalAngle(tt)-90;
-        if data.reversalAngle(tt) < 0
-            data.reversalAngle(tt) = data.reversalAngle(tt)+180;
-        end
-        if data.reversalAngle(tt) > 180
-            data.reversalAngle(tt) = data.reversalAngle(tt)-180;
-        end
+%         % only for the first pilot testXW
+%         if data.reportAngle(tt) > 180
+%             data.reportAngle(tt) = data.reportAngle(tt)-180;
+%         end
+%         data.reversalAngle(tt) = data.reversalAngle(tt)-90;
+%         if data.reversalAngle(tt) < 0
+%             data.reversalAngle(tt) = data.reversalAngle(tt)+180;
+%         end
+%         if data.reversalAngle(tt) > 180
+%             data.reversalAngle(tt) = data.reversalAngle(tt)-180;
+%         end
         
         data.angleError(tt, 1) = -(data.reportAngle(tt)-data.reversalAngle(tt))*data.initialDirection(tt);
     end
     
-    onset = unique(data.flashOnset);
+%     onset = unique(data.flashOnset);
+onset = unique(data.rotationSpeed);
     for ll = 1:length(onset)
-        data.flashOnsetIdx(data.flashOnset==onset(ll), 1) = ll;
+        data.flashOnsetIdx(data.rotationSpeed==onset(ll), 1) = ll;
     end
     meanError = accumarray(data.flashOnsetIdx, data.angleError, [], @mean);
     stdError = accumarray(data.flashOnsetIdx, data.angleError, [], @std);
@@ -94,14 +96,14 @@ for ii = 1:size(names, 2)
         if merged==1
             figure
             box off
-            errorbar(onset*1000, meanError, stdError)
+            errorbar(onset, meanError, stdError)
             
-            xlabel('Reversal time (ms)')
+            xlabel('Rotation speed (°/s)')
             ylabel('Perceived shift (°)')
             set(gca, 'FontSize', fontSize)
         end
         
-        saveas(gca, [names{ii}, '_', mergeName, '.pdf'])
+        saveas(gca, [names{ii}, '_', mergeName, '_speed.pdf'])
     end
     
     %% Baseline data, flash onset was not important and merged
@@ -154,7 +156,7 @@ for ii = 1:size(names, 2)
     %     saveas(gca, [names{ii}, '_baseline_fit.pdf'])
     
     % save data
-    if loadData==0
+%     if loadData==0
         if howMany>0
             %             save(['dataPMFbase', num2str(2*howMany), '_', names{ii}], 'dataPMFbase', 'fitObjBase', 'LLBase', 'exitflagBase', 'PSEbase') % baseline
             save(['data', mergeName, num2str(2*howMany), '_', names{ii}], 'data') % experiment
@@ -162,7 +164,7 @@ for ii = 1:size(names, 2)
             %             save(['dataPMFbase_', names{ii}], 'dataPMFbase', 'fitObjBase', 'LLBase', 'exitflagBase', 'PSEbase') % baseline
             save(['data', mergeName, '_', names{ii}], 'data') % experiment
         end
-    end
+%     end
     %
     %     % collapse data
     %     if ii==1
