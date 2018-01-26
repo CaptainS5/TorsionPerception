@@ -186,7 +186,7 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
     %     end
 end
 % end
-% StimulusOffsetTime = GetSecs; % here is actually the offset time
+StimulusOffsetTime = GetSecs; % here is actually the offset time
 
 % response instruction
 % if info.reportStyle==-1
@@ -246,7 +246,7 @@ while quitFlag==0
     [x, y, buttons, focus, valuators, valinfo] = GetMouse(prm.screen.windowPtr);
     
     if any(buttons) % record the last mouse position
-        %             rt = Get
+        rt = GetSecs-StimulusOffsetTime;
         resp.reportAngle(tempN, 1) = respAngle;
         quitFlag = 1;
     end

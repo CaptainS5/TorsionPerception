@@ -1,5 +1,5 @@
-% function currentBlock = runExp(currentBlock, rStyle)
-clear all; close all; clc; currentBlock=1; rStyle = -1; % debugging
+function currentBlock = runExp(currentBlock, rStyle)
+% clear all; close all; clc; currentBlock=1; rStyle = -1; % debugging
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
     global trigger
@@ -174,7 +174,7 @@ try
 %                 respText = 'Invalid Key';
 %                 Screen('DrawText', prm.screen.windowPtr, respText, prm.screen.center(1)-80, prm.screen.center(2), prm.screen.whiteColour);
 %             end
-%             resp.RTms(tempN, 1) = rt*1000; % in ms
+            resp.RTms(tempN, 1) = rt*1000; % in ms
 %             resp.trialIdx(tempN, 1) = trialN; % index for the condition used
             
             % replicate the display parameters for each trial
