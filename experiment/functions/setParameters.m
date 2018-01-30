@@ -58,9 +58,9 @@ prm.flash.respColour = [0 0 0]; % RGB in 0-255 range
 % prm.flash.colour = 255; % 88 measured about 34.5 cd/m^2
 
 % rotation control
-prm.rotation.freq = [100 125 150 175 200]; % in degrees out of a cycle (360 in total)/s
-prm.rotation.beforeDuration = 90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
-prm.rotation.afterDuration = 90./prm.rotation.freq(3); 
+prm.rotation.freq = [40 60 80 220 240]; % in degrees out of a cycle (360 in total)/s
+prm.rotation.beforeDuration = .7; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
+prm.rotation.afterDuration = .7; %90./prm.rotation.freq(3); 
 % prm.rotation.randDuration = 0.5; % rotation time = base+-rand
 prm.rotation.initialDirection = [-1 1]; % -1 is counterclockwise, 1 is clockwise
 
