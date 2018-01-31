@@ -114,14 +114,14 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
         rotationAngle = rotationAngle + 180;
     end
     
-    if info.expType==1 % experiment
+%     if info.expType==1 % experiment
         % draw rotating grating
         Screen('DrawTexture', prm.screen.windowPtr, prm.grating.tex{sizeN}, [], [], rotationAngle);
-    else % baseline
-        % draw fixation
-        Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
-        Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
-    end
+%     else % baseline
+%         % draw fixation
+%         Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
+%         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
+%     end
     % draw flash
     %     % No Reversal
     %     if frameN>=flashOnset

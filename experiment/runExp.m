@@ -22,14 +22,14 @@ try
     % creating saving path and filenames
     if info.expType==0 % for baseline
         prm.blockN = 1; % total number of blocks
-        prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
-            length(prm.flash.displacement)*length(prm.rotation.initialDirection); 
+%         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
+%             length(prm.flash.displacement)*length(prm.rotation.initialDirection); 
         % total number of combinations of conditions
         % flash displacement
-        prm.trialPerCondition = 30; % trial number per condition
+        prm.trialPerCondition = 3; % trial number per condition
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         
-        prm.fileName.folder = ['data\', info.subID{1}, '\baseline'];
+        prm.fileName.folder = ['data\', info.subID{1}, '\practice'];
     elseif info.expType==1
         prm.fileName.folder = ['data\', info.subID{1}];
     end
