@@ -5,10 +5,11 @@ clc; clear all; close all;
 %check whether there is a LogFiles folder on the same level as the
 %experiment folder
 try
-    global trigger;
+    global trigger info;
     setupTrigger();
     currentBlock = 1;
     rStyleDefault = 1;
+    expTyp = 0;
        
     while(true)
         if currentBlock>5
@@ -19,8 +20,11 @@ try
         else
             rStyle = -1*rStyleDefault;
         end
-        currentBlock = runExp(currentBlock, rStyle); % baseline: block 0; experiment: block 1
-%         resetTriggerGUI; % what's this?
+        currentBlock = runExp(currentBlock, rStyle, expTyp); % baseline: block 0; experiment: block 1
+        if expTyp==0
+            expTyp = 1;
+        end
+        %         resetTriggerGUI; % what's this?
         trigger.stopRecording();
     end
 catch ME

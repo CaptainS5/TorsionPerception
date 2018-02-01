@@ -1,4 +1,4 @@
-function currentBlock = runExp(currentBlock, rStyle)
+function currentBlock = runExp(currentBlock, rStyle, expTyp)
 % clear all; close all; clc; currentBlock=1; rStyle = -1; % debugging
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
@@ -14,7 +14,7 @@ try
 
     setParameters;
     prm.pwd = pwd;
-    info = getInfo(currentBlock, rStyle);
+    info = getInfo(currentBlock, rStyle, expTyp);
     if info.expType==1
         currentBlock = currentBlock + 1;
     end
