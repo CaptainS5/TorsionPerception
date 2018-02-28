@@ -235,6 +235,7 @@ while quitFlag==0
         respAngle = respAngle+180;
     end
     Screen('DrawTexture', prm.screen.windowPtr, prm.resp.tex, [], [], respAngle);
+    Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
     Screen('DrawText', prm.screen.windowPtr, '+', x0, y0, prm.screen.blackColour);
     Screen('Flip', prm.screen.windowPtr);
     
