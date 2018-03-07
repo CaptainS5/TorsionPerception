@@ -36,7 +36,8 @@ initialAngle = rotationAngle; % for presentation of the markers
 %     rotationFrames = 2*round(sec2frm(prm.rotation.baseDuration-prm.rotation.randDuration));
 % end
 display{blockN}.initialAngle(trialN) = rotationAngle;
-display{blockN}.durationBefore(trialN) = rotationFramesBefore/prm.screen.refreshRate;
+display{blockN}.flashOnset(trialN) = flashOnset;
+display{blockN}.durationBefore(trialN) = (rotationFramesBefore+flashOnset)/prm.screen.refreshRate;
 display{blockN}.durationAfter(trialN) = rotationFramesAfter/prm.screen.refreshRate;
 
 % rest of the set ups

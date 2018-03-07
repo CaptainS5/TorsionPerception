@@ -6,10 +6,10 @@
 % end
 
 %% skip invalid trials
-if logData.choice==0
-    trial.valid = 0;
-    return
-end
+% if logData.choice==0
+%     trial.valid = 0;
+%     return
+% end
 
 %% setup trial
 trial = setupTrial(data, header, logData, currentTrial);

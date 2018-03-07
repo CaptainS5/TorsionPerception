@@ -6,7 +6,7 @@
 clear all; close all; clc
 
 % basic setting
-names = {'JFp2'};
+names = {'XWb'};
 folder = pwd;
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 
@@ -22,7 +22,7 @@ for ii = 1:size(names, 2)
     jj = 1;
     while jj <= size(fileResp, 2)
         load(fileResp{1, jj})
-        while size(resp, 1)<70 % not regenerating log files for invalid blocks
+        while size(resp, 1)<60 % not regenerating log files for invalid blocks
             jj = jj+1;
             if jj<=size(fileResp, 2)
                 load(fileResp{1, jj})
@@ -43,12 +43,12 @@ for ii = 1:size(names, 2)
         fprintf(fileID, ['SubjectID: ' num2str(ii) '\n']);
         fprintf(fileID, ['Experiment: ' blockNstr '\n']);
         fprintf(fileID, datestr(now, 'yyyy_mmmm_dd_HH:MM:SS.FFF\n'));
-        fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s %s \n',...
+        fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s \n',...
             resp.Properties.VariableNames{:});
         
         for tt = 1:size(resp, 1) 
         % print trial data
-        fprintf(fileID, '%0.3f %d %0.3f %d %d %0.3f %0.2f %d %0.2f %0.3f %d %d \n',...
+        fprintf(fileID, '%0.3f %0.2f %0.3f %0.2f %0.3f %d %0.2f %0.2f %0.3f %0.3f %0.2f \n',...
             resp{tt, 1:end});        
         end
         fclose(fileID);

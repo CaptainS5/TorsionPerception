@@ -5,8 +5,9 @@ startFrame = 1;
 endFrame = trial.length;
 
 sampleRate = evalin('base','sampleRate');
-timeInMs = linspace(0, trial.length*1000/sampleRate, 10); 
-tickStep = (2000/5)/(length(timeInMs)-1); %?...
+timeInMs = linspace(0, trial.length*1000/sampleRate, 5); 
+tickStep = (2000/5)/(length(timeInMs)-1)*2; %?...
+% tickStep = (2000/5)/(length(timeInMs)-1); %?...
 %% position plot
 % subplot(2,3,1,'replace');
 % 
@@ -107,8 +108,8 @@ plot(startFrame:endFrame,trial.frames.T_filt(startFrame:endFrame));
 
 line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle','--');
 line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle','--');
-
-
+% duration after reversal
+line([trial.stim_end trial.stim_end], [-100 100],'Color','b','LineStyle','--');
 
 if sum(trial.lostTframes) > 0
    plot(startFrame:endFrame, double(trial.lostTframes(startFrame:endFrame)+3), 'r');

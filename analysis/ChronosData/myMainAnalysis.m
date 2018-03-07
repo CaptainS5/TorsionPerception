@@ -2,11 +2,11 @@
 % Xiuyun Wu, 11/26/2017
 clear all; close all; clc
 
-names = {'XWp1'};
-folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\Torsion&FDE\data'};
-conditions = [0.35 0.7 1.05 1.4 1.75];
-direction = [1 -1];
-trialPerCon = 168; % for each flash onset, all directions together though...
+names = {'XWb'};
+folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\Torsion&perception\data'};
+conditions = [40 80 120 160 200];
+direction = [-1 1];
+trialPerCon = 60; % for each flash onset, all directions together though...
 eyeName = {'L' 'R'};
 
 % first row is clockwise, second row is counterclockwise
@@ -32,8 +32,7 @@ for subj = 1:length(names)
         
         counts = {zeros(size(conditions)) zeros(size(conditions))};
         
-        for block = 1:12
-            if ~strcmp(subject, 'XWp1') || (block~=9 && block~=4 && block~=5 && block~=8)
+        for block = 1:5
             % read in data and socscalexy
             filename = ['session_' num2str(block,'%.2i') '_' eyeName{eye} '.dat'];
             data = readDataFile(filename, [folder{:} '\' subject '\chronos']);
@@ -49,13 +48,13 @@ for subj = 1:length(names)
             errors = load([folder{:} '\' subject '\chronos\Exp' num2str(block) '_Subject' num2str(subj,'%.2i') '_Block' num2str(block,'%.2i') '_' eyeName{eye} '_errorFile.mat']);
             
             for t = 1:size(resp, 1) % trial number
-                if errors.errorStatus(t)==0 && resp.choice(t) ~= 0 % valid trial
+                if errors.errorStatus(t)==0 % valid trial
                     currentTrial = t;
                     analyzeTrial;
                     
                     dirIdx = find(direction==resp.initialDirection(t)); % 1-clockwise, 2-counterclockwise
                     
-                    conIdx = find(conditions==resp.flashOnset(t));
+                    conIdx = find(conditions==resp.rotationSpeed(t));
                     counts{dirIdx}(conIdx) = counts{dirIdx}(conIdx)+1;
                     
                     startFrame = trial.stim_onset; % onset of rotation
@@ -84,7 +83,6 @@ for subj = 1:length(names)
             numNonError{eye}(subj, :, 2) = counts{2}; % counterclockwise
             end
         end
-    end
     
     %%
     for ii = 1:2 % two directions
@@ -114,7 +112,7 @@ for subj = 1:length(names)
         legend({['Clockwise(' num2str(mean(numNonError{eye}(subj, :, 1))) ')'] ...
             ['Counterclockwise(' num2str(mean(numNonError{eye}(subj, :, 2))) ')']}, ...
             'box', 'off')
-        xlabel('Flash onset (s)')
+        xlabel('Rotation speed (deg/s)')
         ylabel('Torsion velocity (deg/s)')
         title([eyeName{eye}, ' eye'])
     end
@@ -131,7 +129,7 @@ for subj = 1:length(names)
         legend({['Clockwise(' num2str(mean(numNonError{eye}(subj, :, 1))) ')'] ...
             ['Counterclockwise(' num2str(mean(numNonError{eye}(subj, :, 2))) ')']}, ...
             'box', 'off')
-        xlabel('Flash onset (s)')
+        xlabel('Rotation speed (deg/s)')
         ylabel('Saccade number')
         title([eyeName{eye}, ' eye'])
     end
@@ -148,7 +146,7 @@ for subj = 1:length(names)
         legend({['Clockwise(' num2str(mean(numNonError{eye}(subj, :, 1))) ')'] ...
             ['Counterclockwise(' num2str(mean(numNonError{eye}(subj, :, 2))) ')']}, ...
             'box', 'off')
-        xlabel('Flash onset (s)')
+        xlabel('Rotation speed (deg/s)')
         ylabel('Saccade sum amplitude (deg)')
         title([eyeName{eye}, ' eye'])
     end

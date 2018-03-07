@@ -9,14 +9,14 @@
 clear all; close all; clc
 
 % basic setting
-names = {'testXW1'};
+names = {'XWb'};
 folder = pwd;
 howMany = -13; % include the first howMany trials for each condition*each initialDirection
 % using for pilot to see how many trials we need...
 % if not using this, set howMany to a negative number such as -1
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
-trialPerBlock = 50; % ignore unfinished blocks
-trialPerBlockBase = 50; % ignore unfinished blocks
+trialPerBlock = 60; % ignore unfinished blocks
+trialPerBlockBase = 60; % ignore unfinished blocks
 
 dataRawAll = table();
 dataRawBaseAll = table();
@@ -43,6 +43,10 @@ for ii = 1:size(names, 2)
                 dataRaw = resp;
 %                 dataRaw.rotationSpeed = display{jj}.rotationSpeed;
             else
+%                 if size(resp, 2)>10
+%                     resp(resp.RTms<400, :) = [];
+%                     resp.RTms = [];
+%                 end
 %                 resp.rotationSpeed = display{jj}.rotationSpeed;
                 dataRaw = [dataRaw; resp];
             end
@@ -70,7 +74,7 @@ for ii = 1:size(names, 2)
     % Go to the analysis file to save the processed data
     cd(folder)
     % delete invalid trials
-%     dataRaw(dataRaw.choice==0, :) = [];
+    dataRaw(dataRaw.RTms<400, :) = [];
     dataRaw.sub = mat2cell(repmat(names{ii}, size(dataRaw, 1), 1), ones(size(dataRaw, 1), 1), length(names{ii})); % experiment
 %     dataRawBase(dataRawBase.choice==0, :) = [];
 %     dataRawBase.sub = mat2cell(repmat(names{ii}, size(dataRawBase, 1), 1), ones(size(dataRawBase, 1), 1), length(names{ii})); % baseline

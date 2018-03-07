@@ -30,8 +30,10 @@ trial.lostYframes = data.lostYframes(trial.startFrame:trial.endFrame);
 trial.lostTframes = data.lostTframes(trial.startFrame:trial.endFrame);
 
 %% calculate stim_onset and stim_offset
+% 
 trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000);                          
-trial.stim_offset = trial.stim_onset + ms2frames(logData.flashOnset(currentTrial)*1000+60);     
+trial.stim_offset = trial.stim_onset + ms2frames(logData.durationBefore(currentTrial)*1000); 
+trial.stim_end = trial.stim_offset + ms2frames(logData.durationAfter(currentTrial)*1000);
 trial.length = length(trial.startFrame:trial.endFrame);
 
 %% read log data
@@ -41,8 +43,7 @@ trial.log.block = logData.block;
 trial.log.eye = data.eye;
 % trial.log.number = logData.trial(currentTrial);
 trial.log.rotationalDirection = logData.initialDirection(currentTrial);
-trial.log.rotationalSpeed = 0.4*360;
-trial.log.flashOnset = logData.flashOnset(currentTrial);
+trial.log.rotationalSpeed = logData.rotationSpeed(currentTrial);
 % trial.log.translationalDirection = logData.translationalDirection(currentTrial);
 % trial.log.rotationalDirection = logData.rotationalDirection(currentTrial);
 % trial.log.rotationalSpeed = ((double(logData.randomSpeed(currentTrial))+100)/100)*logData.rotationalSpeed(currentTrial);

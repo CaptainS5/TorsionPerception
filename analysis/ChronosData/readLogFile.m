@@ -53,7 +53,7 @@ header.subjectID = textscan(fid, '%*s %d %*[^\n]',1);
 header.subjectID = header.subjectID{1};
 header.experiment = textscan(fid, '%*s %d %*[^\n]',1);
 header.experiment = header.experiment{1};
-header.trialsPerBlock = 70; %currentBlockSize;
+header.trialsPerBlock = 60; %currentBlockSize;
 
 %skip 2 lines
 textscan(fid, '%*[^\n]', 2);
@@ -61,22 +61,21 @@ textscan(fid, '%*[^\n]', 2);
 % skipLines = sum(blockSizes(blockNumbers<block)); %skip lines of previous blocks
 % textscan(fid, '%*[^\n]', skipLines);
 
-allData = textscan(fid, '%f %d %f %d %d %f %f %d %f %d %d %d %*[^\n]');
+allData = textscan(fid, '%f %f %f %f %f %d %f %f %f %f %f %*[^\n]');
 
 logData.fileName = selectedLogFile;
 logData.block = block;
-logData.choice = allData{2};
-logData.RT = allData{3};
-logData.trialIdx = allData{4};
-logData.gratingRadiusIdx = allData{5};
-logData.gratingRadius = allData{6};
-logData.flashOnset = allData{7};
-logData.flashDisplaceLeft = allData{8};
-logData.initialDirection = allData{9}; % -1 counterclockwise, 1 clockwise
-logData.initialAngle = allData{10};
-logData.sideDisplaced = allData{11};
-logData.reportStyle = allData{12};
 logData.fixationDuration = allData{1};
+logData.reportAngle = allData{2};
+logData.RTms = allData{3};
+logData.gratingRadius = allData{4};
+logData.flashOnset = allData{5};
+logData.initialDirection = allData{6}; % -1 counterclockwise, 1 clockwise
+logData.initialAngle = allData{7};
+logData.reversalAngle = allData{8};
+logData.durationBefore = allData{9};
+logData.durationAfter = allData{10};
+logData.rotationSpeed = allData{11};
 
 % rightNatural = ~logData.translationalDirection & ~logData.rotationalDirection;
 % leftNatural  = logData.translationalDirection & logData.rotationalDirection;
