@@ -6,7 +6,7 @@
 clear all; close all; clc
 
 % basic setting
-names = {'XWb'};
+names = {'XWc'};
 folder = pwd;
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 

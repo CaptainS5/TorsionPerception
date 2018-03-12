@@ -109,7 +109,7 @@ plot(startFrame:endFrame,trial.frames.T_filt(startFrame:endFrame));
 line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle','--');
 line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle','--');
 % duration after reversal
-line([trial.stim_end trial.stim_end], [-100 100],'Color','b','LineStyle','--');
+line([trial.stim_start trial.stim_start], [-100 100],'Color','b','LineStyle','--');
 
 if sum(trial.lostTframes) > 0
    plot(startFrame:endFrame, double(trial.lostTframes(startFrame:endFrame)+3), 'r');

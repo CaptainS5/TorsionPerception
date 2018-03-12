@@ -2,7 +2,7 @@
 % Xiuyun Wu, 11/26/2017
 clear all; close all; clc
 
-names = {'XWb'};
+names = {'XWc'};
 folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\Torsion&perception\data'};
 conditions = [40 80 120 160 200];
 direction = [-1 1];
