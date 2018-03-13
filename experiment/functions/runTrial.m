@@ -206,6 +206,10 @@ x = [];
 key = [];
 rt = [];
 [x0, y0, buttons0, focus0, valuators0, valinfo0] = GetMouse(prm.screen.windowPtr);
+if info.eyeTracker==1
+    trigger.stopRecording();
+    recordFlag = 1;
+end
 while quitFlag==0
     %     % response window
     %     if info.eyeTracker==1 && secs-StimulusOnsetTime>=prm.recording.stopDuration && recordFlag==0 % stop recording after a certain duration after offset
@@ -286,8 +290,4 @@ end
 
 % HideCursor();
 
-if info.eyeTracker==1
-    trigger.stopRecording();
-    recordFlag = 1;
-end
 % end
