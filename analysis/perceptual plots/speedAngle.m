@@ -12,8 +12,8 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-names = {'XWc'};
-merged = 1; % whether initial direction is merged; 1=merged
+names = {'QZc'};
+merged = 0; % whether initial direction is merged; 1=merged
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 % loadData = 0; % whether get new fitting or using existing fitting
 howMany = -12;% include the first howMany trials for each condition*each initialDirection
@@ -22,6 +22,7 @@ howMany = -12;% include the first howMany trials for each condition*each initial
 % if not using this, set howMany to a negative number such as -1
 trialPerCon = 30; % trials per condition in the experiment
 fontSize = 15; % for plot
+dirCons = [-1 1]; % initial counterclockwise and clockwise; in plots shows direction after reversal
 
 if merged==1
     conditionNames = {'rotationSpeed'};
@@ -88,12 +89,24 @@ for ii = 1:size(names, 2)
 %     data(idxt, :) = [];
     
     %     onset = unique(data.flashOnset);
+    % merged
     onset = unique(data.rotationSpeed);
     for ll = 1:length(onset)
         data.flashOnsetIdx(data.rotationSpeed==onset(ll), 1) = ll;
     end
     meanError = accumarray(data.flashOnsetIdx, data.angleError, [], @mean);
     stdError = accumarray(data.flashOnsetIdx, data.angleError, [], @std);
+    
+    % initial direction seperated
+    onset = unique(data.rotationSpeed);
+    for ll = 1:length(onset)
+        data.flashOnsetIdx(data.rotationSpeed==onset(ll), 1) = ll;
+    end
+    for dirI = 1:2
+        dataT = data(data.initialDirection==(dirCons(dirI)), :);
+        meanErrorS(:, dirI) = accumarray(dataT.flashOnsetIdx, dataT.angleError, [], @mean);
+        stdErrorS(:, dirI) = accumarray(dataT.flashOnsetIdx, dataT.angleError, [], @std);
+    end
     
     % draw plots
     if merged==1
@@ -105,9 +118,20 @@ for ii = 1:size(names, 2)
         xlabel('Rotation speed (°/s)')
         ylabel('Perceived shift (°)')
         set(gca, 'FontSize', fontSize)
+        saveas(gca, [names{ii}, '_', mergeName, '_speedSameDirection.pdf'])
+    else
+        figure
+        box off
+        errorbar(onset, meanErrorS(:, 1), stdErrorS(:, 1))
+        hold on
+        errorbar(onset, meanErrorS(:, 2), stdErrorS(:, 2))
+        legend({'Clockwise' 'Counterclockwise'})
+        ylim([-5, 15])
+        xlabel('Rotation speed (°/s)')
+        ylabel('Perceived shift (°)')
+        set(gca, 'FontSize', fontSize)
+        saveas(gca, [names{ii}, '_', mergeName, '_speedSameDirection.pdf'])
     end
-    
-    saveas(gca, [names{ii}, '_', mergeName, '_speedSameDirection.pdf'])
 end
 
 %% Baseline data, flash onset was not important and merged

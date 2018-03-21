@@ -101,15 +101,18 @@ plot(startFrame:endFrame,data.segments(startFrame+data.startFrames(trial.number)
 
 plot(startFrame:endFrame,trial.frames.T_filt(startFrame:endFrame));
 
-% plot(trial.saccades.T.onsets,trial.frames.T_filt(trial.saccades.T.onsets),'g*');
-% plot(trial.saccades.T.offsets,trial.frames.T_filt(trial.saccades.T.offsets),'k*');
+plot(trial.saccades.T.onsets,trial.frames.T_filt(trial.saccades.T.onsets),'g*');
+plot(trial.saccades.T.offsets,trial.frames.T_filt(trial.saccades.T.offsets),'k*');
 % 
 % plot(pursuit.onset,trial.frames.T_filt(pursuit.onset),'r:+');
 
+% start of stimuli and reversal point
+line([trial.stim_start trial.stim_start], [-100 100],'Color','b','LineStyle','--');
+line([trial.stim_reversal trial.stim_reversal], [-100 100],'Color','b','LineStyle','--');
+
+% analysis window
 line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle','--');
 line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle','--');
-% duration after reversal
-line([trial.stim_start trial.stim_start], [-100 100],'Color','b','LineStyle','--');
 
 if sum(trial.lostTframes) > 0
    plot(startFrame:endFrame, double(trial.lostTframes(startFrame:endFrame)+3), 'r');
