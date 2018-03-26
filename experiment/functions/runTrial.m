@@ -92,12 +92,16 @@ quitFlag=0;
 % record response, won't continue until a response is recorded
 recordFlag=0;
 
+mPtr = Screen('CreateMovie', prm.screen.windowPtr, ['demo', num2str(trialN)]);
+
 % draw fixation at the beginning of each trial
 Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
 Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
 Screen('Flip', prm.screen.windowPtr);
 resp.fixationDuration(tempN, 1) = prm.fixation.durationBase+rand*prm.fixation.durationJitter;
 WaitSecs(resp.fixationDuration(tempN, 1));
+fixFrames = round(sec2frm(resp.fixationDuration(tempN, 1)));
+Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr, fixFrames)
 
 for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuration) % Reversal--rotationFrames, motion stops when presenting flash
     
@@ -176,6 +180,7 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
     %         %% end of button response
     %     end
     Screen('Flip', prm.screen.windowPtr);
+    Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr);
     %     if frameN==1 || frameN==rotationFrames/2+flashDuration || frameN == rotationFrames+flashDuration
     %         pause;
     %         rotationAngle
@@ -200,6 +205,7 @@ StimulusOffsetTime = GetSecs; % here is actually the offset time
 % Screen('DrawText', prm.screen.windowPtr, textResp, prm.screen.center(1)-200, prm.screen.center(2), prm.screen.whiteColour);
 
 Screen('Flip', prm.screen.windowPtr);
+Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr);
 
 buttons = [];
 x = [];
@@ -243,6 +249,7 @@ while quitFlag==0
     Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
     Screen('DrawText', prm.screen.windowPtr, '+', x0, y0, prm.screen.blackColour);
     Screen('Flip', prm.screen.windowPtr);
+    Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr);
     
     if ~isempty(x)
         x0 = x; % record "old" position
@@ -287,6 +294,8 @@ while quitFlag==0
     %     end
     %     %% end of button response
 end
+
+Screen('FinalizeMovie', mPtr);
 
 % HideCursor();
 

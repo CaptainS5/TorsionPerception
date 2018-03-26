@@ -7,8 +7,8 @@ info.dateTime = clock;
 
 % questions and defaults
 n = 1;
-q{n} = 'subID'; defaults{n} = 'SMc'; n = n+1;
-q{n} = 'Eyetracker(1) or not(0)'; defaults{n} = '1'; n = n+1;
+q{n} = 'subID'; defaults{n} = 'test'; n = n+1;
+q{n} = 'Eyetracker(1) or not(0)'; defaults{n} = '0'; n = n+1;
 q{n} = 'ReportStyle(lower: -1; higher: 1)'; defaults{n} = num2str(rStyle); n = n+1; %L-lower; H-higher
 q{n} = 'Block'; defaults{n} = num2str(currentBlock); n = n+1;
 % q{n} = 'To block'; defaults{n} = '5'; n = n+1;

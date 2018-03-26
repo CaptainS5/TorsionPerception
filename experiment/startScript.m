@@ -8,8 +8,8 @@ try
     global trigger info;
     setupTrigger();
     currentBlock = 1;
-    rStyleDefault = 1;
-    expTyp = 0;
+    rStyleDefault = 1; 
+    expTyp = 1;
        
     while(true)
         if currentBlock>5
