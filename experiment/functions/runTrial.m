@@ -152,9 +152,10 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
         %         StimulusOnsetTime = GetSecs;
         %         Screen('Flip', prm.screen.windowPtr);
         [VBLTimestamp StimulusOnsetTime FlipTimestamp Missed Beampos] = Screen('Flip', prm.screen.windowPtr);
+%         if trialN==1
 %         imgFl = Screen('GetImage', prm.screen.windowPtr);
-%         imwrite(imgFl, 'flash.jpg')
-        
+%         imwrite(imgFl, ['frame', num2str(frameN), '.jpg'])
+%         end
         %         pause;
         display{blockN}.reversalAngle(trialN) = rotationAngle;
     end
@@ -184,11 +185,13 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
     %         %% end of button response
     %     end
     Screen('Flip', prm.screen.windowPtr);
+%     if trialN==1
 %     imgD = Screen('GetImage', prm.screen.windowPtr);
-%     imwrite(imgD, 'display.jpg')
+%     imwrite(imgD, ['frame', num2str(frameN), '.jpg'])
+%     end
 %         Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr);
     %     if frameN==1 || frameN==rotationFrames/2+flashDuration || frameN == rotationFrames+flashDuration
-    %         pause;
+    %         pause;111
     %         rotationAngle
     %     end
     
@@ -255,8 +258,11 @@ while quitFlag==0
     Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
     Screen('DrawText', prm.screen.windowPtr, '+', x0, y0, prm.screen.blackColour);
     Screen('Flip', prm.screen.windowPtr);
+%     if trialN==1
+%     frameN = frameN+1;
 %     imgR = Screen('GetImage', prm.screen.windowPtr);
-%     imwrite(imgR, 'response.jpg')
+%     imwrite(imgR, ['frame', num2str(frameN), '.jpg'])
+%     end
 %         Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr);
     
     if ~isempty(x)
