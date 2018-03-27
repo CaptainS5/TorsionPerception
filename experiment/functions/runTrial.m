@@ -92,7 +92,7 @@ quitFlag=0;
 % record response, won't continue until a response is recorded
 recordFlag=0;
 
-mPtr = Screen('CreateMovie', prm.screen.windowPtr, ['demo', num2str(trialN)]);
+% mPtr = Screen('CreateMovie', prm.screen.windowPtr, ['demo', num2str(trialN)], [], [], [], [], 3);
 
 % draw fixation at the beginning of each trial
 Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
@@ -101,7 +101,9 @@ Screen('Flip', prm.screen.windowPtr);
 resp.fixationDuration(tempN, 1) = prm.fixation.durationBase+rand*prm.fixation.durationJitter;
 WaitSecs(resp.fixationDuration(tempN, 1));
 fixFrames = round(sec2frm(resp.fixationDuration(tempN, 1)));
-Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr, fixFrames)
+% imgF = Screen('GetImage', prm.screen.windowPtr);
+% imwrite(imgF, 'fixation.jpg')
+% Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr, fixFrames)
 
 for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuration) % Reversal--rotationFrames, motion stops when presenting flash
     
@@ -119,14 +121,14 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
         rotationAngle = rotationAngle + 180;
     end
     
-%     if info.expType==1 % experiment
-        % draw rotating grating
-        Screen('DrawTexture', prm.screen.windowPtr, prm.grating.tex{sizeN}, [], [], rotationAngle);
-%     else % baseline
-%         % draw fixation
-%         Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
-%         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
-%     end
+    %     if info.expType==1 % experiment
+    % draw rotating grating
+    Screen('DrawTexture', prm.screen.windowPtr, prm.grating.tex{sizeN}, [], [], rotationAngle);
+    %     else % baseline
+    %         % draw fixation
+    %         Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
+    %         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
+    %     end
     % draw flash
     %     % No Reversal
     %     if frameN>=flashOnset
@@ -150,6 +152,8 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
         %         StimulusOnsetTime = GetSecs;
         %         Screen('Flip', prm.screen.windowPtr);
         [VBLTimestamp StimulusOnsetTime FlipTimestamp Missed Beampos] = Screen('Flip', prm.screen.windowPtr);
+%         imgFl = Screen('GetImage', prm.screen.windowPtr);
+%         imwrite(imgFl, 'flash.jpg')
         
         %         pause;
         display{blockN}.reversalAngle(trialN) = rotationAngle;
@@ -180,7 +184,9 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
     %         %% end of button response
     %     end
     Screen('Flip', prm.screen.windowPtr);
-    Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr);
+%     imgD = Screen('GetImage', prm.screen.windowPtr);
+%     imwrite(imgD, 'display.jpg')
+%         Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr);
     %     if frameN==1 || frameN==rotationFrames/2+flashDuration || frameN == rotationFrames+flashDuration
     %         pause;
     %         rotationAngle
@@ -205,7 +211,7 @@ StimulusOffsetTime = GetSecs; % here is actually the offset time
 % Screen('DrawText', prm.screen.windowPtr, textResp, prm.screen.center(1)-200, prm.screen.center(2), prm.screen.whiteColour);
 
 Screen('Flip', prm.screen.windowPtr);
-Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr);
+% Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr);
 
 buttons = [];
 x = [];
@@ -239,7 +245,7 @@ while quitFlag==0
     else % changing the angle of the next loop according to the cursor position
         respAngle = atan2(y-prm.screen.size(4)/2, x-prm.screen.size(3)/2)/pi*180+90;
     end
-%             ShowCursor('CrossHair',  prm.screen.windowPtr); % draw a text instead, which you can control thr color...
+    %             ShowCursor('CrossHair',  prm.screen.windowPtr); % draw a text instead, which you can control thr color...
     if respAngle>180
         respAngle = respAngle-180;
     elseif respAngle<0
@@ -249,7 +255,9 @@ while quitFlag==0
     Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
     Screen('DrawText', prm.screen.windowPtr, '+', x0, y0, prm.screen.blackColour);
     Screen('Flip', prm.screen.windowPtr);
-    Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr);
+%     imgR = Screen('GetImage', prm.screen.windowPtr);
+%     imwrite(imgR, 'response.jpg')
+%         Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr);
     
     if ~isempty(x)
         x0 = x; % record "old" position
@@ -295,7 +303,7 @@ while quitFlag==0
     %     %% end of button response
 end
 
-Screen('FinalizeMovie', mPtr);
+% Screen('FinalizeMovie', mPtr);
 
 % HideCursor();
 
