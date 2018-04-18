@@ -35,7 +35,7 @@ trial.stim_start = ms2frames(logData.fixationDuration(currentTrial)*1000);
 trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000);
 trial.stim_reversal = ms2frames((logData.fixationDuration(currentTrial)+logData.durationBefore(currentTrial))*1000);
 % trial.stim_onset = ms2frames((logData.fixationDuration(currentTrial)+logData.durationBefore(currentTrial)+0.12)*1000);                          
-trial.stim_offset = trial.stim_onset + ms2frames((logData.durationBefore(currentTrial)+0.12+logData.durationAfter(currentTrial)-0.12)*1000);
+trial.stim_offset = trial.stim_onset + ms2frames((logData.durationBefore(currentTrial)+logData.durationAfter(currentTrial))*1000);
 
 trial.length = length(trial.startFrame:trial.endFrame);
 

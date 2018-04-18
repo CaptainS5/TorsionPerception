@@ -25,7 +25,7 @@ predecessor = [middle(2:end); 0];
 successor = [0; middle(1:end-1)];
 relevantFrames = middle+predecessor+successor == 3;
 
-% uncomment if you want to use 5 instead of 3 consecutive frames
+% % uncomment if you want to use 5 instead of 3 consecutive frames
 % %****
 % prepredecessor = [predecessor(2:end); 0];
 % sucsuccessor = [0; successor(1:end-1)];

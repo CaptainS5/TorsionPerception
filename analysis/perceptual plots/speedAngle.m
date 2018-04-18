@@ -12,8 +12,8 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-names = {'QZc'};
-merged = 0; % whether initial direction is merged; 1=merged
+names = {'MSc'};
+merged = 1; % whether initial direction is merged; 1=merged
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 % loadData = 0; % whether get new fitting or using existing fitting
 howMany = -12;% include the first howMany trials for each condition*each initialDirection
@@ -112,24 +112,24 @@ for ii = 1:size(names, 2)
     if merged==1
         figure
         box off
-        errorbar(onset, meanError, stdError)
+        errorbar(onset, meanError, stdError, 'LineWidth', 2)
         
-        ylim([-5, 15])
+        ylim([0, 25])
         xlabel('Rotation speed (°/s)')
         ylabel('Perceived shift (°)')
-        set(gca, 'FontSize', fontSize)
+        set(gca, 'FontSize', fontSize, 'box', 'off')
         saveas(gca, [names{ii}, '_', mergeName, '_speedSameDirection.pdf'])
     else
         figure
         box off
-        errorbar(onset, meanErrorS(:, 1), stdErrorS(:, 1))
+        errorbar(onset, meanErrorS(:, 1), stdErrorS(:, 1), 'LineWidth', 2)
         hold on
-        errorbar(onset, meanErrorS(:, 2), stdErrorS(:, 2))
-        legend({'Clockwise' 'Counterclockwise'})
-        ylim([-5, 15])
+        errorbar(onset, -meanErrorS(:, 2), stdErrorS(:, 2), 'LineWidth', 2)
+        legend({'CW' 'CCW'}, 'box', 'off', 'Location', 'northwest')
+        ylim([-25, 25])
         xlabel('Rotation speed (°/s)')
         ylabel('Perceived shift (°)')
-        set(gca, 'FontSize', fontSize)
+        set(gca, 'FontSize', fontSize, 'box', 'off')
         saveas(gca, [names{ii}, '_', mergeName, '_speedSameDirection.pdf'])
     end
 end

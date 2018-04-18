@@ -1,50 +1,48 @@
 function [] = updatePlots(trial, torsion, pursuit, data)
 
 startFrame = 1;
-% endFrame = min(trial.length, 400);
-endFrame = trial.length;
+endFrame = min(trial.length, trial.stim_offset+400);
 
 sampleRate = evalin('base','sampleRate');
 timeInMs = linspace(0, trial.length*1000/sampleRate, 5); 
 tickStep = (2000/5)/(length(timeInMs)-1)*2; %?...
 % tickStep = (2000/5)/(length(timeInMs)-1); %?...
 %% position plot
-% subplot(2,3,1,'replace');
-% 
-% 
-% axis([startFrame endFrame -15 15]);
-% %change frames to ms
-% set(gca,'Xtick',startFrame:tickStep:endFrame,'XTickLabel',timeInMs);
-% 
-% hold on;
-% xlabel('Time(ms)', 'fontsize', 12);
-% ylabel('Position (degree)', 'fontsize', 12);
-% 
-% plot(startFrame:endFrame,trial.frames.X_filt(startFrame:endFrame),'k');
-% plot(startFrame:endFrame,trial.frames.Y_filt(startFrame:endFrame),'b');
-% 
-% plot(trial.saccades.X.onsets,trial.frames.X_filt(trial.saccades.X.onsets),'g*');
-% plot(trial.saccades.X.offsets,trial.frames.X_filt(trial.saccades.X.offsets),'k*');
-% 
-% plot(trial.saccades.Y.onsets,trial.frames.Y_filt(trial.saccades.Y.onsets),'g*');
-% plot(trial.saccades.Y.offsets,trial.frames.Y_filt(trial.saccades.Y.offsets),'k*');
-% 
+subplot(3,1,1,'replace');
+
+axis([startFrame endFrame -15 15]);
+%change frames to ms
+set(gca,'Xtick',startFrame:tickStep:endFrame,'XTickLabel',timeInMs);
+
+hold on;
+xlabel('Time(ms)', 'fontsize', 12);
+ylabel('Position (degree)', 'fontsize', 12);
+
+plot(startFrame:endFrame,trial.frames.X_filt(startFrame:endFrame),'k');
+plot(startFrame:endFrame,trial.frames.Y_filt(startFrame:endFrame),'b');
+
+plot(trial.saccades.X.onsets,trial.frames.X_filt(trial.saccades.X.onsets),'g*');
+plot(trial.saccades.X.offsets,trial.frames.X_filt(trial.saccades.X.offsets),'k*');
+
+plot(trial.saccades.Y.onsets,trial.frames.Y_filt(trial.saccades.Y.onsets),'g*');
+plot(trial.saccades.Y.offsets,trial.frames.Y_filt(trial.saccades.Y.offsets),'k*');
+
 % plot(startFrame:endFrame,trial.frames.S(startFrame:endFrame),'k-.');
-% 
-% 
+
+
 % if pursuit.onsetOnSaccade
 %     plot(trial.saccades.firstSaccadeOffset+trial.stim_onset,trial.frames.X_filt(trial.saccades.firstSaccadeOffset+trial.stim_onset),'r:+');
 % else
 %     plot(pursuit.onset,trial.frames.X_filt(pursuit.onset),'r:+');
 % end
-% 
-% line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle',':');
-% line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle',':');
-% line([startFrame endFrame], [0 0],'Color','k','LineStyle',':');
-% 
-% if sum(trial.lostXframes) > 0
-%    plot(startFrame:endFrame, double(trial.lostXframes(startFrame:endFrame)+13), 'r');
-% end
+
+line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle',':');
+line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle',':');
+line([startFrame endFrame], [0 0],'Color','k','LineStyle',':');
+
+if sum(trial.lostXframes) > 0
+   plot(startFrame:endFrame, double(trial.lostXframes(startFrame:endFrame)+13), 'r');
+end
 
 
 %% velocity plot
@@ -81,8 +79,8 @@ tickStep = (2000/5)/(length(timeInMs)-1)*2; %?...
 % line([startFrame endFrame], [0 0],'Color','k','LineStyle',':');
 
 %% torsion plot
-% subplot(2,3,2,'replace');
-subplot(1,2,1,'replace');
+subplot(3,1,2,'replace');
+% subplot(2,1,1,'replace');
 
 axis([startFrame endFrame -5 5]);
 %change frames to ms
@@ -92,40 +90,41 @@ hold on;
 xlabel('Time(ms)', 'fontsize', 12);
 ylabel('Torsion (degree)', 'fontsize', 12);
 
-%plot segments
+% plot segments
 plot(startFrame:endFrame,data.segments(startFrame+data.startFrames(trial.number):endFrame+data.startFrames(trial.number),1),'b:');
 plot(startFrame:endFrame,data.segments(startFrame+data.startFrames(trial.number):endFrame+data.startFrames(trial.number),2),'r:');
 plot(startFrame:endFrame,data.segments(startFrame+data.startFrames(trial.number):endFrame+data.startFrames(trial.number),3),'g:');
 plot(startFrame:endFrame,data.segments(startFrame+data.startFrames(trial.number):endFrame+data.startFrames(trial.number),4),'m:');
 
 
-plot(startFrame:endFrame,trial.frames.T_filt(startFrame:endFrame));
+plot(startFrame:endFrame,trial.frames.T_filt(startFrame:endFrame)); %, 'LineWidth', 2);
 
-plot(trial.saccades.T.onsets,trial.frames.T_filt(trial.saccades.T.onsets),'g*');
-plot(trial.saccades.T.offsets,trial.frames.T_filt(trial.saccades.T.offsets),'k*');
+plot(trial.saccades.T.onsets,trial.frames.T_filt(trial.saccades.T.onsets),'g*', 'MarkerSize', 10);
+plot(trial.saccades.T.offsets,trial.frames.T_filt(trial.saccades.T.offsets),'k*', 'MarkerSize', 10);
 % 
 % plot(pursuit.onset,trial.frames.T_filt(pursuit.onset),'r:+');
 
 % start of stimuli and reversal point
-line([trial.stim_start trial.stim_start], [-100 100],'Color','b','LineStyle','--');
-line([trial.stim_reversal trial.stim_reversal], [-100 100],'Color','b','LineStyle','--');
+line([trial.stim_start trial.stim_start], [-100 100],'Color','b','LineStyle','--', 'LineWidth', 2);
+line([trial.stim_reversal trial.stim_reversal], [-100 100],'Color','b','LineStyle','--', 'LineWidth', 2);
 
 % analysis window
-line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle','--');
-line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle','--');
+line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle','--', 'LineWidth', 2);
+line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle','--', 'LineWidth', 2);
 
-if sum(trial.lostTframes) > 0
-   plot(startFrame:endFrame, double(trial.lostTframes(startFrame:endFrame)+3), 'r');
-end
+% if sum(trial.lostTframes) > 0
+%    plot(startFrame:endFrame, double(trial.lostTframes(startFrame:endFrame)+3), 'r');
+% end
 
 try
-    plot(startFrame:endFrame,trial.LP(startFrame:endFrame), 'k--');
+    plot(startFrame:endFrame,trial.LP(startFrame:endFrame), 'k--', 'LineWidth', 2);
 end
 
+set(gca, 'FontSize', 15)
 
 %% torsion velocity plot
 % subplot(2,3,5,'replace');
-subplot(1,2,2,'replace');
+subplot(3,1,3,'replace');
 axis([startFrame endFrame -20 20]);
 %change frames to ms
 set(gca,'Xtick',startFrame:tickStep:endFrame,'XTickLabel',timeInMs);
