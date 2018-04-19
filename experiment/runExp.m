@@ -1,5 +1,5 @@
-function currentBlock = runExp(currentBlock, rStyle, expTyp)
-% clear all; close all; clc; currentBlock=1; rStyle = -1; % debugging
+function currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker)
+% clear all; close all; clc; currentBlock=1; rStyle = -1; expTyp = 1;% debugging
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
     global trigger
@@ -11,10 +11,10 @@ try
     % presented, including trials with invalid response/loss of fixation etc.
     addpath(genpath(pwd))
     AssertOpenGL;
-
+    
     setParameters;
     prm.pwd = pwd;
-    info = getInfo(currentBlock, rStyle, expTyp);
+    info = getInfo(currentBlock, rStyle, expTyp, eyeTracker);
     if info.expType==1
         currentBlock = currentBlock + 1;
     end
@@ -22,14 +22,15 @@ try
     % creating saving path and filenames
     if info.expType==0 % for baseline
         prm.blockN = 1; % total number of blocks
-%         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
-%             length(prm.flash.displacement)*length(prm.rotation.initialDirection); 
+        %         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
+        %             length(prm.flash.displacement)*length(prm.rotation.initialDirection);
         % total number of combinations of conditions
         % flash displacement
-        prm.trialPerCondition = 3; % trial number per condition
+        prm.trialPerCondition = 6; % trial number per condition
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
+        prm.rotation.freq = [2 4 8 12 16]; % the angle of the flash...
         
-        prm.fileName.folder = ['data\', info.subID{1}, '\practice'];
+        prm.fileName.folder = ['data\', info.subID{1}, '\baseline'];
     elseif info.expType==1
         prm.fileName.folder = ['data\', info.subID{1}];
     end
@@ -41,7 +42,7 @@ try
     else
         load([prm.fileName.folder, '\randomAssignment_', info.subID{1}])
     end
-
+    
     openScreen; % modify background color here
     % Gamma correction
     load('lut527.mat')
@@ -71,12 +72,25 @@ try
         % gratingOuterRadius, gratingInnerRadius, flashRadius, color
         % (RGB 0-255), axis (0-horizontal, 1-vertical)
         prm.flash.tex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgFlash);
+        if info.expType==0 % baseline
+            imgUniform = generateRespTexture(round(dva2pxl(prm.grating.outerRadius(ii))), ...
+                0, 0, ...
+                prm.flash.respColour, prm.flash.axis);
+            % gratingOuterRadius, gratingInnerRadius, flashRadius, color (RGB 0-255)
+            prm.baseline.uniformTex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgUniform);
+        
+            imgBaseFlash = generateRespTexture(round(dva2pxl(prm.grating.outerRadius(ii))), ...
+                round(dva2pxl(prm.grating.innerRadius)), round(dva2pxl(prm.flash.radius)), ...
+                prm.flash.colour, prm.flash.axis);
+            % gratingOuterRadius, gratingInnerRadius, flashRadius, color (RGB 0-255)
+            prm.baseline.flashTex = Screen('MakeTexture', prm.screen.windowPtr, imgBaseFlash);
+        end
     end
     % texture for the adjustment response, initial position vertical
     imgResp = generateRespTexture(round(dva2pxl(prm.grating.outerRadius(ii))), ...
-            round(dva2pxl(prm.grating.innerRadius)), round(dva2pxl(prm.flash.radius)), ...
-            prm.flash.respColour, prm.flash.axis);
-        % gratingOuterRadius, gratingInnerRadius, flashRadius, color (RGB 0-255)
+        round(dva2pxl(prm.grating.innerRadius)), round(dva2pxl(prm.flash.radius)), ...
+        prm.flash.respColour, prm.flash.axis);
+    % gratingOuterRadius, gratingInnerRadius, flashRadius, color (RGB 0-255)
     prm.resp.tex = Screen('MakeTexture', prm.screen.windowPtr, imgResp);
     
     prm.fixation.colour = prm.grating.lightest;
@@ -109,7 +123,7 @@ try
         prm.fileName.disp = [prm.fileName.folder, '\display', num2str(blockN), '_', info.fileNameTime];
         prm.fileName.resp = [prm.fileName.folder, '\response', num2str(blockN), '_', info.fileNameTime];
         % initialize the randomization that will be made in each trial
-%         display{blockN}.initialDirection = zeros(prm.trialPerBlock, 1);
+        %         display{blockN}.initialDirection = zeros(prm.trialPerBlock, 1);
         display{blockN}.initialAngle = zeros(prm.trialPerBlock, 1);
         display{blockN}.reversalAngle = zeros(prm.trialPerBlock, 1);
         display{blockN}.duration = zeros(prm.trialPerBlock, 1);
@@ -142,7 +156,7 @@ try
         else
             reportStyle = 'Wrong! Get experimenter.'
         end
-%         Screen('DrawText', prm.screen.windowPtr, reportInstruction, prm.screen.center(1)-100, prm.screen.center(2)+50, prm.screen.whiteColour);
+        %         Screen('DrawText', prm.screen.windowPtr, reportInstruction, prm.screen.center(1)-100, prm.screen.center(2)+50, prm.screen.whiteColour);
         Screen('Flip', prm.screen.windowPtr);
         KbWait();
         WaitSecs(prm.ITI);
@@ -155,41 +169,41 @@ try
             end
             % present the stimuli and recording response
             [key rt] = runTrial(blockN, trialN, tempN); % display rotating grating and the flash
-            % trialN is the index for looking up in display; 
+            % trialN is the index for looking up in display;
             % tempN is the actual trial number, including invalid trials
             %             if strcmp(key, 'LeftArrow')
-%             if strcmp(key, 'z') % counterclockwise
-%                 resp.choice(tempN, 1) = -1;
-%             elseif strcmp(key, '/') % clockwise
-%                 %             elseif strcmp(key, 'RightArrow')
-%                 resp.choice(tempN, 1) = 1;
-%                 %             elseif strcmp(key, 'void') % no response
-%                 %                 resp{blockN}.choice(trialN, 1) = 0;
-%             else % wrong key
-%                 resp.choice(tempN, 1) = 0;
-%                 % repeat this trial at the end of the block
-%                 makeUpN = makeUpN + 1;
-%                 trialMakeUp(makeUpN) = trialN;
-%                 % feedback on the screen
-%                 respText = 'Invalid Key';
-%                 Screen('DrawText', prm.screen.windowPtr, respText, prm.screen.center(1)-80, prm.screen.center(2), prm.screen.whiteColour);
-%             end
+            %             if strcmp(key, 'z') % counterclockwise
+            %                 resp.choice(tempN, 1) = -1;
+            %             elseif strcmp(key, '/') % clockwise
+            %                 %             elseif strcmp(key, 'RightArrow')
+            %                 resp.choice(tempN, 1) = 1;
+            %                 %             elseif strcmp(key, 'void') % no response
+            %                 %                 resp{blockN}.choice(trialN, 1) = 0;
+            %             else % wrong key
+            %                 resp.choice(tempN, 1) = 0;
+            %                 % repeat this trial at the end of the block
+            %                 makeUpN = makeUpN + 1;
+            %                 trialMakeUp(makeUpN) = trialN;
+            %                 % feedback on the screen
+            %                 respText = 'Invalid Key';
+            %                 Screen('DrawText', prm.screen.windowPtr, respText, prm.screen.center(1)-80, prm.screen.center(2), prm.screen.whiteColour);
+            %             end
             resp.RTms(tempN, 1) = rt*1000; % in ms
-%             resp.trialIdx(tempN, 1) = trialN; % index for the condition used
+            %             resp.trialIdx(tempN, 1) = trialN; % index for the condition used
             
             % replicate the display parameters for each trial
-%             resp.gratingRadiusIdx(tempN, 1) = display{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
+            %             resp.gratingRadiusIdx(tempN, 1) = display{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
             resp.gratingRadius(tempN, 1) = prm.grating.outerRadius(display{blockN}.gratingRadiusIdx(trialN)); % actual value of the grating outer radius
             resp.flashOnset(tempN, 1) = display{blockN}.flashOnset(trialN);
-%             resp.flashDisplaceLeft(tempN, 1) = display{blockN}.flashDisplaceLeft(trialN);
+            %             resp.flashDisplaceLeft(tempN, 1) = display{blockN}.flashDisplaceLeft(trialN);
             resp.initialDirection(tempN, 1) = display{blockN}.initialDirection(trialN);
             resp.initialAngle(tempN, 1) = display{blockN}.initialAngle(trialN);
             resp.reversalAngle(tempN, 1) = display{blockN}.reversalAngle(trialN);
             resp.durationBefore(tempN, 1) = display{blockN}.durationBefore(trialN);
             resp.durationAfter(tempN, 1) = display{blockN}.durationAfter(trialN);
             resp.rotationSpeed(tempN, 1) = display{blockN}.rotationSpeed(trialN);
-%             resp.sideDisplaced(tempN, 1) = display{blockN}.sideDisplaced(trialN);
-%             resp.reportStyle(tempN, 1) = info.reportStyle; % report lower or higher
+            %             resp.sideDisplaced(tempN, 1) = display{blockN}.sideDisplaced(trialN);
+            %             resp.reportStyle(tempN, 1) = info.reportStyle; % report lower or higher
             
             % save the response
             save(prm.fileName.disp, 'display');
@@ -240,7 +254,7 @@ catch expME
     Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
     Screen('CloseAll')
     %         rethrow(lasterror)
-%     clear all;
+    %     clear all;
     return;
 end
 % end

@@ -7,7 +7,7 @@ function setParameters
 global prm
 
 % physical parameters, in cm
-prm.screen.viewDistance = 30; % 57.29 cm corresponds to 1cm on screen as 1 dva
+prm.screen.viewDistance = 37; % 57.29 cm corresponds to 1cm on screen as 1 dva
 prm.screen.monitorWidth = 36.8; % horizontal dimension of viewable screen (cm)
 % 29.4 for the laptop; 36.8 for the lab computer in X527
 prm.screen.monitorHeight = 27.3;
@@ -58,7 +58,7 @@ prm.flash.respColour = [0 0 0]; % RGB in 0-255 range
 % prm.flash.colour = 255; % 88 measured about 34.5 cd/m^2
 
 % rotation control
-prm.rotation.freq = [25 50 100 150 200]; % in degrees out of a cycle (360 in total)/s
+prm.rotation.freq = [25 50 100 200 400]; % in degrees out of a cycle (360 in total)/s
 prm.rotation.beforeDuration = .7; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
 prm.rotation.afterDuration = .7; %90./prm.rotation.freq(3); 
 % prm.rotation.randDuration = 0.5; % rotation time = base+-rand

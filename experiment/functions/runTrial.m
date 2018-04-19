@@ -106,29 +106,34 @@ fixFrames = round(sec2frm(resp.fixationDuration(tempN, 1)));
 % Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr, fixFrames)
 
 for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuration) % Reversal--rotationFrames, motion stops when presenting flash
-    
-    if frameN<=rotationFramesBefore+flashOnset % first direction
-        rotationAngle = rotationAngle + direction*prm.rotation.anglePerFrame(speedIdx);
-        %     elseif frameN==rotationFrames/2+flashOnset
-        %         rotationAngle = initialAngle + direction*prm.rotation.anglePerFrame + direction*90; % force it to stop at vertical
-    elseif frameN>rotationFramesBefore+flashOnset+flashDuration % second direction, after reversal
-        rotationAngle = rotationAngle - direction*prm.rotation.anglePerFrame(speedIdx);
+    if info.expType==1 % experiment
+        if frameN<=rotationFramesBefore+flashOnset % first direction
+            rotationAngle = rotationAngle + direction*prm.rotation.anglePerFrame(speedIdx);
+            %     elseif frameN==rotationFrames/2+flashOnset
+            %         rotationAngle = initialAngle + direction*prm.rotation.anglePerFrame + direction*90; % force it to stop at vertical
+        elseif frameN>rotationFramesBefore+flashOnset+flashDuration % second direction, after reversal
+            rotationAngle = rotationAngle - direction*prm.rotation.anglePerFrame(speedIdx);
+        end
+        
+        if rotationAngle > 180
+            rotationAngle = rotationAngle - 180;
+        elseif rotationAngle < 0
+            rotationAngle = rotationAngle + 180;
+        end
+    else % baseline; different angles set up
+        rotationAngle = direction*display{blockN}.rotationSpeed(trialN);
     end
     
-    if rotationAngle > 180
-        rotationAngle = rotationAngle - 180;
-    elseif rotationAngle < 0
-        rotationAngle = rotationAngle + 180;
+    if info.expType==1 % experiment
+        % draw rotating grating
+        Screen('DrawTexture', prm.screen.windowPtr, prm.grating.tex{sizeN}, [], [], rotationAngle);
+    else % baseline
+        Screen('DrawTexture', prm.screen.windowPtr, prm.baseline.uniformTex{sizeN}, [], [], rotationAngle);
+        Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
+        %         % draw fixation
+        %         Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
+        %         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
     end
-    
-    %     if info.expType==1 % experiment
-    % draw rotating grating
-    Screen('DrawTexture', prm.screen.windowPtr, prm.grating.tex{sizeN}, [], [], rotationAngle);
-    %     else % baseline
-    %         % draw fixation
-    %         Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
-    %         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
-    %     end
     % draw flash
     %     % No Reversal
     %     if frameN>=flashOnset
@@ -142,7 +147,12 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
         %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectL);
         %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectR);
         % dots flash -- how the hell can I get the transparency?????
-        Screen('DrawTexture', prm.screen.windowPtr, prm.flash.tex{sizeN}, [], [], rotationAngle, [], 1);
+        if info.expType==1 % experiment
+            Screen('DrawTexture', prm.screen.windowPtr, prm.flash.tex{sizeN}, [], [], rotationAngle, [], 1);
+        else
+            Screen('DrawTexture', prm.screen.windowPtr, prm.baseline.flashTex, [], [], rotationAngle, [], 1);
+            Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
+        end
     end
     
     % Reversal
@@ -152,10 +162,10 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
         %         StimulusOnsetTime = GetSecs;
         %         Screen('Flip', prm.screen.windowPtr);
         [VBLTimestamp StimulusOnsetTime FlipTimestamp Missed Beampos] = Screen('Flip', prm.screen.windowPtr);
-%         if trialN==1
-%         imgFl = Screen('GetImage', prm.screen.windowPtr);
-%         imwrite(imgFl, ['frame', num2str(frameN), '.jpg'])
-%         end
+        %         if trialN==1
+        %         imgFl = Screen('GetImage', prm.screen.windowPtr);
+        %         imwrite(imgFl, ['frame', num2str(frameN), '.jpg'])
+        %         end
         %         pause;
         display{blockN}.reversalAngle(trialN) = rotationAngle;
     end
@@ -185,11 +195,11 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
     %         %% end of button response
     %     end
     Screen('Flip', prm.screen.windowPtr);
-%     if trialN==1
-%     imgD = Screen('GetImage', prm.screen.windowPtr);
-%     imwrite(imgD, ['frame', num2str(frameN), '.jpg'])
-%     end
-%         Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr);
+    %     if trialN==1
+    %     imgD = Screen('GetImage', prm.screen.windowPtr);
+    %     imwrite(imgD, ['frame', num2str(frameN), '.jpg'])
+    %     end
+    %         Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr);
     %     if frameN==1 || frameN==rotationFrames/2+flashDuration || frameN == rotationFrames+flashDuration
     %         pause;111
     %         rotationAngle
@@ -241,7 +251,7 @@ while quitFlag==0
     % display the stimuli, random starting angle
     if isempty(x) % the first loop, random angle
         % show the cursor; put it at the start angle everytime
-        respAngle = 180*rand;
+        respAngle = 90*rand-45;
         SetMouse(prm.screen.size(3)/2+cos((respAngle-90)/180*pi)*ecc, ...
             prm.screen.size(4)/2+sin((respAngle-90)/180*pi)*ecc, ...
             prm.screen.windowPtr);
@@ -258,12 +268,12 @@ while quitFlag==0
     Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
     Screen('DrawText', prm.screen.windowPtr, '+', x0, y0, prm.screen.blackColour);
     Screen('Flip', prm.screen.windowPtr);
-%     if trialN==1
-%     frameN = frameN+1;
-%     imgR = Screen('GetImage', prm.screen.windowPtr);
-%     imwrite(imgR, ['frame', num2str(frameN), '.jpg'])
-%     end
-%         Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr);
+    %     if trialN==1
+    %     frameN = frameN+1;
+    %     imgR = Screen('GetImage', prm.screen.windowPtr);
+    %     imwrite(imgR, ['frame', num2str(frameN), '.jpg'])
+    %     end
+    %         Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr);
     
     if ~isempty(x)
         x0 = x; % record "old" position
