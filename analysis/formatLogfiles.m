@@ -6,11 +6,11 @@
 clear all; close all; clc
 
 % basic setting
-names = {'XWc' 'PHc' 'ARc' 'SMc' 'JFc' 'MSc'};
+names = {'JL' 'RD' 'KK'};
 folder = pwd;
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 
-for ii = 6:size(names, 2)
+for ii = 3:size(names, 2)
     % Read all raw data
     cd(folder)
     cd ..

@@ -12,8 +12,8 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-names = {'MSc'};
-merged = 1; % whether initial direction is merged; 1=merged
+names = {'JL' 'RD' 'KK'};
+merged = 0; % whether initial direction is merged; 1=merged
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 % loadData = 0; % whether get new fitting or using existing fitting
 howMany = -12;% include the first howMany trials for each condition*each initialDirection
@@ -30,7 +30,7 @@ if merged==1
     %     conditionNamesBase = {'flashOnset'}; % which conditions are different
     mergeName = 'merged';
 else
-    conditionNames = {'flashOnset', 'initialDirection'}; % which conditions are different
+    conditionNames = {'rotationSpeed', 'initialDirection'}; % which conditions are different
     %     conditionNamesBase = conditionNames;
     mergeName = 'notMerged';
 end
@@ -44,7 +44,7 @@ end
 
 dataPMFall = table(); % experiment
 dataPMFbaseAll = table(); % baseline
-for ii = 1:size(names, 2)
+for ii = 3:size(names, 2)
     % load raw data for each participant
     cd ..
     if howMany>0
@@ -133,76 +133,3 @@ for ii = 1:size(names, 2)
         saveas(gca, [names{ii}, '_', mergeName, '_speedSameDirection.pdf'])
     end
 end
-
-%% Baseline data, flash onset was not important and merged
-%     if loadData==0
-%         tempI = 1; % index to add into the table of dataPMFbase
-%
-%         comb = consBase{2};
-%         for tt = 1:size(comb, 1)
-%             dataPMFbase.sub(tempI, 1) = names(ii);
-%             idxAll = 1:size(dataRawBase, 1);
-%             for aa = 1:size(comb, 2)
-%                 eval(['dataPMFbase.', conditionNamesBase{aa+1}, '(tempI, 1) = ', num2str(comb(tt, aa)), ';'])
-%                 eval(['idx = find(roundn(dataRawBase.', conditionNamesBase{aa+1}, ', roundN)==', num2str(comb(tt, aa)), ');'])
-%                 idxAll = intersect(idxAll, idx);
-%             end
-%             idx = find(dataRawBase.perceivedLower(idxAll)==1);
-%             dataPMFbase.percentLeftLower(tempI, 1) = length(idx)/length(idxAll);
-%             dataPMFbase.totalTrials(tempI, 1) = length(idxAll);
-%
-%             tempI = tempI+1;
-%         end
-%     end
-%
-%     % draw plots for baseline, initial direction merged
-%     figure
-%     box off
-%     dataPlot = dataPMFbase;
-%     if loadData==0
-%     [fitObjBase LLBase exitflagBase] = PAL_PFML_Fit(dataPlot.flashDisplaceLeft, ...
-%         dataPlot.totalTrials.*dataPlot.percentLeftLower, dataPlot.totalTrials, searchGrid, paramsFree, PF);
-%     end
-%     % raw data
-%     scatter(dataPlot.flashDisplaceLeft, dataPlot.percentLeftLower, 'filled');
-%     hold on
-%     % fitted line
-%     yFitBase = PAL_Logistic(fitObjBase, xFitBase);
-%     plot(xFitBase, yFitBase, '-k')
-%     % get the PSE
-%     PSEbase = PAL_Logistic(fitObjBase, threshold, 'Inverse');
-%
-%     ylim([0, 1])
-%     xlabel('Flash Displacement (left-right, dva)')
-%     ylabel('Percentage of perceived left to be lower')
-%     if howMany>0
-%         title(['PSE=', num2str(PSEbase(1)), ', ', num2str(2*howMany),' trials'])
-%     else
-%         title(['PSE=', num2str(PSEbase(1))])
-%     end
-%
-%     saveas(gca, [names{ii}, '_baseline_fit.pdf'])
-
-% save data
-%     if loadData==0
-%         if howMany>0
-%             %             save(['dataPMFbase', num2str(2*howMany), '_', names{ii}], 'dataPMFbase', 'fitObjBase', 'LLBase', 'exitflagBase', 'PSEbase') % baseline
-%             save(['data', mergeName, num2str(2*howMany), '_', names{ii}], 'data') % experiment
-%         else
-%             %             save(['dataPMFbase_', names{ii}], 'dataPMFbase', 'fitObjBase', 'LLBase', 'exitflagBase', 'PSEbase') % baseline
-%             save(['data', mergeName, '_', names{ii}], 'data') % experiment
-%         end
-%     end
-%
-%     % collapse data
-%     if ii==1
-%         dataPMFall = dataPMF; % experiment
-%         dataPMFbaseAll = dataPMFbase; % baseline
-%     else
-%         dataPMFall = [dataPMFall; dataPMF]; % experiment
-%         dataPMFbaseAll = [dataPMFbaseAll; dataPMFbase];  % baseline
-%     end
-% end
-% % save collapsed data
-%     save(['dataPMF', mergeName, '_all', num2str(size(names, 2))], 'dataPMFall') % experiment
-%     save(['dataPMFbase', mergeName, '_all', num2str(size(names, 2))], 'dataPMFbaseAll') % baseline
