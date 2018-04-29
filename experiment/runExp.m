@@ -1,5 +1,5 @@
 function currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker)
-% clear all; close all; clc; currentBlock=1; rStyle = -1; expTyp = 1;% debugging
+% clear all; close all; clc; currentBlock=1; rStyle = -1; expTyp = 1; eyeTracker=0;% debugging
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
     global trigger
@@ -20,7 +20,7 @@ try
     end
     
     % creating saving path and filenames
-    if info.expType==0 % for baseline
+    if info.expType==-1 % for baseline
         prm.blockN = 1; % total number of blocks
         %         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
         %             length(prm.flash.displacement)*length(prm.rotation.initialDirection);
@@ -31,6 +31,18 @@ try
         prm.rotation.freq = [2 4 8 12 16]; % the angle of the flash...
         
         prm.fileName.folder = ['data\', info.subID{1}, '\baseline'];
+    elseif info.expType==0 % baseline of torsion
+        prm.blockN = 1; % total number of blocks
+        %         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
+        %             length(prm.flash.displacement)*length(prm.rotation.initialDirection);
+        % total number of combinations of conditions
+        % flash displacement
+        prm.trialPerCondition = 5; % trial number per condition
+        prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
+        prm.rotation.beforeDuration = 1; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
+        prm.rotation.afterDuration = 1
+        
+        prm.fileName.folder = ['data\', info.subID{1}, '\baselineTorsion'];        
     elseif info.expType==1
         prm.fileName.folder = ['data\', info.subID{1}];
     end
@@ -72,7 +84,7 @@ try
         % gratingOuterRadius, gratingInnerRadius, flashRadius, color
         % (RGB 0-255), axis (0-horizontal, 1-vertical)
         prm.flash.tex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgFlash);
-        if info.expType==0 % baseline
+        if info.expType==-1 % baseline
             imgUniform = generateRespTexture(round(dva2pxl(prm.grating.outerRadius(ii))), ...
                 0, 0, ...
                 prm.flash.respColour, prm.flash.axis);

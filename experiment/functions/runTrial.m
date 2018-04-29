@@ -120,14 +120,16 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
         elseif rotationAngle < 0
             rotationAngle = rotationAngle + 180;
         end
-    else % baseline; different angles set up
+    elseif info.expType==0 % baselineTorsion, rotating in one direction
+        rotationAngle = rotationAngle - direction*prm.rotation.anglePerFrame(speedIdx); % rotating in the direction after reversal as in exp
+    elseif info.expType==-1 % baseline; different angles set up
         rotationAngle = direction*display{blockN}.rotationSpeed(trialN);
     end
     
-    if info.expType==1 % experiment
+    if info.expType>=0 % experiment & baselineTorsion
         % draw rotating grating
         Screen('DrawTexture', prm.screen.windowPtr, prm.grating.tex{sizeN}, [], [], rotationAngle);
-    else % baseline
+    elseif info.expType==-1 % baseline
         Screen('DrawTexture', prm.screen.windowPtr, prm.baseline.uniformTex{sizeN}, [], [], rotationAngle);
         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
         %         % draw fixation
@@ -140,7 +142,7 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
     %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectL);
     %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectR);
     %     end
-    
+if info.expType~=0   
     % Reversal
     if frameN>=rotationFramesBefore+flashOnset && frameN<=rotationFramesBefore+flashOnset+flashDuration
         %         % bar flash
@@ -149,7 +151,7 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
         % dots flash -- how the hell can I get the transparency?????
         if info.expType==1 % experiment
             Screen('DrawTexture', prm.screen.windowPtr, prm.flash.tex{sizeN}, [], [], rotationAngle, [], 1);
-        else
+        elseif info.expType==-1 % baseline
             Screen('DrawTexture', prm.screen.windowPtr, prm.baseline.flashTex, [], [], rotationAngle, [], 1);
             Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
         end
@@ -169,6 +171,7 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
         %         pause;
         display{blockN}.reversalAngle(trialN) = rotationAngle;
     end
+end
     
     %     % record response
     %     if frameN>=rotationFrames/2+flashOnset+flashDuration
@@ -235,13 +238,15 @@ if info.eyeTracker==1
     trigger.stopRecording();
     recordFlag = 1;
 end
+
+% if info.expType~=0
 while quitFlag==0
     %     % response window
     %     if info.eyeTracker==1 && secs-StimulusOnsetTime>=prm.recording.stopDuration && recordFlag==0 % stop recording after a certain duration after offset
     %         trigger.stopRecording();
     %         recordFlag = 1;
     %     end
-    % for quitting at any timr
+    % for quitting at any time
     [keyIsDown, secs, keyCode, deltaSecs] = KbCheck();
     if keyIsDown
         key = KbName(keyCode);
@@ -318,6 +323,7 @@ while quitFlag==0
     %     end
     %     %% end of button response
 end
+% end
 
 % Screen('FinalizeMovie', mPtr);
 

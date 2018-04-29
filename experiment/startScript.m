@@ -10,7 +10,7 @@ try
     currentBlock = 1;
     rStyleDefault = 1; 
     expTyp = 0;
-    eyeTracker = 0;
+    eyeTracker = 1;
        
     while(true)
         if currentBlock>5
@@ -22,9 +22,11 @@ try
             rStyle = -1*rStyleDefault;
         end
         currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker); % baseline: block 0; experiment: block 1
-        if expTyp==0
-            expTyp = 1;
-            eyeTracker = 1;
+        if expTyp<1
+            expTyp = expTyp+1;
+            if expTyp==0
+                eyeTracker = 1;
+            end
         end
         %         resetTriggerGUI; % what's this?
         trigger.stopRecording();

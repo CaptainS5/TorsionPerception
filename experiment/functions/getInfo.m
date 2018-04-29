@@ -7,12 +7,12 @@ info.dateTime = clock;
 
 % questions and defaults
 n = 1;
-q{n} = 'subID'; defaults{n} = 'test'; n = n+1;
+q{n} = 'subID'; defaults{n} = 'NY'; n = n+1;
 q{n} = 'Eyetracker(1) or not(0)'; defaults{n} = num2str(eyeTracker); n = n+1;
 q{n} = 'ReportStyle(lower: -1; higher: 1)'; defaults{n} = num2str(rStyle); n = n+1; %L-lower; H-higher
 q{n} = 'Block'; defaults{n} = num2str(currentBlock); n = n+1;
 % q{n} = 'To block'; defaults{n} = '5'; n = n+1;
-q{n} = 'Experiment type(0=base, 1=exp)'; defaults{n} = num2str(expTyp); n = n+1;
+q{n} = 'Experiment type(-1=base, 0=baseTorsion, 1=exp)'; defaults{n} = num2str(expTyp); n = n+1;
 
 answer = inputdlg(q, 'Experiment basic information', 1, defaults);
 
