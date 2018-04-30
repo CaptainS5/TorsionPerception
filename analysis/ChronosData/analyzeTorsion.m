@@ -4,7 +4,7 @@ startFrame = pursuit.onset;
 endFrame = trial.stim_offset; % - ms2frames(60);
 
 %% mark slowPhases (1 if slowphase, 0 otherwise)
-trial.quickphaseFrames = false(trial.length,1); % what's this for?... defined in removeSaccade.m
+% trial.quickphaseFrames = false(trial.length,1); % defined in removeSaccade.m
 slowPhases = ~trial.quickphaseFrames; %
 slowPhases(1:startFrame) = 0;
 slowPhases(endFrame+1:end) = 0;

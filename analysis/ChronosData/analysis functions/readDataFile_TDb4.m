@@ -1,5 +1,5 @@
 function [data] = readDataFile(selectedDataFile, experimentFolder)
-% experimentFolder = ['C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\Torsion&perception\data\MS\chronos'];%[folder{:} '\' subject '\chronos']; % for debug
+% experimentFolder = ['C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\Torsion&perception\data\TD\chronos'];%[folder{:} '\' subject '\chronos']; % for debug
 %% Part1: read number of segments
 %Open Data file
 path = fullfile(experimentFolder,selectedDataFile);
@@ -26,7 +26,8 @@ triggeredFrames = textscan(fid, '%*s%*s%*s%*s%*s%*s %d %*[^\n]', 1);
 triggeredFrames = triggeredFrames{1};
 nonTriggeredFrames = textscan(fid, '%*s%*s%*s%*s%*s%*s%*s %d %*[^\n]', 1);
 nonTriggeredFrames = nonTriggeredFrames{1};
-data.totalFrames = triggeredFrames + nonTriggeredFrames;
+data.totalFrames = triggeredFrames + nonTriggeredFrames-10646;
+
 
 recordedBlocks = textscan(fid, '%*s%*s%*s%*s%*s %d %*[^\n]', 1);
 recordedBlocks = recordedBlocks{1};  
@@ -34,20 +35,18 @@ notRecordedBlocks = textscan(fid, '%*s%*s%*s%*s%*s %d %*[^\n]', 1);
 notRecordedBlocks = notRecordedBlocks{1};
 
 %skip line ("--blocks recorded--" and calibration block line)
-textscan(fid, '%*[^\n]', 1); % original was 2--but what calibration??? calibration is in separate file!!!
+textscan(fid, '%*[^\n]', 2); % original was 2--but what calibration??? calibration is in separate file!!!
 
 %% Part3: read start frames and end frames
 
 data.startFrames = [];
 data.endFrames = [];
 
-for i = 1:recordedBlocks
+for i = 1:recordedBlocks-1
     frame = textscan(fid, '%*s%*s%*s%*s %d %*s %*s %d %*[^\n]', 1);
     
-%     if % skip lost frames
-        data.startFrames(i) = frame{1};
-        data.endFrames(i) = frame{2};
-%     end
+    data.startFrames(i) = frame{1}-10646;
+    data.endFrames(i) = frame{2}-10646;
 end
 
 % %skip line ("--blocks not recorded--")

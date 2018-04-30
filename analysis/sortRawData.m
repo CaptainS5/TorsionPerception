@@ -9,7 +9,7 @@
 clear all; close all; clc
 
 % basic setting
-names = {'JL' 'RD' 'KK'};
+names = {'JL' 'RD' 'TD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY'};
 folder = pwd;
 howMany = -13; % include the first howMany trials for each condition*each initialDirection
 % using for pilot to see how many trials we need...
@@ -20,7 +20,7 @@ trialPerBlockBase = 60; % ignore unfinished blocks
 
 dataRawAll = table();
 dataRawBaseAll = table();
-for ii = 3:size(names, 2)
+for ii = 1:size(names, 2)
     % Read all raw data
     cd ..
     % read Experiment data

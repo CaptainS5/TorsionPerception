@@ -12,8 +12,8 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-names = {'JL' 'RD' 'KK'};
-merged = 0; % whether initial direction is merged; 1=merged
+names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY'};
+merged = 1; % whether initial direction is merged; 1=merged
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 % loadData = 0; % whether get new fitting or using existing fitting
 howMany = -12;% include the first howMany trials for each condition*each initialDirection
@@ -35,22 +35,26 @@ else
     mergeName = 'notMerged';
 end
 
-% % load raw data collapsed
-% cd ..
+cd ..
+% load baseline
+load(['dataBase_all', num2str(size(names, 2)), '.mat']);
+% load raw data collapsed
 % load(['dataRaw_all', num2str(size(names, 2))])
 % load(['dataRawBase_all', num2str(size(names, 2))])
 % % back into the folder
-% cd(folder)
+cd(folder)
 
+dataPercept = table();
 dataPMFall = table(); % experiment
 dataPMFbaseAll = table(); % baseline
-for ii = 3:size(names, 2)
+for ii = 1:size(names, 2)
     % load raw data for each participant
     cd ..
     if howMany>0
         load(['dataRaw', num2str(2*howMany), '_', names{ii}])
     else
         load(['dataRaw_', names{ii}])
+        load(['dataRawBase_', names{ii}])
     end
     %     load(['dataRawBase_', names{ii}])
     % back into the folder
@@ -85,9 +89,18 @@ for ii = 3:size(names, 2)
         
         data.angleError(tt, 1) = -(data.reportAngle(tt)-data.reversalAngle(tt))*data.initialDirection(tt);
     end
-%     idxt = find(data.angleError<0);
-%     data(idxt, :) = [];
+    %     idxt = find(data.angleError<0);
+    %     data(idxt, :) = [];
+    % corrected for baseline
+    data.angleError = data.angleError-dataBase.baseErrorMean(ii, 1);
     
+    % save the generated data
+    if ii==1
+        dataPercept = data;
+    else
+        dataPercept = [dataPercept; data];
+    end
+        
     %     onset = unique(data.flashOnset);
     % merged
     onset = unique(data.rotationSpeed);
@@ -114,7 +127,7 @@ for ii = 3:size(names, 2)
         box off
         errorbar(onset, meanError, stdError, 'LineWidth', 2)
         
-        ylim([0, 25])
+%         ylim([0, 25])
         xlabel('Rotation speed (°/s)')
         ylabel('Perceived shift (°)')
         set(gca, 'FontSize', fontSize, 'box', 'off')
@@ -126,10 +139,13 @@ for ii = 3:size(names, 2)
         hold on
         errorbar(onset, -meanErrorS(:, 2), stdErrorS(:, 2), 'LineWidth', 2)
         legend({'CW' 'CCW'}, 'box', 'off', 'Location', 'northwest')
-        ylim([-25, 25])
+%         ylim([-25, 25])
         xlabel('Rotation speed (°/s)')
         ylabel('Perceived shift (°)')
         set(gca, 'FontSize', fontSize, 'box', 'off')
         saveas(gca, [names{ii}, '_', mergeName, '_speedSameDirection.pdf'])
     end
 end
+
+cd ..
+save(['dataPercept_all', num2str(ii), '.mat'], 'dataPercept')

@@ -1,5 +1,5 @@
 function [data] = readDataFile(selectedDataFile, experimentFolder)
-% experimentFolder = ['C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\Torsion&perception\data\MS\chronos'];%[folder{:} '\' subject '\chronos']; % for debug
+% experimentFolder = ['C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\Torsion&perception\data\TD\chronos'];%[folder{:} '\' subject '\chronos']; % for debug
 %% Part1: read number of segments
 %Open Data file
 path = fullfile(experimentFolder,selectedDataFile);
@@ -26,7 +26,9 @@ triggeredFrames = textscan(fid, '%*s%*s%*s%*s%*s%*s %d %*[^\n]', 1);
 triggeredFrames = triggeredFrames{1};
 nonTriggeredFrames = textscan(fid, '%*s%*s%*s%*s%*s%*s%*s %d %*[^\n]', 1);
 nonTriggeredFrames = nonTriggeredFrames{1};
-data.totalFrames = triggeredFrames + nonTriggeredFrames;
+%% change here
+data.totalFrames = 60262; %triggeredFrames + nonTriggeredFrames;
+
 
 recordedBlocks = textscan(fid, '%*s%*s%*s%*s%*s %d %*[^\n]', 1);
 recordedBlocks = recordedBlocks{1};  
@@ -44,10 +46,8 @@ data.endFrames = [];
 for i = 1:recordedBlocks
     frame = textscan(fid, '%*s%*s%*s%*s %d %*s %*s %d %*[^\n]', 1);
     
-%     if % skip lost frames
-        data.startFrames(i) = frame{1};
-        data.endFrames(i) = frame{2};
-%     end
+    data.startFrames(i) = frame{1};
+    data.endFrames(i) = frame{2};
 end
 
 % %skip line ("--blocks not recorded--")

@@ -26,7 +26,8 @@ triggeredFrames = textscan(fid, '%*s%*s%*s%*s%*s%*s %d %*[^\n]', 1);
 triggeredFrames = triggeredFrames{1};
 nonTriggeredFrames = textscan(fid, '%*s%*s%*s%*s%*s%*s%*s %d %*[^\n]', 1);
 nonTriggeredFrames = nonTriggeredFrames{1};
-data.totalFrames = triggeredFrames + nonTriggeredFrames;
+%% change here
+data.totalFrames = 51399;%triggeredFrames + nonTriggeredFrames;
 
 recordedBlocks = textscan(fid, '%*s%*s%*s%*s%*s %d %*[^\n]', 1);
 recordedBlocks = recordedBlocks{1};  

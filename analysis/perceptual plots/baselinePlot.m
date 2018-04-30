@@ -9,7 +9,7 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-names = {'JL' 'RD' 'KK' 'SG'};
+names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY'};
 merged = 1; % whether initial direction is merged; 1=merged
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 trialPerCon = 6; % trials per condition (separate for directions) in the experiment
@@ -31,11 +31,11 @@ end
 % load(['dataRawBase_all', num2str(size(names, 2))])
 % % back into the folder
 % cd(folder)
-
-for ii = 1:size(names, 2)
+dataBase = table();
+for t = 1:size(names, 2)
     % load raw data for each participant
     cd ..
-        load(['dataRawBase_', names{ii}])
+    load(['dataRawBase_', names{t}])
     % back into the folder
     cd(folder)
     
@@ -62,51 +62,39 @@ for ii = 1:size(names, 2)
         
         data.angleError(tt, 1) = (data.reportAngle(tt)-data.reversalAngle(tt))*data.initialDirection(tt);
     end
-    idxt = find((data.reportAngle<90 & data.reversalAngle>90) | (data.reportAngle>90 & data.reversalAngle<90));
+    idxt = find((data.reportAngle<90 & data.reversalAngle>90) | (data.reportAngle>90 & data.reversalAngle<90) | abs(data.angleError)>15);
     data(idxt, :) = [];
     
     %     onset = unique(data.flashOnset);
     % merged
-    onset = unique(data.rotationSpeed); 
+    onset = unique(data.rotationSpeed);
     for ll = 1:length(onset)
         data.flashOnsetIdx(data.rotationSpeed==onset(ll), 1) = ll;
     end
     meanError = accumarray(data.flashOnsetIdx, data.angleError, [], @mean);
     stdError = accumarray(data.flashOnsetIdx, data.angleError, [], @std);
-    
-%     % initial direction seperated
-%     onset = unique(data.rotationSpeed);
-%     for ll = 1:length(onset)
-%         data.flashOnsetIdx(data.rotationSpeed==onset(ll), 1) = ll;
-%     end
-%     for dirI = 1:2
-%         dataT = data(data.initialDirection==(dirCons(dirI)), :);
-%         meanErrorS(:, dirI) = accumarray(dataT.flashOnsetIdx, dataT.angleError, [], @mean);
-%         stdErrorS(:, dirI) = accumarray(dataT.flashOnsetIdx, dataT.angleError, [], @std);
-%     end
+
+    % just use the average...
+    dataBase.sub(t, 1) = t;
+    dataBase.baseErrorMean(t, 1) = mean(data.angleError);
+    dataBase.baseErrorStd(t, 1) = std(data.angleError);
+%     % fit the curve
+%     [dataFit.fitobject{t}, dataFit.gof{t}, dataFit.output{t}] = fit(data.rotationSpeed, data.angleError, 'lowess', 'lower', [-inf, -inf, 0], 'upper', [inf, inf, 0]); % f(x) = p1*x^2 + p2*x + p3
     
     % draw plots
-    if merged==1
-        figure
-        box off
-        errorbar(onset, meanError, stdError, 'LineWidth', 2)
-        
-        ylim([-5, 10])
-        xlabel('Tilt angle (°)')
-        ylabel('Report error (°)')
-        set(gca, 'FontSize', fontSize, 'box', 'off')
-        saveas(gca, [names{ii}, '_baseline_', mergeName, '.pdf'])
-%     else
-%         figure
-%         box off
-%         errorbar(onset, meanErrorS(:, 1), stdErrorS(:, 1), 'LineWidth', 2)
-%         hold on
-%         errorbar(onset, -meanErrorS(:, 2), stdErrorS(:, 2), 'LineWidth', 2)
-%         legend({'CW' 'CCW'}, 'box', 'off', 'Location', 'northwest')
-%         ylim([-25, 25])
-%         xlabel('Rotation speed (°/s)')
-%         ylabel('Perceived shift (°)')
-%         set(gca, 'FontSize', fontSize, 'box', 'off')
-%         saveas(gca, [names{ii}, '_baseline_', mergeName, '.pdf'])
-    end
+    figure
+    box off
+    errorbar(onset, meanError, stdError, 'LineWidth', 2)
+%     hold on
+%     plot(dataFit.fitobject{t});%, 'LineWidth', 2)
+%     legend({'data' 'fitted curve'}, 'box', 'off')
+%     ylim([-5, 10])
+    xlabel('Tilt angle (°)')
+    ylabel('Report error (°)')
+    title(['mean=', num2str(dataBase.baseErrorMean(t, 1))])
+    set(gca, 'FontSize', fontSize, 'box', 'off')
+    saveas(gca, [names{t}, '_baseline_', mergeName, '.pdf'])
 end
+
+cd ..
+save(['dataBase_all', num2str(t), '.mat'], 'dataBase')
