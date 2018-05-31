@@ -4,25 +4,16 @@ clear all; close all; clc
 
 global trial
 
-names = {'SZ' 'NY'};
+names = {'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 conditions = [25 50 100 200 400];
 startT = 1;
-loadData = 1;
+loadData = 0;
 individualPlots = 1;
-merged = 0;
-if merged==0
-    mergeName = 'notMerged';
-else
-    mergeName = 'merged';
-end
-
-cd ..
-analysisF = pwd;
-folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\Torsion&perception\data'};
+merged = 1;
+torsionThreshold = [10 10 13 8 13 10 10];
+torsionFrames = [5 3 3 3 3 3 3];
 direction = [-1 1]; % rotation direction
 trialPerCon = 10; % for each flash onset, all directions together though...
-torsionThreshold = [13 13];
-torsionFrames = [3 3];
 % eyeName = {'L' 'R'};
 eyeName = {'R'};
 % change both paramters below, as well as time window in the loop
@@ -33,6 +24,16 @@ eyeName = {'R'};
 % endName = '120msAroundReversal';
 % endName = '120msToEnd';
 endName = 'baseline';
+
+if merged==0
+    mergeName = 'notMerged';
+else
+    mergeName = 'merged';
+end
+
+cd ..
+analysisF = pwd;
+folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\Torsion&perception\data'};
 
 trialData = table(); % organize into long format
 conData = table();
@@ -63,7 +64,7 @@ if loadData==0
                 load([folder{:} '\' subject '\baselineTorsion\' dataFile.name]) % resp is the response data for the current block
                 
                 % get mean velocities for each eye
-                errors = load(['Errorfiles\Exp0_Subject' num2str(subj+7,'%.2i') '_Block' num2str(block,'%.2i') '_' eyeName{eye} '_errorFile.mat']);
+                errors = load(['Errorfiles\Exp0_Subject' num2str(subj+8,'%.2i') '_Block' num2str(block,'%.2i') '_' eyeName{eye} '_errorFile.mat']);
                 
                 for t = 1:size(resp, 1) % trial number
                     if errors.errorStatus(t)==0 % valid trial
@@ -263,6 +264,8 @@ if loadData==0
                 conData.sacAmpMeanTMean(countLc, 1) = nanmean(trialData.sacAmpMeanT(tempI, 1));
                 conData.sacAmpMeanTStd(countLc, 1) = nanstd(trialData.sacAmpMeanT(tempI, 1));
                 
+                conData.nonErrorTrialN(countLc, 1) = length(tempI);
+                
                 countLc = countLc+1;
             end
         end
@@ -312,7 +315,7 @@ if individualPlots==1
                     ['CCW(' num2str(mean(tempDcc.nonErrorTrialN(sortIcc, 1))) ')']}, ...
                     'box', 'off', 'FontSize', 10)
             else
-                tempI = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==0); % clockwise
+                tempI = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==0); % merged
                 [B sortI] = sort(conData.rotationSpeed(tempI));
                 tempD = conData(tempI, :);
                 
@@ -322,10 +325,14 @@ if individualPlots==1
             ylabel('Torsion velocity (deg/s)')
             set(gca, 'FontSize', 15, 'box', 'off')
             %             xlim([0 420])
-%             ylim([-2 2])
-            title([eyeName{eye}, ' eye'])
+            %             ylim([-2 2])
+            if merged==0
+                title([eyeName{eye}, ' eye']);
+            else
+                title([eyeName{eye}, ' eye, ', num2str(mean(tempD.nonErrorTrialN(sortI, 1))), ' trials'])
+            end
         end
-        saveas(gca, ['torsionVelocity_' names{t} '_' endName '_' mergeName '.pdf'])
+            saveas(gca, ['torsionVelocity_' names{t} '_' endName '_' mergeName '.pdf'])
         
         % torsion angle
         figure
@@ -351,7 +358,7 @@ if individualPlots==1
                     ['CCW(' num2str(mean(tempDcc.nonErrorTrialN(sortIcc, 1))) ')']}, ...
                     'box', 'off', 'FontSize', 10)
             else
-                tempI = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==0); % clockwise
+                tempI = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==0); % merged
                 [B sortI] = sort(conData.rotationSpeed(tempI));
                 tempD = conData(tempI, :);
                 
@@ -362,7 +369,11 @@ if individualPlots==1
             set(gca, 'FontSize', 15, 'box', 'off')
             %             xlim([0 420])
             %             ylim([-2 2])
-            title([eyeName{eye}, ' eye'])
+            if merged==0
+                title([eyeName{eye}, ' eye']);
+            else
+                title([eyeName{eye}, ' eye, ', num2str(mean(tempD.nonErrorTrialN(sortI, 1))), ' trials'])
+            end
         end
         saveas(gca, ['torsionAngle_' names{t} '_' endName '_' mergeName '.pdf'])
         
@@ -390,7 +401,7 @@ if individualPlots==1
                     ['CCW(' num2str(mean(tempDcc.nonErrorTrialN(sortIcc, 1))) ')']}, ...
                     'box', 'off', 'FontSize', 10, 'Location', 'northwest')
             else
-                tempI = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==0); % clockwise
+                tempI = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==0); % merged
                 [B sortI] = sort(conData.rotationSpeed(tempI));
                 tempD = conData(tempI, :);
                 
@@ -399,7 +410,11 @@ if individualPlots==1
             
             xlabel('Rotation speed (deg/s)')
             ylabel('Saccade number')
-            title([eyeName{eye}, ' eye'])
+            if merged==0
+                title([eyeName{eye}, ' eye']);
+            else
+                title([eyeName{eye}, ' eye, ', num2str(mean(tempD.nonErrorTrialN(sortI, 1))), ' trials'])
+            end
         end
         saveas(gca, ['saccadeNumber_' names{t} '_' endName '_' mergeName '.pdf'])
         
@@ -427,7 +442,7 @@ if individualPlots==1
                     ['CCW(' num2str(mean(tempDcc.nonErrorTrialN(sortIcc, 1))) ')']}, ...
                     'box', 'off', 'FontSize', 10, 'Location', 'northwest')
             else
-                tempI = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==0); % clockwise
+                tempI = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==0); % merged
                 [Bc sortI] = sort(conData.rotationSpeed(tempI));
                 tempD = conData(tempI, :);
                 
@@ -436,7 +451,11 @@ if individualPlots==1
             
             xlabel('Rotation speed (deg/s)')
             ylabel('Saccade sum amplitude (deg)')
-            title([eyeName{eye}, ' eye'])
+            if merged==0
+                title([eyeName{eye}, ' eye']);
+            else
+                title([eyeName{eye}, ' eye, ', num2str(mean(tempD.nonErrorTrialN(sortI, 1))), ' trials'])
+            end
         end
         saveas(gca, ['saccadeSumAmplitude_' names{t} '_' endName '_' mergeName '.pdf'])
         

@@ -53,7 +53,8 @@ header.subjectID = textscan(fid, '%*s %d %*[^\n]',1);
 header.subjectID = header.subjectID{1};
 header.experiment = textscan(fid, '%*s %d %*[^\n]',1);
 header.experiment = header.experiment{1};
-header.trialsPerBlock = 60; %currentBlockSize;
+header.trialsPerBlock = textscan(fid, '%*s %d %*[^\n]',1);
+header.trialsPerBlock = header.trialsPerBlock{1};
 
 %skip 2 lines
 textscan(fid, '%*[^\n]', 2);

@@ -54,14 +54,14 @@ torsion.slowPhases.totalAngleCW = sum(abs(torsion.slowPhases.angleCW));
 torsion.slowPhases.totalAngleCCW = sum(abs(torsion.slowPhases.angleCCW));
 
 %% calculate torsional position at onset and offset of each torsional saccade (quickphase)
-% trial.saccades.T.onsetPositions = trial.frames.T_filt(trial.saccades.T.onsets)';
-% trial.saccades.T.offsetPositions = trial.frames.T_filt(trial.saccades.T.offsets)';
-% 
-% trial.saccades.T_CCW.onsetPositions = trial.frames.T_filt(trial.saccades.T_CCW.onsets)';
-% trial.saccades.T_CCW.offsetPositions = trial.frames.T_filt(trial.saccades.T_CCW.offsets)';
-% 
-% trial.saccades.T_CW.onsetPositions = trial.frames.T_filt(trial.saccades.T_CW.onsets)';
-% trial.saccades.T_CW.offsetPositions = trial.frames.T_filt(trial.saccades.T_CW.offsets)';
+trial.saccades.T.onsetPositions = trial.frames.T_filt(trial.saccades.T.onsets)';
+trial.saccades.T.offsetPositions = trial.frames.T_filt(trial.saccades.T.offsets)';
+
+trial.saccades.T_CCW.onsetPositions = trial.frames.T_filt(trial.saccades.T_CCW.onsets)';
+trial.saccades.T_CCW.offsetPositions = trial.frames.T_filt(trial.saccades.T_CCW.offsets)';
+
+trial.saccades.T_CW.onsetPositions = trial.frames.T_filt(trial.saccades.T_CW.onsets)';
+trial.saccades.T_CW.offsetPositions = trial.frames.T_filt(trial.saccades.T_CW.offsets)';
 
 
 % end

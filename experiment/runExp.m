@@ -40,7 +40,7 @@ try
         prm.trialPerCondition = 5; % trial number per condition
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         prm.rotation.beforeDuration = 1; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
-        prm.rotation.afterDuration = 1
+        prm.rotation.afterDuration = 1;
         
         prm.fileName.folder = ['data\', info.subID{1}, '\baselineTorsion'];        
     elseif info.expType==1

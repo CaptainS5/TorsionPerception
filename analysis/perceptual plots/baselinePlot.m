@@ -9,7 +9,7 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY'};
+names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 merged = 1; % whether initial direction is merged; 1=merged
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 trialPerCon = 6; % trials per condition (separate for directions) in the experiment

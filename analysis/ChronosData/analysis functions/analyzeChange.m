@@ -8,8 +8,8 @@ clear all; close all; clc
 % conditions1 = [20 40 80 140 200];
 % conditions2 = [25 50 100 150 200];
 % conditions3 = [25 50 100 200 400];
-names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY'};
-startT = 1; % start from which participant
+names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
+startT = 13; % start from which participant for individual plots
 conditions = [25 50 100 200 400];
 individualPlots = 0; % whether plot individual data
 averagedPlots = 1;
@@ -35,7 +35,7 @@ else
     dataChangeSummary = table();
     subT = 1;
     subS = 1;
-    for t = startT:size(names, 2)
+    for t = 1:size(names, 2)
         %         if t <=2
         %             conditions = conditions0;
         %         elseif t<=3
@@ -237,58 +237,130 @@ end
 if averagedPlots==1
     cd([analysisF '\summaryPlots'])
     % torsionV/perceptual error/torsionVGain vs. speed, scatter
-    markerC = [77 255 202; 70 95 232; 232 123 70; 255 231 108; 255 90 255; 100 178 42]/255;
+    for t = 1:size(names, 2)
+        if t<=3
+            markerC(t, :) = (t+2)/5*[77 255 202]/255;
+        elseif t<=6
+            markerC(t, :) = (t-1)/5*[70 95 232]/255;
+        elseif t<=9
+            markerC(t, :) = (t-4)/5*[232 123 70]/255;
+        elseif t<=12
+            markerC(t, :) = (t-7)/5*[255 231 108]/255;
+        elseif t<=15
+            markerC(t, :) = (t-10)/5*[255 90 255]/255;
+        end
+    end
+%     markerC = [77 255 202; 70 95 232; 232 123 70; 255 231 108; 255 90 255; 100 178 42]/255;
     
-    % torsionVchange vs speed
-    figure
-    for eye = 1:size(eyeName, 2)
-        subplot(1, size(eyeName, 2), eye);
-        if strcmp(eyeName{eye}, 'L')
-            eyeN = 1; % 1-left,
-        elseif strcmp(eyeName{eye}, 'R')
-            eyeN = 2; % 2-right
-        end
-        for t = 1:size(names, 2)
-            tempI = find(dataChangeSummary.sub==t & dataChangeSummary.eye==eyeN & dataChangeSummary.afterReversalD==0); % merged initial direction
-            errorbar(dataChangeSummary.rotationSpeed(tempI), dataChangeSummary.torsionVDiffMean(tempI), ...
-                dataChangeSummary.torsionVDiffStd(tempI), 'LineStyle', 'None', ...
-                'Marker', 's', 'MarkerSize', 12, 'MarkerFaceColor', 'auto');%markerC(t, :), 'MarkerEdgeColor', 'none')
-            hold on
-        end
-        legend(names, 'box', 'off', 'Location', 'SouthWest')
-        xlabel('Rotation speed(deg/s)')
-        ylabel('Torsional velocity change (deg/s)')
-        xlim([0 420])
-        %         ylim([-2 2])
-        set(gca, 'FontSize', 15, 'box', 'off')
-        title([eyeName{eye}, ' eye'])
-    end
-    saveas(gca, ['speedTorsionVelocityChange_', endName1, '_', endName2, '.pdf'])
-    % torsion angle change
-    figure
-    for eye = 1:size(eyeName, 2)
-        subplot(1, size(eyeName, 2), eye);
-        if strcmp(eyeName{eye}, 'L')
-            eyeN = 1; % 1-left,
-        elseif strcmp(eyeName{eye}, 'R')
-            eyeN = 2; % 2-right
-        end
-        for t = 1:size(names, 2)
-            tempI = find(dataChangeSummary.sub==t & dataChangeSummary.eye==eyeN & dataChangeSummary.afterReversalD==0); % merged initial direction
-            errorbar(dataChangeSummary.rotationSpeed(tempI), dataChangeSummary.torsionADiffMean(tempI), ...
-                dataChangeSummary.torsionADiffStd(tempI), 'LineStyle', 'None', ...
-                'Marker', 's', 'MarkerSize', 12, 'MarkerFaceColor', 'auto');%markerC(t, :), 'MarkerEdgeColor', 'none')
-            hold on
-        end
-        %                 legend(names, 'box', 'off', 'Location', 'SouthWest')
-        xlabel('Rotation speed(deg/s)')
-        ylabel('Torsional angle change (deg/s)')
-        xlim([0 420])
-        %         ylim([-2 2])
-        set(gca, 'FontSize', 15, 'box', 'off')
-        title([eyeName{eye}, ' eye'])
-    end
-    saveas(gca, ['speedTorsionAngleChange_', endName1, '_', endName2, '.pdf'])
+%     % torsionVchange vs speed, individuals
+%     figure
+%     for eye = 1:size(eyeName, 2)
+%         subplot(1, size(eyeName, 2), eye);
+%         if strcmp(eyeName{eye}, 'L')
+%             eyeN = 1; % 1-left,
+%         elseif strcmp(eyeName{eye}, 'R')
+%             eyeN = 2; % 2-right
+%         end
+%         for t = 1:size(names, 2)
+%             tempI = find(dataChangeSummary.sub==t & dataChangeSummary.eye==eyeN & dataChangeSummary.afterReversalD==0); % merged initial direction
+%             errorbar(dataChangeSummary.rotationSpeed(tempI), dataChangeSummary.torsionVDiffMean(tempI), ...
+%                 dataChangeSummary.torsionVDiffStd(tempI), ...
+%                 'Marker', 's', 'MarkerSize', 12, 'MarkerFaceColor', markerC(t, :), 'MarkerEdgeColor', 'none')
+%             hold on
+%         end
+%         legend(names, 'box', 'off', 'Location', 'SouthWest')
+%         xlabel('Rotation speed(deg/s)')
+%         ylabel('Torsional velocity change (deg/s)')
+%         xlim([0 420])
+%         %         ylim([-2 2])
+%         set(gca, 'FontSize', 15, 'box', 'off')
+%         title([eyeName{eye}, ' eye'])
+%     end
+%     saveas(gca, ['speedTorsionVelocityChange_', endName1, '_', endName2, '.pdf'])
+%     % torsion angle change, individuals
+%     figure
+%     for eye = 1:size(eyeName, 2)
+%         subplot(1, size(eyeName, 2), eye);
+%         if strcmp(eyeName{eye}, 'L')
+%             eyeN = 1; % 1-left,
+%         elseif strcmp(eyeName{eye}, 'R')
+%             eyeN = 2; % 2-right
+%         end
+%         for t = 1:size(names, 2)
+%             tempI = find(dataChangeSummary.sub==t & dataChangeSummary.eye==eyeN & dataChangeSummary.afterReversalD==0); % merged initial direction
+%             errorbar(dataChangeSummary.rotationSpeed(tempI), dataChangeSummary.torsionADiffMean(tempI), ...
+%                 dataChangeSummary.torsionADiffStd(tempI), ...
+%                 'Marker', 's', 'MarkerSize', 12, 'MarkerFaceColor', markerC(t, :), 'MarkerEdgeColor', 'none')
+%             hold on
+%         end
+%         %                 legend(names, 'box', 'off', 'Location', 'SouthWest')
+%         xlabel('Rotation speed(deg/s)')
+%         ylabel('Torsional angle change (deg/s)')
+%         xlim([0 420])
+%         %         ylim([-2 2])
+%         set(gca, 'FontSize', 15, 'box', 'off')
+%         title([eyeName{eye}, ' eye'])
+%     end
+%     saveas(gca, ['speedTorsionAngleChange_', endName1, '_', endName2, '.pdf'])
+
+% % torsionVchange vs speed, mean
+%     figure
+%     for eye = 1:size(eyeName, 2)
+%         subplot(1, size(eyeName, 2), eye);
+%         if strcmp(eyeName{eye}, 'L')
+%             eyeN = 1; % 1-left,
+%         elseif strcmp(eyeName{eye}, 'R')
+%             eyeN = 2; % 2-right
+%         end
+%             tempI = find(dataChangeSummary.eye==eyeN & dataChangeSummary.afterReversalD==0); % merged initial direction
+%             dataT = dataChangeSummary(tempI, :);
+%             onset = unique(dataChangeSummary.rotationSpeed);
+%             for ll = 1:length(onset)
+%                 dataChangeSummary.flashOnsetIdx(dataChangeSummary.rotationSpeed==onset(ll), 1) = ll;
+%             end
+%             meanError = accumarray(dataChangeSummary.flashOnsetIdx, dataChangeSummary.torsionVDiffMean, [], @mean);
+%             stdError = accumarray(dataChangeSummary.flashOnsetIdx, dataChangeSummary.torsionVDiffMean, [], @std);
+%             
+%             errorbar(onset, meanError, stdError, ...
+%                 'Marker', 's', 'MarkerSize', 12, 'MarkerFaceColor', 'auto')
+%             hold on
+%         xlabel('Rotation speed(deg/s)')
+%         ylabel('Torsional velocity change (deg/s)')
+%         xlim([0 420])
+%         %         ylim([-2 2])
+%         set(gca, 'FontSize', 15, 'box', 'off')
+%         title([eyeName{eye}, ' eye'])
+%     end
+%     saveas(gca, ['meanSpeedTorsionVelocityChange_', endName1, '_', endName2, '.pdf'])
+%     % torsion angle change, mean
+%     figure
+%     for eye = 1:size(eyeName, 2)
+%         subplot(1, size(eyeName, 2), eye);
+%         if strcmp(eyeName{eye}, 'L')
+%             eyeN = 1; % 1-left,
+%         elseif strcmp(eyeName{eye}, 'R')
+%             eyeN = 2; % 2-right
+%         end
+%         tempI = find(dataChangeSummary.eye==eyeN & dataChangeSummary.afterReversalD==0); % merged initial direction
+%             dataT = dataChangeSummary(tempI, :);
+%             onset = unique(dataChangeSummary.rotationSpeed);
+%             for ll = 1:length(onset)
+%                 dataChangeSummary.flashOnsetIdx(dataChangeSummary.rotationSpeed==onset(ll), 1) = ll;
+%             end
+%             meanError = accumarray(dataChangeSummary.flashOnsetIdx, dataChangeSummary.torsionADiffMean, [], @mean);
+%             stdError = accumarray(dataChangeSummary.flashOnsetIdx, dataChangeSummary.torsionADiffMean, [], @std);
+%             
+%             errorbar(onset, meanError, stdError, ...
+%                 'Marker', 's', 'MarkerSize', 12, 'MarkerFaceColor', 'auto')
+%             hold on
+%         xlabel('Rotation speed(deg/s)')
+%         ylabel('Torsional angle change (deg)')
+%         xlim([0 420])
+%         %         ylim([-2 2])
+%         set(gca, 'FontSize', 15, 'box', 'off')
+%         title([eyeName{eye}, ' eye'])
+%     end
+%     saveas(gca, ['meanSpeedTorsionAngleChange_', endName1, '_', endName2, '.pdf'])
     
     % scatter torsion vs. perceptual error
     % velocity change
@@ -303,23 +375,26 @@ if averagedPlots==1
         for t = 1:size(names, 2)
             tempI = find(dataChangeSummary.sub==t & dataChangeSummary.eye==eyeN & dataChangeSummary.afterReversalD==0);
             if ~isempty(tempI)
-                scatter(dataChangeSummary.torsionVDiffMean(tempI, 1), dataChangeSummary.perceptualErrorMean(tempI, 1), 'LineWidth', 2)%,...
-%                     'MarkerEdgeColor', markerC(t, :), 'MarkerFaceColor', 'none')
+                scatter(dataChangeSummary.torsionVDiffMean(tempI, 1), dataChangeSummary.perceptualErrorMean(tempI, 1), ...
+                    'LineWidth', 2, 'MarkerEdgeColor', markerC(t, :), 'MarkerFaceColor', 'none')
                 hold on
             end
             xlabel('Torsional velocity change (deg/s)')
             ylabel('Perceptual bias (deg)')
             %                 title(['Speed ', num2str(speedN(ii)), ', ', eyeName{eye}])
-            %                 [rho pval] = corr(trialData.torsionVelTMergedNorm(tempI, 1), trialData.perceptualErrNorm(tempI, 1));
             %                 xlim([-4 4])
             %                 ylim([-4 4])
-            set(gca, 'FontSize', 10, 'box', 'off')
-            %                 title([eyeName{eye}, ', rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.2f'), '(', num2str(length(tempI)), ' trials)'])
+            set(gca, 'FontSize', 15, 'box', 'off')
             axis square
         end
+        tempI = find(dataChangeSummary.eye==eyeN & dataChangeSummary.afterReversalD==0);
+        [rho pval] = partialcorr([dataChangeSummary.torsionVDiffMean(tempI, 1) dataChangeSummary.perceptualErrorMean(tempI, 1)], dataChangeSummary.rotationSpeed(tempI, 1));
+        title([eyeName{eye}, ', rho=', num2str(rho(1, 2), '%.2f'), ', p=', num2str(pval(1, 2), '%.3f')])
+%         [rho pval] = corr(dataChangeSummary.torsionVDiffMean(tempI, 1), dataChangeSummary.perceptualErrorMean(tempI, 1));
+%         title([eyeName{eye}, ', rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.3f')])
     end
     %         saveas(gca, ['torsionVSperceptNorm_speed', num2str(speedN(ii)), '.pdf'])
-    saveas(gca, ['torsionVelocityChangeVSpercept_', endName1, '_', endName2, '.pdf'])
+    saveas(gca, ['torsionVelocityChangeVSperceptPartialCorr_', endName1, '_', endName2, '.pdf'])
     
     % angle change
     figure
@@ -333,22 +408,25 @@ if averagedPlots==1
         for t = 1:size(names, 2)
             tempI = find(dataChangeSummary.sub==t & dataChangeSummary.eye==eyeN & dataChangeSummary.afterReversalD==0);
             if ~isempty(tempI)
-                scatter(dataChangeSummary.torsionADiffMean(tempI, 1), dataChangeSummary.perceptualErrorMean(tempI, 1), 'LineWidth', 2)%,...
-%                     'MarkerEdgeColor', markerC(t, :), 'MarkerFaceColor', 'none')
+                scatter(dataChangeSummary.torsionADiffMean(tempI, 1), dataChangeSummary.perceptualErrorMean(tempI, 1), ...
+                    'LineWidth', 2, 'MarkerEdgeColor', markerC(t, :), 'MarkerFaceColor', 'none')
                 hold on
             end
             xlabel('Torsional angle change (deg/s)')
             ylabel('Perceptual bias (deg)')
             %                 title(['Speed ', num2str(speedN(ii)), ', ', eyeName{eye}])
-            %                 [rho pval] = corr(trialData.torsionVelTMergedNorm(tempI, 1), trialData.perceptualErrNorm(tempI, 1));
             %                 xlim([-4 4])
             %                 ylim([-4 4])
-            set(gca, 'FontSize', 10, 'box', 'off')
-            %                 title([eyeName{eye}, ', rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.2f'), '(', num2str(length(tempI)), ' trials)'])
+            set(gca, 'FontSize', 15, 'box', 'off')
             axis square
         end
+        tempI = find(dataChangeSummary.eye==eyeN & dataChangeSummary.afterReversalD==0);
+        [rho pval] = partialcorr([dataChangeSummary.torsionADiffMean(tempI, 1) dataChangeSummary.perceptualErrorMean(tempI, 1)], dataChangeSummary.rotationSpeed(tempI, 1));
+        title([eyeName{eye}, ', rho=', num2str(rho(1, 2), '%.2f'), ', p=', num2str(pval(1, 2), '%.3f')])
+%         [rho pval] = corr(dataChangeSummary.torsionADiffMean(tempI, 1), dataChangeSummary.perceptualErrorMean(tempI, 1));
+%         title([eyeName{eye}, ', rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.3f')])
     end
     %         saveas(gca, ['torsionVSperceptNorm_speed', num2str(speedN(ii)), '.pdf'])
-    saveas(gca, ['torsionAngleChangeVSpercept_', endName1, '_', endName2, '.pdf'])
+    saveas(gca, ['torsionAngleChangeVSperceptPartialCorr_', endName1, '_', endName2, '.pdf'])
     
 end

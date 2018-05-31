@@ -8,20 +8,20 @@ global trial
 % conditions1 = [20 40 80 140 200];
 % conditions2 = [25 50 100 150 200];
 % conditions3 = [25 50 100 200 400];
-names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY'};
+names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 conditions = [25 50 100 200 400];
 cd ..
 analysisF = pwd;
 folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\Torsion&perception\data'};
 direction = [-1 1]; % initial direction; in the plot shows the direction after reversal
 trialPerCon = 60; % for each flash onset, all directions together though...
-torsionThreshold = [10 13 13 10 8 8 10 13 10];
-torsionFrames = [5 3 3 3 3 5 3 5 5];
+torsionThreshold = [10 13 13 10 8 8 10 13 10 10 13 8 13 10 10];
+torsionFrames = [5 3 3 3 3 5 3 5 5 3 3 3 3 3 3];
 % eyeName = {'L' 'R'};
 eyeName = {'R'};
-% change both paramters below, as well as time window in the loop
+% change both paramters below, as well as time window in the loop 
 % around line 100
-% checkAngle = -1; % 1-for direction after reversal, -1 for direction before reversal
+checkAngle = -1; % 1-for direction after reversal, -1 for direction before reversal
 % for the endName, also change around line70 for the time window used
 endName = '120msToReversal';
 % endName = '120msAroundReversal';
@@ -63,6 +63,8 @@ for subj = 1:length(names)
                 data = readDataFile_ICb1(filename, [folder{:} '\' subject '\chronos']);
             elseif subj==9 && block==5 % for NY, 5-lost frames...
                 data = readDataFile_NYb5(filename, [folder{:} '\' subject '\chronos']);
+            elseif subj==13 && block==4 % for NY, 5-lost frames...
+                data = readDataFile_RRb4(filename, [folder{:} '\' subject '\chronos']);
             else
                 data = readDataFile(filename, [folder{:} '\' subject '\chronos']);
             end
@@ -78,7 +80,7 @@ for subj = 1:length(names)
             errors = load(['Errorfiles\Exp' num2str(block) '_Subject' num2str(subj,'%.2i') '_Block' num2str(block,'%.2i') '_' eyeName{eye} '_errorFile.mat']);
             
             for t = 1:size(resp, 1) % trial number
-                if errors.errorStatus(t)==0 % valid trial
+                if errors.errorStatus(t)==0 % valid eye data trial
                     currentTrial = t;
                     
                     %                     %% analyzeTrial for excluding trials with unexpected torsion direction
@@ -117,8 +119,8 @@ for subj = 1:length(names)
                     trial.stim_offset = trial.stim_reversal; % reversal
                     %                     trial.stim_onset = trial.stim_reversal - ms2frames((0.12)*1000); % 120ms before reversal
                     %                     trial.stim_offset = trial.stim_reversal + ms2frames((0.12)*1000); % 120ms after reversal
-%                     trial.stim_onset = trial.stim_reversal + ms2frames((0.12)*1000);
-%                     trial.stim_offset = trial.stim_onset + ms2frames((logData.durationAfter(currentTrial)-0.12)*1000); % end of display
+%                                         trial.stim_onset = trial.stim_reversal + ms2frames((0.12)*1000);
+%                                         trial.stim_offset = trial.stim_onset + ms2frames((logData.durationAfter(currentTrial)-0.12)*1000); % end of display
                     
                     find saccades;
                     [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
@@ -163,50 +165,63 @@ for subj = 1:length(names)
                     if resp.reversalAngle(t) < 0
                         resp.reversalAngle(t) = resp.reversalAngle(t)+180;
                     end
-                    trialData.perceptualError(countLt, 1) = -(resp.reportAngle(t)-resp.reversalAngle(t))*resp.initialDirection(t)-dataBase.baseErrorMean(subj, 1);
-                    
-                    %% torsion velocity
-                    trialData.torsionVelT(countLt, 1) = torsion.slowPhases.meanSpeed;
-                    
-                    %% torsion velocity gain
-                    trialData.torsionVGain(countLt, 1) = torsion.slowPhases.meanSpeed/conditions(conIdx);
-                    
-                    %% torsion magnitude
-                    trialData.torsionAngleTotal(countLt, 1) = torsion.slowPhases.totalAngle;
-                    trialData.torsionAngleCW(countLt, 1) = torsion.slowPhases.totalAngleCW;
-                    trialData.torsionAngleCCW(countLt, 1) = torsion.slowPhases.totalAngleCCW;
-                    % just take the one that is not zero
-                    if torsion.slowPhases.totalAngleCW==0
-                        trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
-                    elseif torsion.slowPhases.totalAngleCCW==0
-                        trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                    trialData.perceptualError(countLt, 1) = -(resp.reportAngle(t)-resp.reversalAngle(t))*resp.initialDirection(t);
+                    if trialData.perceptualError(countLt, 1)>dataBase.baseErrorMean(subj, 1)
+                        trialData.perceptualError(countLt, 1) = trialData.perceptualError(countLt, 1)-dataBase.baseErrorMean(subj, 1);
+                    elseif trialData.perceptualError(countLt, 1)<-dataBase.baseErrorMean(subj, 1)
+                        trialData.perceptualError(countLt, 1) = trialData.perceptualError(countLt, 1)+dataBase.baseErrorMean(subj, 1);
                     end
+                    %                     trialData.perceptualError(countLt, 1) = -(resp.reportAngle(t)-resp.reversalAngle(t))*resp.initialDirection(t)-dataBase.baseErrorMean(subj, 1);
                     
-%                     if checkAngle == -1 % the same as direction before reversal
-%                         if trialData.afterReversalD(countLt, 1)==1 % direction after reversal is CW
-%                             trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
-%                         else
-%                             trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
-%                         end
-%                     elseif checkAngle == 1 % the same as direction after reversal
-%                         if trialData.afterReversalD(countLt, 1)==1 % direction after reversal is CW
-%                             trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
-%                         else
-%                             trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
-%                         end
-%                     end
-                    
-                    %% saccade numbers
-                    trialData.sacNumT(countLt, 1) = trial.saccades.T.number;
-                    
-                    %% saccade sum amplitudes
-                    trialData.sacAmpSumT(countLt, 1) = trial.saccades.T.sum;
-                    
-                    %% saccade mean amplitudes
-                    trialData.sacAmpMeanT(countLt, 1) = trial.saccades.T.meanAmplitude;
-                    
-                    countLt = countLt+1;
-                    %                     end
+                    if trialData.perceptualError(countLt, 1)>-10
+                        
+                        %% torsion velocity
+                        trialData.torsionVelT(countLt, 1) = torsion.slowPhases.meanSpeed;
+                        
+                        %% torsion velocity gain
+                        trialData.torsionVGain(countLt, 1) = torsion.slowPhases.meanSpeed/conditions(conIdx);
+                        
+                        %% torsion magnitude
+                        trialData.torsionAngleTotal(countLt, 1) = torsion.slowPhases.totalAngle;
+                        trialData.torsionAngleCW(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                        trialData.torsionAngleCCW(countLt, 1) = torsion.slowPhases.totalAngleCCW;
+                        % just take the one that is not zero, if both
+                        % not zero, take the expected direction
+                        if torsion.slowPhases.totalAngleCW==0
+                            trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                        elseif torsion.slowPhases.totalAngleCCW==0
+                            trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                        elseif trialData.afterReversalD(countLt, 1)*checkAngle==1
+                            trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                        elseif trialData.afterReversalD(countLt, 1)*checkAngle==-1
+                            trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                        end
+                        
+                        %                     if checkAngle == -1 % the same as direction before reversal
+                        %                         if trialData.afterReversalD(countLt, 1)==1 % direction after reversal is CW
+                        %                             trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                        %                         else
+                        %                             trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                        %                         end
+                        %                     elseif checkAngle == 1 % the same as direction after reversal
+                        %                         if trialData.afterReversalD(countLt, 1)==1 % direction after reversal is CW
+                        %                             trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                        %                         else
+                        %                             trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                        %                         end
+                        %                     end
+                        
+                        %% saccade numbers
+                        trialData.sacNumT(countLt, 1) = trial.saccades.T.number;
+                        
+                        %% saccade sum amplitudes
+                        trialData.sacAmpSumT(countLt, 1) = trial.saccades.T.sum;
+                        
+                        %% saccade mean amplitudes
+                        trialData.sacAmpMeanT(countLt, 1) = trial.saccades.T.meanAmplitude;
+                        
+                        countLt = countLt+1;
+                    end
                 end
             end
         end
@@ -312,6 +327,8 @@ for subj=1:size(names, 2)
             
             conData.sacAmpMeanTMean(countLc, 1) = nanmean(trialData.sacAmpMeanT(tempI, 1));
             conData.sacAmpMeanTStd(countLc, 1) = nanstd(trialData.sacAmpMeanT(tempI, 1));
+            
+            conData.nonErrorTrialN(countLc, 1) = length(tempI);
             
             countLc = countLc+1;
         end

@@ -6,11 +6,13 @@
 clear all; close all; clc
 
 % basic setting
-names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY'};
+names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 folder = pwd;
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
+expTpB = 60; % trial per block in the experiment
+baseTpB = 50; % trial per block in baseline
 
-for ii = 9:size(names, 2)
+for ii = 13:size(names, 2)
     % Read all raw data
     cd(folder)
     cd ..
@@ -23,7 +25,7 @@ for ii = 9:size(names, 2)
     jj = 1;
     while jj <= size(fileResp, 2)
         load(fileResp{1, jj})
-        while size(resp, 1)<60 % not regenerating log files for invalid blocks
+        while size(resp, 1)<expTpB % not regenerating log files for invalid blocks
             jj = jj+1;
             if jj<=size(fileResp, 2)
                 load(fileResp{1, jj})
@@ -38,11 +40,13 @@ for ii = 9:size(names, 2)
         
         fileName = fileResp{1, jj}(1:(11+size(names{ii}, 2)));
         filePath = fullfile(pwd, fileName);
+        delete(filePath)
         fileID = fopen(filePath, 'a');
         % print headers
         fprintf(fileID, ['ExperimentID: 1\n']);
         fprintf(fileID, ['SubjectID: ' num2str(ii) '\n']);
         fprintf(fileID, ['Experiment: ' blockNstr '\n']);
+        fprintf(fileID, ['TrialPerBlock: ' num2str(expTpB) '\n']);
         fprintf(fileID, datestr(now, 'yyyy_mmmm_dd_HH:MM:SS.FFF\n'));
         fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s \n',...
             resp.Properties.VariableNames{:});
@@ -67,7 +71,7 @@ for ii = 9:size(names, 2)
         jj = 1;
         while jj <= size(fileResp, 2)
             load(fileResp{1, jj})
-            while size(resp, 1)<50 % not regenerating log files for invalid blocks
+            while size(resp, 1)<baseTpB % not regenerating log files for invalid blocks
                 jj = jj+1;
                 if jj<=size(fileResp, 2)
                     load(fileResp{1, jj})
@@ -82,11 +86,13 @@ for ii = 9:size(names, 2)
             
             fileName = fileResp{1, jj}(1:(11+size(names{ii}, 2)));
             filePath = fullfile(pwd, fileName);
+            delete(filePath)
             fileID = fopen(filePath, 'a');
             % print headers
             fprintf(fileID, ['ExperimentID: 0\n']);
             fprintf(fileID, ['SubjectID: ' num2str(ii) '\n']);
             fprintf(fileID, ['Experiment: 0\n']);
+            fprintf(fileID, ['TrialPerBlock: ' num2str(baseTpB) '\n']);
             fprintf(fileID, datestr(now, 'yyyy_mmmm_dd_HH:MM:SS.FFF\n'));
             fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s \n',...
                 resp.Properties.VariableNames{:});
