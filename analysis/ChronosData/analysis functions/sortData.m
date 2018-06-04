@@ -23,9 +23,10 @@ eyeName = {'R'};
 % around line 100
 checkAngle = -1; % 1-for direction after reversal, -1 for direction before reversal
 % for the endName, also change around line70 for the time window used
-endName = '120msToReversal';
+% endName = '120msToReversal';
 % endName = '120msAroundReversal';
 % endName = '120msToEnd';
+endName = 'atReversal';
 
 trialData = table(); % organize into long format
 conData = table();
@@ -115,8 +116,10 @@ for subj = 1:length(names)
                     trial.torsionFrames = torsionFrames(subj);
                     
                     %% change the time window here
-                    trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+120); % 120ms latency
-                    trial.stim_offset = trial.stim_reversal; % reversal
+                    trial.stim_offset = trial.stim_reversal+ms2frames(10); % reversal
+                    trial.stim_offset = trial.stim_reversal+ms2frames(50); % reversal
+%                     trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+120); % 120ms latency
+%                     trial.stim_offset = trial.stim_reversal; % reversal
                     %                     trial.stim_onset = trial.stim_reversal - ms2frames((0.12)*1000); % 120ms before reversal
                     %                     trial.stim_offset = trial.stim_reversal + ms2frames((0.12)*1000); % 120ms after reversal
 %                                         trial.stim_onset = trial.stim_reversal + ms2frames((0.12)*1000);
@@ -174,6 +177,9 @@ for subj = 1:length(names)
                     %                     trialData.perceptualError(countLt, 1) = -(resp.reportAngle(t)-resp.reversalAngle(t))*resp.initialDirection(t)-dataBase.baseErrorMean(subj, 1);
                     
                     if trialData.perceptualError(countLt, 1)>-10
+                        
+                        %% retinal torsion angle
+                        trialData.torsionPosition(countLt, 1) = nanmean(torsion.slowPhases.onsetPosition);
                         
                         %% torsion velocity
                         trialData.torsionVelT(countLt, 1) = torsion.slowPhases.meanSpeed;
@@ -245,6 +251,9 @@ for subj = 1:length(names)
                 conData.perceptualErrorMean(countLc, 1) = nanmean(trialData.perceptualError(tempI, 1));
                 conData.perceptualErrorStd(countLc, 1) = nanstd(trialData.perceptualError(tempI, 1));
                 
+                conData.torsionPosMean(countLc, 1) = nanmean(trialData.torsionPosition(tempI, 1));
+                conData.torsionPosStd(countLc, 1) = nanstd(trialData.torsionPosition(tempI, 1));
+                
                 conData.torsionVelTMean(countLc, 1) = nanmean(trialData.torsionVelT(tempI, 1));
                 conData.torsionVelTStd(countLc, 1) = nanstd(trialData.torsionVelT(tempI, 1));
                 
@@ -277,6 +286,8 @@ cd([analysisF '\analysis functions'])
 trialData.torsionVelTMerged = trialData.torsionVelT.*trialData.afterReversalD;
 trialData.torsionVGainMerged = trialData.torsionVGain.*trialData.afterReversalD;
 trialData.torsionAngleMerged = trialData.torsionAngle.*trialData.afterReversalD;
+trialData.torsionPositionMerged = trialData.torsionPosition.*trialData.afterReversalD;
+
 countLc = size(conData, 1)+1;
 for subj=1:size(names, 2)
     %     if subj <=2
@@ -303,6 +314,9 @@ for subj=1:size(names, 2)
             
             conData.perceptualErrorMean(countLc, 1) = nanmean(trialData.perceptualError(tempI, 1));
             conData.perceptualErrorStd(countLc, 1) = nanstd(trialData.perceptualError(tempI, 1));
+            
+            conData.torsionPosMean(countLc, 1) = nanmean(trialData.torsionPositionMerged(tempI, 1));
+            conData.torsionPosStd(countLc, 1) = nanstd(trialData.torsionPositionMerged(tempI, 1));
             
             conData.torsionVelTMean(countLc, 1) = nanmean(trialData.torsionVelTMerged(tempI, 1));
             conData.torsionVelTStd(countLc, 1) = nanstd(trialData.torsionVelTMerged(tempI, 1));

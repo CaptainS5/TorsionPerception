@@ -39,6 +39,9 @@ torsion.slowPhases.peakVelocity = nanmax(abs(trial.frames.DT_slowphases(torsion.
 torsion.gain = abs(nanmean(trial.frames.DT_slowphases)/double(trial.log.rotationalSpeed));
 
 %% calculate slow phase parameters (angles, duration, speed)
+% for retinal image angle
+torsion.slowPhases.onsetPosition = trial.frames.T_filt(torsion.slowPhases.onsets);
+
 torsion.slowPhases.angle = trial.frames.T_filt(torsion.slowPhases.offsets) - trial.frames.T_filt(torsion.slowPhases.onsets);
 torsion.slowPhases.angleCW = torsion.slowPhases.angle(torsion.slowPhases.angle > 0);
 torsion.slowPhases.angleCCW = torsion.slowPhases.angle(torsion.slowPhases.angle <= 0);

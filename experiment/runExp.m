@@ -15,7 +15,7 @@ try
     setParameters;
     prm.pwd = pwd;
     info = getInfo(currentBlock, rStyle, expTyp, eyeTracker);
-    if info.expType==1
+    if info.expType>=1
         currentBlock = currentBlock + 1;
     end
     
@@ -71,6 +71,8 @@ try
     
     %     generate textures for the stimuli
     for ii = 1:size(prm.grating.outerRadius, 2)
+        if info.expType==2 % control with two stimuli in the periphery
+        elseif info.expType>=0 % baseline torsion or experiment
         % rotation stimuli
         imgGrating = generateRotationTexture(round(dva2pxl(prm.grating.outerRadius(ii))), ...
             round(dva2pxl(prm.grating.innerRadius)), prm.grating.freq, 0, prm.grating.contrast, prm.grating.averageLum);
@@ -84,7 +86,7 @@ try
         % gratingOuterRadius, gratingInnerRadius, flashRadius, color
         % (RGB 0-255), axis (0-horizontal, 1-vertical)
         prm.flash.tex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgFlash);
-        if info.expType==-1 % baseline
+        elseif info.expType==-1 % baseline
             imgUniform = generateRespTexture(round(dva2pxl(prm.grating.outerRadius(ii))), ...
                 0, 0, ...
                 prm.flash.respColour, prm.flash.axis);

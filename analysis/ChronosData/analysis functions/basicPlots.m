@@ -17,9 +17,10 @@ direction = [-1 1]; % initial direction; in the plot shows the direction after r
 trialPerCon = 60; % for each flash onset, all directions together though...
 % eyeName = {'L' 'R'};
 eyeName = {'R'};
-endName = '120msToReversal'; % from beginning of stimulus to reversal
+% endName = '120msToReversal'; % from beginning of stimulus to reversal
 % endName = '120msAroundReversal';
 % endName = '120msToEnd'; % 120ms after reversal to end of display
+endName = 'atReversal';
 
 if merged==0
     mergeName = 'notMerged';
@@ -210,55 +211,78 @@ if individualPlots==1
         %         end
         %         saveas(gca, ['trialCorrelationAngle&perception_' names{t} '_' endName '.pdf'])
         
-        % for per speed trial by trial correlation
-        speedN = unique(trialData.rotationSpeed);
-        for ii = 1:length(speedN)
-            % torsion velocity trial correlation with perception, merged direction
-            figure
-            for eye = 1:size(eyeName, 2)
-                subplot(1, size(eyeName, 2), eye)
-                if strcmp(eyeName{eye}, 'L')
-                    eyeN = 1; % 1-left,
-                elseif strcmp(eyeName{eye}, 'R')
-                    eyeN = 2; % 2-right
+%         torsion position trial correlation with perception, merged direction
+                figure
+                for eye = 1:size(eyeName, 2)
+                    subplot(1, size(eyeName, 2), eye)
+                    if strcmp(eyeName{eye}, 'L')
+                        eyeN = 1; % 1-left,
+                    elseif strcmp(eyeName{eye}, 'R')
+                        eyeN = 2; % 2-right
+                    end
+        
+                    tempI = find(trialData.sub==t & trialData.eye==eyeN); % clockwise
+        
+                    scatter(trialData.torsionPositionMerged(tempI, 1), trialData.perceptualError(tempI, 1), 'LineWidth', 1)
+                    ylabel('Perceptual errors (deg)')
+                    xlabel('Torsion position (deg)')
+                    set(gca, 'FontSize', 15, 'box', 'off')
+                    %             xlim([0 420])
+                    %             ylim([-2 2])
+                    [rho pval] = corr(trialData.torsionPositionMerged(tempI, 1), trialData.perceptualError(tempI, 1));
+                    title([eyeName{eye}, ', rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.3f')])
                 end
-                
-                tempI = find(trialData.sub==t & trialData.eye==eyeN & trialData.rotationSpeed==speedN(ii));
-                
-                scatter(trialData.torsionVelTMerged(tempI, 1), trialData.perceptualError(tempI, 1), 'LineWidth', 1)
-                ylabel('Perceptual errors (deg)')
-                xlabel('Torsion velocity (deg/s)')
-                set(gca, 'FontSize', 15, 'box', 'off')
-                %             xlim([0 420])
-                %             ylim([-2 2])
-                [rho pval] = corr(trialData.torsionVelTMerged(tempI, 1), trialData.perceptualError(tempI, 1));
-                title([eyeName{eye}, ', ', num2str(speedN(ii)), '°/s, rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.3f')])
-            end
-            saveas(gca, ['trialCorrelationVelocity&perception', num2str(speedN(ii)), '_' names{t} '_' endName '.pdf'])
-            
-            % torsion angle trial correlation with perception, merged direction
-            figure
-            for eye = 1:size(eyeName, 2)
-                subplot(1, size(eyeName, 2), eye)
-                if strcmp(eyeName{eye}, 'L')
-                    eyeN = 1; % 1-left,
-                elseif strcmp(eyeName{eye}, 'R')
-                    eyeN = 2; % 2-right
-                end
-                
-                tempI = find(trialData.sub==t & trialData.eye==eyeN & trialData.rotationSpeed==speedN(ii));
-                
-                scatter(trialData.torsionAngleMerged(tempI, 1), trialData.perceptualError(tempI, 1), 'LineWidth', 1)
-                ylabel('Perceptual errors (deg)')
-                xlabel('Torsion angle (deg)')
-                set(gca, 'FontSize', 15, 'box', 'off')
-                %             xlim([0 420])
-                %             ylim([-2 2])
-                [rho pval] = corr(trialData.torsionAngleMerged(tempI, 1), trialData.perceptualError(tempI, 1));
-                title([eyeName{eye}, ', ', num2str(speedN(ii)), '°/s, rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.3f')])
-            end
-            saveas(gca, ['trialCorrelationAngle&perception', num2str(speedN(ii)), '_' names{t} '_' endName '.pdf'])
-        end
+                saveas(gca, ['trialCorrelationPosition&perception_' names{t} '_' endName '.pdf'])
+        
+%         % for per speed trial by trial correlation
+%         speedN = unique(trialData.rotationSpeed);
+%         for ii = 1:length(speedN)
+%             % torsion velocity trial correlation with perception, merged direction
+%             figure
+%             for eye = 1:size(eyeName, 2)
+%                 subplot(1, size(eyeName, 2), eye)
+%                 if strcmp(eyeName{eye}, 'L')
+%                     eyeN = 1; % 1-left,
+%                 elseif strcmp(eyeName{eye}, 'R')
+%                     eyeN = 2; % 2-right
+%                 end
+%                 
+%                 tempI = find(trialData.sub==t & trialData.eye==eyeN & trialData.rotationSpeed==speedN(ii));
+%                 
+%                 scatter(trialData.torsionVelTMerged(tempI, 1), trialData.perceptualError(tempI, 1), 'LineWidth', 1)
+%                 ylabel('Perceptual errors (deg)')
+%                 xlabel('Torsion velocity (deg/s)')
+%                 set(gca, 'FontSize', 15, 'box', 'off')
+%                 %             xlim([0 420])
+%                 %             ylim([-2 2])
+%                 [rho pval] = corr(trialData.torsionVelTMerged(tempI, 1), trialData.perceptualError(tempI, 1));
+%                 title([eyeName{eye}, ', ', num2str(speedN(ii)), '°/s, rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.3f')])
+%             end
+%             saveas(gca, ['trialCorrelationVelocity&perception', num2str(speedN(ii)), '_' names{t} '_' endName '.pdf'])
+%             
+%             % torsion angle trial correlation with perception, merged direction
+%             figure
+%             for eye = 1:size(eyeName, 2)
+%                 subplot(1, size(eyeName, 2), eye)
+%                 if strcmp(eyeName{eye}, 'L')
+%                     eyeN = 1; % 1-left,
+%                 elseif strcmp(eyeName{eye}, 'R')
+%                     eyeN = 2; % 2-right
+%                 end
+%                 
+%                 tempI = find(trialData.sub==t & trialData.eye==eyeN & trialData.rotationSpeed==speedN(ii));
+%                 
+%                 scatter(trialData.torsionAngleMerged(tempI, 1), trialData.perceptualError(tempI, 1), 'LineWidth', 1)
+%                 ylabel('Perceptual errors (deg)')
+%                 xlabel('Torsion angle (deg)')
+%                 set(gca, 'FontSize', 15, 'box', 'off')
+%                 %             xlim([0 420])
+%                 %             ylim([-2 2])
+%                 [rho pval] = corr(trialData.torsionAngleMerged(tempI, 1), trialData.perceptualError(tempI, 1));
+%                 title([eyeName{eye}, ', ', num2str(speedN(ii)), '°/s, rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.3f')])
+%             end
+%             saveas(gca, ['trialCorrelationAngle&perception', num2str(speedN(ii)), '_' names{t} '_' endName '.pdf'])
+%         end
         
         %                 cd([analysisF '\SaccadePlots'])
         %                 % saccade number
@@ -425,8 +449,41 @@ if averagedPlots==1
     %         saveas(gca, ['torsionVSperceptNorm_speed', num2str(speedN(ii)), '.pdf'])
     saveas(gca, ['torsionAngleVSperceptPartialCorr_' endName '.pdf'])
     
-    %     cd([analysisF '\summaryPlots'])
-    %     %% mean of participants
+% % retinal angle and perception
+% figure
+% for eye = 1:size(eyeName, 2)
+%     subplot(1, size(eyeName, 2), eye)
+%     if strcmp(eyeName{eye}, 'L')
+%         eyeN = 1; % 1-left,
+%     elseif strcmp(eyeName{eye}, 'R')
+%         eyeN = 2; % 2-right
+%     end
+%     for t = 1:size(names, 2)
+%         tempI = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==0);
+%         if ~isempty(tempI)
+%             scatter(conData.torsionPosMean(tempI, 1), conData.perceptualErrorMean(tempI, 1), 'LineWidth', 2,...
+%                 'MarkerEdgeColor', markerC(t, :), 'MarkerFaceColor', 'none')
+%             hold on
+%         end
+%         xlabel('Torsion position (deg)')
+%         ylabel('Perceptual bias (deg)')
+%         %                 title(['Speed ', num2str(speedN(ii)), ', ', eyeName{eye}])
+%         %                 xlim([-4 4])
+%         %                 ylim([-4 4])
+%         set(gca, 'FontSize', 15, 'box', 'off')
+%         axis square
+%     end
+%     tempI = find(conData.eye==eyeN & conData.afterReversalD==0);
+%     [rho pval] = partialcorr([conData.torsionPosMean(tempI, 1) conData.perceptualErrorMean(tempI, 1)], conData.rotationSpeed(tempI, 1));
+%     title([eyeName{eye}, ', rho=', num2str(rho(1, 2), '%.2f'), ', p=', num2str(pval(1, 2), '%.3f')])
+%     %         [rho pval] = corr(conData.torsionAngleMean(tempI, 1), conData.perceptualErrorMean(tempI, 1));
+%     %         title([eyeName{eye}, ', rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.3f')])
+% end
+% %         saveas(gca, ['torsionVSperceptNorm_speed', num2str(speedN(ii)), '.pdf'])
+% saveas(gca, ['torsionPositionVSperceptPartialCorr_' endName '.pdf'])
+
+        %% mean of participants    
+        %     cd([analysisF '\summaryPlots'])
     %     figure
     %     for eye = 1:size(eyeName, 2)
     %         subplot(1, size(eyeName, 2), eye)
