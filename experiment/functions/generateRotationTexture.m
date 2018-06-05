@@ -38,13 +38,13 @@ img(rho>1 | rho<1/outerRadius*innerRadius) = prm.screen.backgroundColour; % the 
 % figure
 % imshow(img/255)
 
-% % adding transparency
-% trans = zeros(2*outerRadius);
-% trans(rho<=contrast & rho>=contrast/outerRadius*innerRadius) = 1;
+% adding transparency
+trans = zeros(2*outerRadius);
+trans(rho<=1 & rho>=1/outerRadius*innerRadius) = 255;
 
 % imgGrating = img;
 imgGrating(:, :, 1) = img;
-% imgGrating(:, :, 2) = trans;
+imgGrating(:, :, 2) = trans;
 
 prm.grating.lightest = max(imgReal(:));
 prm.grating.darkest = min(imgReal(:));

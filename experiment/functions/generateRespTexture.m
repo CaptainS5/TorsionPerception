@@ -9,8 +9,8 @@ function img = generateRespTexture(gratingOuterRadius, gratingInnerRadius, flash
 global prm
 % debugging
 % gratingOuterRadius = 400; gratingInnerRadius = 0;  flashRadius = 50; color = [0 0 0]; axis = 1; prm.screen.backgroundColour = 127; 
-% prm.grating.respColour = [100 100 100];
-img = ones(2*gratingOuterRadius, 2*gratingOuterRadius, 3); % RGB planes
+prm.grating.respColour = [100 100 100];
+img = ones(2*gratingOuterRadius, 2*gratingOuterRadius, 4); % RGBA planes
 coordinateCVonvert = linspace(-gratingOuterRadius, gratingOuterRadius, 2*gratingOuterRadius);
 [X, Y] = meshgrid(coordinateCVonvert,-coordinateCVonvert);
 
@@ -26,11 +26,16 @@ end
 coor(sqrt(X.^2+Y.^2)<=gratingOuterRadius & sqrt(X.^2+Y.^2)>=gratingInnerRadius & coor~=1) = 2;
 
 % add color 
-for ii = 1:3
-    imgTemp = img(:, :, ii);
-    imgTemp = imgTemp.*coor*color(ii);
-    imgTemp(coor==2) = prm.grating.respColour(ii);
-    imgTemp(coor==0) = prm.screen.backgroundColour;
+for ii = 1:4
+    if ii<=3
+        imgTemp = img(:, :, ii);
+        imgTemp = imgTemp.*coor*color(ii);
+        imgTemp(coor==2) = prm.grating.respColour(ii);
+        imgTemp(coor==0) = prm.screen.backgroundColour;
+    else
+        imgTemp = 255*img(:, :, ii);
+        imgTemp(coor==0) = 0;
+    end
     img(:, :, ii) = imgTemp;
 end
 

@@ -1,5 +1,5 @@
-function currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker)
-% clear all; close all; clc; currentBlock=1; rStyle = -1; expTyp = 1; eyeTracker=0;% debugging
+% function currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker)
+clear all; close all; clc; currentBlock=1; rStyle = -1; expTyp = 2; eyeTracker=0;% debugging
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
     global trigger
@@ -45,6 +45,20 @@ try
         prm.fileName.folder = ['data\', info.subID{1}, '\baselineTorsion'];        
     elseif info.expType==1
         prm.fileName.folder = ['data\', info.subID{1}];
+    elseif info.expType==2 % control, two peripheral stimuli
+        prm.grating.outerRadius = 23.6/2;
+        prm.flash.radius = 2.5/2;
+        prm.flash.displacement = [-1 1]; % -1, left side follow the assigned initial direction; 1, right side follow the assigned initial direction
+        prm.flash.eccentricity = 0.5; % distance between edge of grating and fixation, half the gap between the two gratings
+
+        prm.blockN = 6;
+        prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
+    length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
+    length(prm.rotation.freq);
+        prm.trialPerCondition = 18; % 360 trials in total, 60 trials each block
+        prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
+        
+        prm.fileName.folder = ['data\', info.subID{1}, '\controlTorsion'];
     end
     mkdir(prm.fileName.folder)
     
@@ -69,10 +83,11 @@ try
     
     HideCursor;
     
+    % allow transparency
+    Screen('BlendFunction', prm.screen.windowPtr, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     %     generate textures for the stimuli
     for ii = 1:size(prm.grating.outerRadius, 2)
-        if info.expType==2 % control with two stimuli in the periphery
-        elseif info.expType>=0 % baseline torsion or experiment
+        if info.expType>=0 % baseline torsion, experiment, or control
         % rotation stimuli
         imgGrating = generateRotationTexture(round(dva2pxl(prm.grating.outerRadius(ii))), ...
             round(dva2pxl(prm.grating.innerRadius)), prm.grating.freq, 0, prm.grating.contrast, prm.grating.averageLum);
@@ -209,7 +224,7 @@ try
             %             resp.gratingRadiusIdx(tempN, 1) = display{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
             resp.gratingRadius(tempN, 1) = prm.grating.outerRadius(display{blockN}.gratingRadiusIdx(trialN)); % actual value of the grating outer radius
             resp.flashOnset(tempN, 1) = display{blockN}.flashOnset(trialN);
-            %             resp.flashDisplaceLeft(tempN, 1) = display{blockN}.flashDisplaceLeft(trialN);
+            resp.targetSide(tempN, 1) = display{blockN}.flashDisplaceLeft(trialN);
             resp.initialDirection(tempN, 1) = display{blockN}.initialDirection(trialN);
             resp.initialAngle(tempN, 1) = display{blockN}.initialAngle(trialN);
             resp.reversalAngle(tempN, 1) = display{blockN}.reversalAngle(trialN);

@@ -49,7 +49,7 @@ prm.flash.eccentricity = 0; % the inner edge of the flash to the outer edge of t
 prm.flash.duration = 0.047;
 % prm.flash.onsetInterval = [0.35 0.7 1.05 1.4 1.75]; % no reversal, motion duration before flash
 prm.flash.onsetInterval = [0]; % time of flash relative to the reversal, within 1 sec
-prm.flash.displacement = [0]/60;
+prm.flash.displacement = [0]; 
 % prm.flash.displacement = [-30 -20 -10 0 10 20 30]/60; % possible displacement of the left flash compared to the right;
 % in the experiment randomly the left/right flash will be moved, while the
 % other remains horizontal
@@ -77,4 +77,4 @@ prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)
 prm.trialPerCondition = 30; % trial number per condition
 prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
 
-end
+% end
