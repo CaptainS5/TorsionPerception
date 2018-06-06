@@ -9,8 +9,8 @@ try
     setupTrigger();
     currentBlock = 1;
     rStyleDefault = 1; 
-    expTyp = 0;
-    eyeTracker = 1;
+    expTyp = 2;
+    eyeTracker = 0;
        
     while(true)
         if currentBlock>5

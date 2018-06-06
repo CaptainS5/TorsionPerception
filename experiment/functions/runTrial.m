@@ -25,6 +25,12 @@ else
     rotationAngle = 180 - direction*prm.rotation.anglePerFrame(speedIdx)*(1+rotationFramesBefore+flashOnset);
 end
 initialAngle = rotationAngle; % for presentation of the markers
+if rand>=0.5
+    rotationAngle2 = 0 + direction*prm.rotation.anglePerFrame(speedIdx)*(1+rotationFramesBefore+flashOnset);
+else
+    rotationAngle2 = 180 + direction*prm.rotation.anglePerFrame(speedIdx)*(1+rotationFramesBefore+flashOnset);
+end
+initialAngle2 = rotationAngle2; % for presentation of the markers
 % % randomly decide the duration of rotations in this trial
 % if rand>=0.5
 %     rotationFrames = 2*round(sec2frm(prm.rotation.baseDuration+prm.rotation.randDuration));
@@ -32,6 +38,7 @@ initialAngle = rotationAngle; % for presentation of the markers
 %     rotationFrames = 2*round(sec2frm(prm.rotation.baseDuration-prm.rotation.randDuration));
 % end
 display{blockN}.initialAngle(trialN) = rotationAngle;
+display{blockN}.initialAngle2(trialN) = rotationAngle2; % for control, the non-target stimulus
 display{blockN}.flashOnset(trialN) = flashOnset/prm.screen.refreshRate;
 display{blockN}.durationBefore(trialN) = (rotationFramesBefore+flashOnset)/prm.screen.refreshRate;
 display{blockN}.durationAfter(trialN) = rotationFramesAfter/prm.screen.refreshRate;
@@ -141,22 +148,25 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
         end
         
         if info.expType==2 % control torsion
+            if frameN<=rotationFramesBefore+flashOnset % first direction for the non-target grating, opposite direction
+                rotationAngle2 = rotationAngle2 - direction*prm.rotation.anglePerFrame(speedIdx);
+                %     elseif frameN==rotationFrames/2+flashOnset
+                %         rotationAngle = initialAngle + direction*prm.rotation.anglePerFrame + direction*90; % force it to stop at vertical
+            elseif frameN>rotationFramesBefore+flashOnset+flashDuration % second direction, after reversal
+                rotationAngle2 = rotationAngle2 + direction*prm.rotation.anglePerFrame(speedIdx);
+            end
+            if rotationAngle2 > 180
+                rotationAngle2 = rotationAngle2 - 180;
+            elseif rotationAngle < 0
+                rotationAngle2 = rotationAngle2 + 180;
+            end
+            
             if display{blockN}.flashDisplaceLeft(trialN)==-1 % ask to report the left later
                 rotationAngleL = rotationAngle;
-                rotationAngleR = initialAngle+(initialAngle-rotationAngleL);
-                if rotationAngleR > 180
-                    rotationAngleR = rotationAngleR - 180;
-                elseif rotationAngleR < 0
-                    rotationAngleR = rotationAngleR + 180;
-                end
+                rotationAngleR = rotationAngle2;
             elseif display{blockN}.flashDisplaceLeft(trialN)==1
                 rotationAngleR = rotationAngle;
-                rotationAngleL = initialAngle+(initialAngle-rotationAngleR);
-                if rotationAngleL > 180
-                    rotationAngleL = rotationAngleL - 180;
-                elseif rotationAngleL < 0
-                    rotationAngleL = rotationAngleL + 180;
-                end
+                rotationAngleL = rotationAngle2;
             end
         end
         
@@ -217,6 +227,9 @@ if info.expType~=0
         %         end
         %         pause;
         display{blockN}.reversalAngle(trialN) = rotationAngle;
+        if info.expType==2
+            display{blockN}.reversalAngle2(trialN) = rotationAngle2;
+        end
     end
 end
     
@@ -318,12 +331,12 @@ while quitFlag==0
     end
     if info.expType==2 % control torsion
         if display{blockN}.flashDisplaceLeft(trialN)==-1 % report the left
-            Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDotL);
+            rectFixResp=rectRotationL;
         elseif display{blockN}.flashDisplaceLeft(trialN)==1 % report the right
-            Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDotR);
+            rectFixResp=rectRotationR;
         end
     end
-    Screen('DrawTexture', prm.screen.windowPtr, prm.resp.tex, [], [], respAngle);
+    Screen('DrawTexture', prm.screen.windowPtr, prm.resp.tex, [], rectFixResp, respAngle);
     Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
     Screen('DrawText', prm.screen.windowPtr, '+', x0, y0, prm.screen.blackColour);
     Screen('Flip', prm.screen.windowPtr);

@@ -1,5 +1,5 @@
 % function currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker)
-clear all; close all; clc; currentBlock=1; rStyle = -1; expTyp = 2; eyeTracker=0;% debugging
+clear all; close all; clc; currentBlock=1; rStyle = -1; expTyp = 1.5; eyeTracker=0;% debugging
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
     global trigger
@@ -45,7 +45,7 @@ try
         prm.fileName.folder = ['data\', info.subID{1}, '\baselineTorsion'];        
     elseif info.expType==1
         prm.fileName.folder = ['data\', info.subID{1}];
-    elseif info.expType==2 % control, two peripheral stimuli
+    elseif info.expType==1.5 % control, two peripheral stimuli
         prm.grating.outerRadius = 23.6/2;
         prm.flash.radius = 2.5/2;
         prm.flash.displacement = [-1 1]; % -1, left side follow the assigned initial direction; 1, right side follow the assigned initial direction
@@ -187,7 +187,11 @@ try
         end
         %         Screen('DrawText', prm.screen.windowPtr, reportInstruction, prm.screen.center(1)-100, prm.screen.center(2)+50, prm.screen.whiteColour);
         Screen('Flip', prm.screen.windowPtr);
-        KbWait();
+        %         KbWait();
+        buttons = [];
+        while ~any(buttons)
+            [x, y, buttons, focus, valuators, valinfo] = GetMouse(prm.screen.windowPtr);
+        end
         WaitSecs(prm.ITI);
         
         % run trials
@@ -228,6 +232,10 @@ try
             resp.initialDirection(tempN, 1) = display{blockN}.initialDirection(trialN);
             resp.initialAngle(tempN, 1) = display{blockN}.initialAngle(trialN);
             resp.reversalAngle(tempN, 1) = display{blockN}.reversalAngle(trialN);
+            if info.expType==2
+                resp.initialAngle2(tempN, 1) = display{blockN}.initialAngle2(trialN);
+                resp.reversalAngle2(tempN, 1) = display{blockN}.reversalAngle2(trialN);
+            end
             resp.durationBefore(tempN, 1) = display{blockN}.durationBefore(trialN);
             resp.durationAfter(tempN, 1) = display{blockN}.durationAfter(trialN);
             resp.rotationSpeed(tempN, 1) = display{blockN}.rotationSpeed(trialN);
