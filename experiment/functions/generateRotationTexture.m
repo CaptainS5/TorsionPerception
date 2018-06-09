@@ -46,7 +46,7 @@ trans(rho<=1 & rho>=1/outerRadius*innerRadius) = 255;
 imgGrating(:, :, 1) = img;
 imgGrating(:, :, 2) = trans;
 
-prm.grating.lightest = max(imgReal(:));
-prm.grating.darkest = min(imgReal(:));
+prm.grating.lightest = max(imgReal(:, :, 1));
+prm.grating.darkest = min(imgReal(:, :, 1));
 
 % end

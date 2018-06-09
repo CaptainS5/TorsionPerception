@@ -9,7 +9,7 @@ try
     setupTrigger();
     currentBlock = 1;
     rStyleDefault = 1; 
-    expTyp = 2;
+    expTyp = -0.5;
     eyeTracker = 0;
        
     while(true)
@@ -24,7 +24,7 @@ try
         currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker); % baseline: block 0; experiment: block 1
         if expTyp<1
             expTyp = expTyp+1;
-            if expTyp==0
+            if expTyp==0 || expTyp==0.5
                 eyeTracker = 1;
             end
         end

@@ -43,7 +43,7 @@ display{blockN}.flashOnset(trialN) = flashOnset/prm.screen.refreshRate;
 display{blockN}.durationBefore(trialN) = (rotationFramesBefore+flashOnset)/prm.screen.refreshRate;
 display{blockN}.durationAfter(trialN) = rotationFramesAfter/prm.screen.refreshRate;
 
-if info.expType==2 % grating destination rectangle for control torsion
+if fix(info.expType)~=info.expType % grating destination rectangle for control torsion
     rectRotationL = [prm.screen.center(1)-2*gratingRadius-flashEcc,...
     prm.screen.center(2)-gratingRadius,...
     prm.screen.center(1)-flashEcc,...
@@ -109,9 +109,9 @@ recordFlag=0;
 % mPtr = Screen('CreateMovie', prm.screen.windowPtr, ['demo', num2str(trialN)], [], [], [], [], 3);
 
 % draw fixation at the beginning of each trial
-Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
+% Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
 Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
-if info.expType==2 % place holder for peripheral stimuli
+if fix(info.expType)~=info.expType % place holder for peripheral stimuli
     rectFixDotL = [prm.screen.center(1)-rectSizeDot-ecc,...
     prm.screen.center(2)-rectSizeDot,...
     prm.screen.center(1)+rectSizeDot-ecc,...
@@ -147,7 +147,7 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
             rotationAngle = rotationAngle + 180;
         end
         
-        if info.expType==2 % control torsion
+        if info.expType==1.5 % control torsion
             if frameN<=rotationFramesBefore+flashOnset % first direction for the non-target grating, opposite direction
                 rotationAngle2 = rotationAngle2 - direction*prm.rotation.anglePerFrame(speedIdx);
                 %     elseif frameN==rotationFrames/2+flashOnset
@@ -160,35 +160,46 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
             elseif rotationAngle < 0
                 rotationAngle2 = rotationAngle2 + 180;
             end
-            
-            if display{blockN}.flashDisplaceLeft(trialN)==-1 % ask to report the left later
-                rotationAngleL = rotationAngle;
-                rotationAngleR = rotationAngle2;
-            elseif display{blockN}.flashDisplaceLeft(trialN)==1
-                rotationAngleR = rotationAngle;
-                rotationAngleL = rotationAngle2;
-            end
         end
         
-    elseif info.expType==0 % baselineTorsion, rotating in one direction
+    elseif info.expType>=0 % baselineTorsion, rotating in one direction
         rotationAngle = rotationAngle - direction*prm.rotation.anglePerFrame(speedIdx); % rotating in the direction after reversal as in exp
-    elseif info.expType==-1 % baseline; different angles set up
+        if info.expType==0.5
+            rotationAngle2 = rotationAngle2 + direction*prm.rotation.anglePerFrame(speedIdx);
+        end
+    elseif info.expType<0 % baseline; different angles set up
         rotationAngle = direction*display{blockN}.rotationSpeed(trialN);
+        if info.expType==-0.5
+            rotationAngle2 = -direction*display{blockN}.rotationSpeed(trialN);
+        end
+    end
+    
+    if fix(info.expType)~=info.expType
+        if display{blockN}.flashDisplaceLeft(trialN)==-1 % ask to report the left later
+            rotationAngleL = rotationAngle;
+            rotationAngleR = rotationAngle2;
+        elseif display{blockN}.flashDisplaceLeft(trialN)==1
+            rotationAngleR = rotationAngle;
+            rotationAngleL = rotationAngle2;
+        end
     end
     
     % draw rotating grating
-    if info.expType==2 % control torsion        
+    if info.expType>=0 && fix(info.expType)~=info.expType % control & baseline torsion        
         Screen('DrawTextures', prm.screen.windowPtr, prm.grating.tex{sizeN}, [], rectRotationL, rotationAngleL);
         Screen('DrawTextures', prm.screen.windowPtr, prm.grating.tex{sizeN}, [], rectRotationR, rotationAngleR);
-    elseif info.expType>=0 % experiment & baselineTorsion        
+        Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
+    elseif info.expType>=0 && fix(info.expType)==info.expType % experiment & baselineTorsion        
         Screen('DrawTextures', prm.screen.windowPtr, prm.grating.tex{sizeN}, [], [], rotationAngle);
     elseif info.expType==-1 % baseline
         Screen('DrawTextures', prm.screen.windowPtr, prm.baseline.uniformTex{sizeN}, [], [], rotationAngle);
         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
-        %         % draw fixation
-        %         Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
-        %         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
+    elseif info.expType==-0.5
+        Screen('DrawTextures', prm.screen.windowPtr, prm.baseline.uniformTex{sizeN}, [], rectRotationL, rotationAngleL);
+        Screen('DrawTextures', prm.screen.windowPtr, prm.baseline.uniformTex{sizeN}, [], rectRotationR, rotationAngleR);
+        Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
     end
+    
     % draw flash
     %     % No Reversal
     %     if frameN>=flashOnset
@@ -196,21 +207,27 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
     %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectR);
     %     end
     
-% Reversal, show flash    
-if info.expType~=0       
-    if frameN>=rotationFramesBefore+flashOnset && frameN<=rotationFramesBefore+flashOnset+flashDuration
-        %         % bar flash
-        %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectL);
-        %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectR);
-        % dots flash -- how the hell can I get the transparency?????
-        if info.expType==1 % experiment
-            Screen('DrawTextures', prm.screen.windowPtr, prm.flash.tex{sizeN}, [], [], rotationAngle, [], 1);
-        elseif info.expType==2
-            Screen('DrawTextures', prm.screen.windowPtr, prm.flash.tex{sizeN}, [], rectRotationL, rotationAngleL, [], 1);
-            Screen('DrawTextures', prm.screen.windowPtr, prm.flash.tex{sizeN}, [], rectRotationR, rotationAngleR, [], 1);
-        elseif info.expType==-1 % baseline
-            Screen('DrawTextures', prm.screen.windowPtr, prm.baseline.flashTex, [], [], rotationAngle, [], 1);
-            Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
+    % Reversal, show flash
+    if info.expType~=0 && info.expType~=0.5
+        if frameN>=rotationFramesBefore+flashOnset && frameN<=rotationFramesBefore+flashOnset+flashDuration
+            %         % bar flash
+            %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectL);
+            %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectR);
+            % dots flash -- how the hell can I get the transparency?????
+            if info.expType==1 % experiment
+                Screen('DrawTextures', prm.screen.windowPtr, prm.flash.tex{sizeN}, [], [], rotationAngle, [], 1);
+            elseif info.expType==1.5
+                Screen('DrawTextures', prm.screen.windowPtr, prm.flash.tex{sizeN}, [], rectRotationL, rotationAngleL, [], 1);
+                Screen('DrawTextures', prm.screen.windowPtr, prm.flash.tex{sizeN}, [], rectRotationR, rotationAngleR, [], 1);
+            elseif info.expType==-1 % baseline
+                Screen('DrawTextures', prm.screen.windowPtr, prm.baseline.flashTex{sizeN}, [], [], rotationAngle, [], 1);
+                Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
+            elseif info.expType==-0.5
+                Screen('DrawTextures', prm.screen.windowPtr, prm.baseline.flashTex{sizeN}, [], rectRotationL, rotationAngleL, [], 1);
+                Screen('DrawTextures', prm.screen.windowPtr, prm.baseline.flashTex{sizeN}, [], rectRotationR, rotationAngleR, [], 1);
+                Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDotL); % center of the wheel
+                Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDotR); % center of the wheel
+            end
         end
     end
     
@@ -227,11 +244,10 @@ if info.expType~=0
         %         end
         %         pause;
         display{blockN}.reversalAngle(trialN) = rotationAngle;
-        if info.expType==2
+        if fix(info.expType)~=info.expType
             display{blockN}.reversalAngle2(trialN) = rotationAngle2;
         end
     end
-end
     
     %     % record response
     %     if frameN>=rotationFrames/2+flashOnset+flashDuration
@@ -299,7 +315,17 @@ if info.eyeTracker==1
     recordFlag = 1;
 end
 
-% if info.expType~=0
+yCenter = prm.screen.center(2);
+if fix(info.expType)==info.expType % one grating in the center
+    xCenter = prm.screen.center(1);
+else % two gratings in the periphery
+    if display{blockN}.flashDisplaceLeft(trialN)==-1 % ask to report the left later
+        xCenter = prm.screen.center(1)-ecc;
+    elseif display{blockN}.flashDisplaceLeft(trialN)==1
+        xCenter = prm.screen.center(1)+ecc;
+    end
+end
+
 while quitFlag==0
     %     % response window
     %     if info.eyeTracker==1 && secs-StimulusOnsetTime>=prm.recording.stopDuration && recordFlag==0 % stop recording after a certain duration after offset
@@ -317,11 +343,11 @@ while quitFlag==0
     if isempty(x) % the first loop, random angle
         % show the cursor; put it at the start angle everytime
         respAngle = 90*rand-45;
-        SetMouse(prm.screen.size(3)/2+cos((respAngle-90)/180*pi)*ecc, ...
-            prm.screen.size(4)/2+sin((respAngle-90)/180*pi)*ecc, ...
+        SetMouse(xCenter+cos((respAngle-90)/180*pi)*ecc, ...
+            yCenter+sin((respAngle-90)/180*pi)*ecc, ...
             prm.screen.windowPtr);
     else % changing the angle of the next loop according to the cursor position
-        respAngle = atan2(y-prm.screen.size(4)/2, x-prm.screen.size(3)/2)/pi*180+90;
+        respAngle = atan2(y-yCenter, x-xCenter)/pi*180+90;
     end
     %             ShowCursor('CrossHair',  prm.screen.windowPtr); % draw a text instead, which you can control thr color...
     if respAngle>180
@@ -329,7 +355,7 @@ while quitFlag==0
     elseif respAngle<0
         respAngle = respAngle+180;
     end
-    if info.expType==2 % control torsion
+    if fix(info.expType)~=info.expType % control torsion
         if display{blockN}.flashDisplaceLeft(trialN)==-1 % report the left
             rectFixResp=rectRotationL;
         elseif display{blockN}.flashDisplaceLeft(trialN)==1 % report the right
@@ -337,7 +363,9 @@ while quitFlag==0
         end
     end
     Screen('DrawTexture', prm.screen.windowPtr, prm.resp.tex, [], rectFixResp, respAngle);
-    Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
+%     if fix(info.expType)==info.expType
+        Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
+%     end
     Screen('DrawText', prm.screen.windowPtr, '+', x0, y0, prm.screen.blackColour);
     Screen('Flip', prm.screen.windowPtr);
     %     if trialN==1

@@ -1,5 +1,5 @@
-% function currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker)
-clear all; close all; clc; currentBlock=1; rStyle = -1; expTyp = 1.5; eyeTracker=0;% debugging
+function currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker)
+% clear all; close all; clc; currentBlock=1; rStyle = -1; expTyp = 0.5; eyeTracker=0;% debugging
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
     global trigger
@@ -20,34 +20,57 @@ try
     end
     
     % creating saving path and filenames
-    if info.expType==-1 % for baseline
-        prm.blockN = 1; % total number of blocks
-        %         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
-        %             length(prm.flash.displacement)*length(prm.rotation.initialDirection);
-        % total number of combinations of conditions
-        % flash displacement
-        prm.trialPerCondition = 6; % trial number per condition
-        prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
+    if info.expType==-1 % for baseline perception
         prm.rotation.freq = [2 4 8 12 16]; % the angle of the flash...
         
-        prm.fileName.folder = ['data\', info.subID{1}, '\baseline'];
-    elseif info.expType==0 % baseline of torsion
         prm.blockN = 1; % total number of blocks
-        %         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
-        %             length(prm.flash.displacement)*length(prm.rotation.initialDirection);
-        % total number of combinations of conditions
-        % flash displacement
+        prm.trialPerCondition = 6; % trial number per condition
+        prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
+    length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
+    length(prm.rotation.freq);
+        prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
+                
+        prm.fileName.folder = ['data\', info.subID{1}, '\baseline'];
+    elseif info.expType==-0.5 % baseline perception for control
+        prm.flash.displacement = [-1 1]; % -1, left side follow the assigned initial direction; 1, right side follow the assigned initial direction
+        prm.flash.eccentricity = 0.5; % distance between edge of grating and fixation, half the gap between the two gratings
+        prm.rotation.freq = [2 8 16]; % the angle of the flash...
+        
+        prm.blockN = 1; % total number of blocks
+        prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
+    length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
+    length(prm.rotation.freq);
+        prm.trialPerCondition = 5; % trial number per condition
+        prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;        
+
+        prm.fileName.folder = ['data\', info.subID{1}, '\controlTorsion\baseline'];
+    elseif info.expType==0 % baseline of torsion
+        prm.blockN = 1; % total number of blocks        
         prm.trialPerCondition = 5; % trial number per condition
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         prm.rotation.beforeDuration = 1; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
         prm.rotation.afterDuration = 1;
         
-        prm.fileName.folder = ['data\', info.subID{1}, '\baselineTorsion'];        
+        prm.fileName.folder = ['data\', info.subID{1}, '\baselineTorsion'];
+    elseif info.expType==0.5 % baseline torsion for control
+        prm.flash.displacement = [-1 1]; % -1, left side follow the assigned initial direction; 1, right side follow the assigned initial direction
+        prm.flash.eccentricity = 0.5; % distance between edge of grating and fixation, half the gap between the two gratings
+        
+        prm.blockN = 1; % total number of blocks
+        prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
+    length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
+    length(prm.rotation.freq);
+        prm.trialPerCondition = 3; % trial number per condition
+        prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
+        prm.rotation.beforeDuration = 1; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
+        prm.rotation.afterDuration = 1;
+
+        prm.fileName.folder = ['data\', info.subID{1}, '\controlTorsion\baselineTorsion'];
     elseif info.expType==1
         prm.fileName.folder = ['data\', info.subID{1}];
     elseif info.expType==1.5 % control, two peripheral stimuli
-        prm.grating.outerRadius = 23.6/2;
-        prm.flash.radius = 2.5/2;
+%         prm.grating.outerRadius = 23.6/2;
+%         prm.flash.radius = 2.5/2;
         prm.flash.displacement = [-1 1]; % -1, left side follow the assigned initial direction; 1, right side follow the assigned initial direction
         prm.flash.eccentricity = 0.5; % distance between edge of grating and fixation, half the gap between the two gratings
 
@@ -101,7 +124,7 @@ try
         % gratingOuterRadius, gratingInnerRadius, flashRadius, color
         % (RGB 0-255), axis (0-horizontal, 1-vertical)
         prm.flash.tex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgFlash);
-        elseif info.expType==-1 % baseline
+        elseif info.expType<0 % baseline perception
             imgUniform = generateRespTexture(round(dva2pxl(prm.grating.outerRadius(ii))), ...
                 0, 0, ...
                 prm.flash.respColour, prm.flash.axis);
@@ -112,7 +135,7 @@ try
                 round(dva2pxl(prm.grating.innerRadius)), round(dva2pxl(prm.flash.radius)), ...
                 prm.flash.colour, prm.flash.axis);
             % gratingOuterRadius, gratingInnerRadius, flashRadius, color (RGB 0-255)
-            prm.baseline.flashTex = Screen('MakeTexture', prm.screen.windowPtr, imgBaseFlash);
+            prm.baseline.flashTex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgBaseFlash);
         end
     end
     % texture for the adjustment response, initial position vertical
@@ -122,7 +145,7 @@ try
     % gratingOuterRadius, gratingInnerRadius, flashRadius, color (RGB 0-255)
     prm.resp.tex = Screen('MakeTexture', prm.screen.windowPtr, imgResp);
     
-    prm.fixation.colour = prm.grating.lightest;
+    prm.fixation.colour = prm.screen.whiteColour;
     % calculate angle per frame for display
     prm.rotation.anglePerFrame = prm.rotation.freq./prm.screen.refreshRate; % in degree
     % set up folders, files and running paras
@@ -232,7 +255,7 @@ try
             resp.initialDirection(tempN, 1) = display{blockN}.initialDirection(trialN);
             resp.initialAngle(tempN, 1) = display{blockN}.initialAngle(trialN);
             resp.reversalAngle(tempN, 1) = display{blockN}.reversalAngle(trialN);
-            if info.expType==2
+            if fix(info.expType)~=info.expType
                 resp.initialAngle2(tempN, 1) = display{blockN}.initialAngle2(trialN);
                 resp.reversalAngle2(tempN, 1) = display{blockN}.reversalAngle2(trialN);
             end
