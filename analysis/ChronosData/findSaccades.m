@@ -27,19 +27,9 @@ successor = [0; middle(1:end-1)];
 relevantFrames = middle+predecessor+successor == 3;
 
 % % uncomment if you want to use 5 instead of 3 consecutive frames
-% %****
-% % only for sortData.m
-% if ~isfield(trial, 'torsionFrames')
-%     if trial.torsionFrames>3
-%         prepredecessor = [predecessor(2:end); 0];
-%         sucsuccessor = [0; successor(1:end-1)];
-%         relevantFrames = middle+predecessor+successor+sucsuccessor+prepredecessor == trial.torsionFrames;
-%     end
-% elseif isfield(trial, 'torsionFrames')
 %     prepredecessor = [predecessor(2:end); 0];
 %     sucsuccessor = [0; successor(1:end-1)];
 %     relevantFrames = middle+predecessor+successor+sucsuccessor+prepredecessor == 5;
-% end
 % %****
 
 relevantFramesDiff = diff(relevantFrames);

@@ -43,7 +43,7 @@ try
         prm.trialPerCondition = 5; % trial number per condition
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;        
 
-        prm.fileName.folder = ['data\', info.subID{1}, '\controlTorsion\baseline'];
+        prm.fileName.folder = ['data\', info.subID{1}, '\baseline'];
     elseif info.expType==0 % baseline of torsion
         prm.blockN = 1; % total number of blocks        
         prm.trialPerCondition = 5; % trial number per condition
@@ -65,7 +65,7 @@ try
         prm.rotation.beforeDuration = 1; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
         prm.rotation.afterDuration = 1;
 
-        prm.fileName.folder = ['data\', info.subID{1}, '\controlTorsion\baselineTorsion'];
+        prm.fileName.folder = ['data\', info.subID{1}, '\baselineTorsion'];
     elseif info.expType==1
         prm.fileName.folder = ['data\', info.subID{1}];
     elseif info.expType==1.5 % control, two peripheral stimuli
@@ -81,7 +81,7 @@ try
         prm.trialPerCondition = 18; % 360 trials in total, 60 trials each block
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         
-        prm.fileName.folder = ['data\', info.subID{1}, '\controlTorsion'];
+        prm.fileName.folder = ['data\', info.subID{1}];
     end
     mkdir(prm.fileName.folder)
     

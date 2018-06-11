@@ -15,8 +15,8 @@ analysisF = pwd;
 folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\Torsion&perception\data'};
 direction = [-1 1]; % initial direction; in the plot shows the direction after reversal
 trialPerCon = 60; % for each flash onset, all directions together though...
-torsionThreshold = [10 13 13 10 8 8 10 13 10 10 13 8 13 10 10];
-torsionFrames = [5 3 3 3 3 5 3 5 5 3 3 3 3 3 3];
+torsionThreshold = [10 10 10 10 10 10 10 10 10 10 10 10 10 10 10];
+torsionFrames = [3 3 3 3 3 3 3 3 3 3 3 3 3 3 3];
 % eyeName = {'L' 'R'};
 eyeName = {'R'};
 % change both paramters below, as well as time window in the loop 
