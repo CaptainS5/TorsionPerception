@@ -8,7 +8,8 @@ global trial
 % conditions1 = [20 40 80 140 200];
 % conditions2 = [25 50 100 150 200];
 % conditions3 = [25 50 100 200 400];
-names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
+% names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
+names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
 conditions = [25 50 100 200 400];
 cd ..
 analysisF = pwd;

@@ -5,11 +5,12 @@
 % Under clockwise direction, positive=perceived left lower
 % (initialDirection*reportStyle*choice)
 
-% 10/24/2017 Xiuyun Wu
+% 06/12/2018 Xiuyun Wu
 clear all; close all; clc
 
 % basic setting
-names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
+% names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
+names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
 folder = pwd;
 howMany = -13; % include the first howMany trials for each condition*each initialDirection
 % using for pilot to see how many trials we need...
@@ -20,7 +21,7 @@ trialPerBlockBase = 60; % ignore unfinished blocks
 
 dataRawAll = table();
 dataRawBaseAll = table();
-for ii = 1:size(names, 2)
+for ii = 3:size(names, 2)
     % Read all raw data
     cd ..
     % read Experiment data
@@ -77,6 +78,7 @@ for ii = 1:size(names, 2)
     dataRaw(dataRaw.RTms<400, :) = [];
     dataRaw.sub = mat2cell(repmat(names{ii}, size(dataRaw, 1), 1), ones(size(dataRaw, 1), 1), length(names{ii})); % experiment
     %     dataRawBase(dataRawBase.choice==0, :) = [];
+    dataRawBase(dataRawBase.RTms<400, :) = [];
     dataRawBase.sub = mat2cell(repmat(names{ii}, size(dataRawBase, 1), 1), ones(size(dataRawBase, 1), 1), length(names{ii})); % baseline
     
     % save data with each trials for each participant

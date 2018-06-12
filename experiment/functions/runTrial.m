@@ -24,15 +24,15 @@ rotationFramesBefore = round(sec2frm(prm.rotation.beforeDuration));
 rotationFramesAfter = round(sec2frm(prm.rotation.afterDuration));
 % rotationAngle = rand*360 - direction*prm.rotation.anglePerFrame;
 if rand>=0.5
-    rotationAngle = 0 - direction*prm.rotation.anglePerFrame(speedIdx)*(1+rotationFramesBefore+flashOnset);
+    rotationAngle = 0 - direction*prm.rotation.anglePerFrame(speedIdx)*(rotationFramesBefore+flashOnset);
 else
-    rotationAngle = 180 - direction*prm.rotation.anglePerFrame(speedIdx)*(1+rotationFramesBefore+flashOnset);
+    rotationAngle = 180 - direction*prm.rotation.anglePerFrame(speedIdx)*(rotationFramesBefore+flashOnset);
 end
 initialAngle = rotationAngle; % for presentation of the markers
 if rand>=0.5
-    rotationAngle2 = 0 + direction*prm.rotation.anglePerFrame(speedIdx)*(1+rotationFramesBefore+flashOnset);
+    rotationAngle2 = 0 + direction*prm.rotation.anglePerFrame(speedIdx)*(rotationFramesBefore+flashOnset);
 else
-    rotationAngle2 = 180 + direction*prm.rotation.anglePerFrame(speedIdx)*(1+rotationFramesBefore+flashOnset);
+    rotationAngle2 = 180 + direction*prm.rotation.anglePerFrame(speedIdx)*(rotationFramesBefore+flashOnset);
 end
 initialAngle2 = rotationAngle2; % for presentation of the markers
 % % randomly decide the duration of rotations in this trial

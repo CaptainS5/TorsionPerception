@@ -4,7 +4,8 @@ clear all; close all; clc
 
 global trial
 
-names = {'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
+% names = {'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
+names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
 conditions = [25 50 100 200 400];
 startT = 1;
 loadData = 0;
