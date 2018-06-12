@@ -7,11 +7,11 @@ function setParameters
 global prm
 
 % physical parameters, in cm
-prm.screen.viewDistance = 37; % 57.29 cm corresponds to 1cm on screen as 1 dva
-prm.screen.monitorWidth = 36.8; % horizontal dimension of viewable screen (cm)
-% 29.4 for the laptop; 36.8 for the lab computer in X527
-prm.screen.monitorHeight = 27.3;
-% 16.5 for the laptop; 27.3 for the lab computer in X527
+prm.screen.viewDistance = 45; % 57.29 cm corresponds to 1cm on screen as 1 dva
+prm.screen.monitorWidth = 35.2; % horizontal dimension of viewable screen (cm)
+% 29.4 for the laptop; 36 for the lab computer in X527
+prm.screen.monitorHeight = 27;
+% 16.5 for the laptop; 27.1 for the lab computer in X527
 
 % display settings
 % prm.backgroundColour = []; % dark background, currently set in openScreen
@@ -25,7 +25,7 @@ prm.fixation.durationJitter = 0.2;
 % fixation duration before each block is base+rand*jitter
 
 % rotating grating stimulus
-prm.grating.outerRadius = 23.6/2; % [8.9, 23.6, 47.2]/2; % in degree of visual angle (dva)
+prm.grating.outerRadius = 20/2; % 23.6/2; % in degree of visual angle (dva)
 prm.grating.innerRadius = 0; % no fixation
 % prm.grating.innerRadius = 2.05/2; % in dva
 % prm.grating.outerRadius = [7, 7, 7]; % in degree of visual angle (dva)
@@ -42,7 +42,7 @@ prm.grating.respColour = [100 100 100];
 prm.flash.width = 0.85;
 prm.flash.length = 6;
 % circle in flash grab
-prm.flash.radius = 2.5/2;
+prm.flash.radius = 2.5/23.6*20/2;
 
 prm.flash.axis = 1; % 0-horizontal, 1-vertical--this is the reversal location
 prm.flash.eccentricity = 0; % the inner edge of the flash to the outer edge of the rotating stimulus, 1.3-58

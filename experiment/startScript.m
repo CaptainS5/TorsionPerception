@@ -9,11 +9,11 @@ try
     setupTrigger();
     currentBlock = 1;
     rStyleDefault = 1; 
-    expTyp = -0.5;
-    eyeTracker = 0;
+    expTyp = 1.5;
+    eyeTracker = 1;
        
     while(true)
-        if currentBlock>5
+        if currentBlock>6
             break
         end
         if currentBlock<=6

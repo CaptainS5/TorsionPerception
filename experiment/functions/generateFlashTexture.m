@@ -9,21 +9,33 @@ function imgFlash = generateFlashTexture(gratingOuterRadius, gratingInnerRadius,
 global prm
 % debugging
 % gratingOuterRadius = 200; gratingInnerRadius = 20;  flashRadius = 50; color = [255 0 0 0]; axis = 1; 
-% freq = 2; phi = pi; contrast = 0.25; avgLum = 0.5; prm.screen.backgroundColour = 127; 
-imgFlash = ones(2*gratingOuterRadius, 2*gratingOuterRadius, 4); % RGBA planes
-coordinateCVonvert = linspace(-gratingOuterRadius, gratingOuterRadius, 2*gratingOuterRadius);
-[X, Y] = meshgrid(coordinateCVonvert,-coordinateCVonvert);
+% freq = 2; phi = pi; contrast = 0.25; avgLum = 0.5; prm.screen.backgroundColour = 127;
+[gratingOuterRadiusX gratingOuterRadiusY] = dva2pxl(gratingOuterRadius, gratingOuterRadius);
+gratingOuterRadiusX = round(gratingOuterRadiusX);
+gratingOuterRadiusY = round(gratingOuterRadiusY);
+[gratingInnerRadiusX gratingInnerRadiusY] = dva2pxl(gratingInnerRadius, gratingInnerRadius);
+gratingInnerRadiusX = round(gratingInnerRadiusX);
+gratingInnerRadiusY = round(gratingInnerRadiusY);
+[flashRadiusX flashRadiusY] = dva2pxl(flashRadius, flashRadius);
+flashRadiusX = round(flashRadiusX);
+flashRadiusY = round(flashRadiusY);
+imgFlash = ones(2*gratingOuterRadiusY, 2*gratingOuterRadiusX, 4); % RGBA planes
+coordinateCVonvertX = linspace(-1, 1, 2*gratingOuterRadiusX);
+coordinateCVonvertY = linspace(-1, 1, 2*gratingOuterRadiusY);
+[X, Y] = meshgrid(coordinateCVonvertX, -coordinateCVonvertY);
+rho = sqrt(X.^2+Y.^2);
+rhoInner = sqrt((X*gratingOuterRadiusX/gratingInnerRadiusX).^2+(Y*gratingOuterRadiusY/gratingInnerRadiusY).^2);
 
-% coordinates of the dots, marking by 1
-coor = zeros(2*gratingOuterRadius);
+% coordinates of the dots, marked by 1
+coor = zeros(2*gratingOuterRadiusY, 2*gratingOuterRadiusX);
 if axis==0 % horizontal at first
-    coor(sqrt((X-gratingOuterRadius+flashRadius).^2+Y.^2) <= flashRadius) = 1;
-    coor(sqrt((X+gratingOuterRadius-flashRadius).^2+Y.^2) <= flashRadius) = 1;
+    coor(sqrt(((X-1+flashRadiusX/gratingOuterRadiusX)/flashRadiusX*gratingOuterRadiusX).^2+(Y/flashRadiusY*gratingOuterRadiusY).^2) <= 1) = 1;
+    coor(sqrt(((X+1-flashRadiusX/gratingOuterRadiusX)/flashRadiusX*gratingOuterRadiusX).^2+(Y/flashRadiusY*gratingOuterRadiusY).^2) <= 1) = 1;
 elseif axis==1 % vertical at first
-    coor(sqrt(X.^2+(Y-gratingOuterRadius+flashRadius).^2) <= flashRadius) = 1;
-    coor(sqrt(X.^2+(Y+gratingOuterRadius-flashRadius).^2) <= flashRadius) = 1;
+    coor(sqrt((X/flashRadiusX*gratingOuterRadiusX).^2+((Y-1+flashRadiusY/gratingOuterRadiusY)/flashRadiusY*gratingOuterRadiusY).^2) <= 1) = 1;
+    coor(sqrt((X/flashRadiusX*gratingOuterRadiusX).^2+((Y+1-flashRadiusY/gratingOuterRadiusY)/flashRadiusY*gratingOuterRadiusY).^2) <= 1) = 1;
 end
-coor(sqrt(X.^2+Y.^2)<=gratingOuterRadius & sqrt(X.^2+Y.^2)>=gratingInnerRadius & coor~=1) = 2;
+coor(rho<=1 & rhoInner>=1 & coor~=1) = 2;
 
 % add color 
 % 4-transparency

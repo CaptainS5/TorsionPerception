@@ -8,12 +8,20 @@ function imgGrating = generateRotationTexture(outerRadius, innerRadius, freq, ph
 
 % Xiuyun Wu 01/11/2018
 global prm
-% outerRadius = 200; innerRadius = 20; freq = 2; phi = pi; contrast = 0.25; avgLum = 0.5; prm.screen.backgroundColour = 127; % debugging
-img = zeros(2*outerRadius);
-theta = zeros(2*outerRadius);
-coordinateCVonvert = linspace(-1, 1, 2*outerRadius);
-[X, Y] = meshgrid(coordinateCVonvert,-coordinateCVonvert);
+% outerRadius = 10; innerRadius = 0; freq = 8; phi = pi; contrast = 0.25; avgLum = 0.5; prm.screen.backgroundColour = 127; % debugging
+[outerRadiusX outerRadiusY] = dva2pxl(outerRadius, outerRadius);
+outerRadiusX = round(outerRadiusX);
+outerRadiusY = round(outerRadiusY);
+[innerRadiusX innerRadiusY] = dva2pxl(innerRadius, innerRadius);
+innerRadiusX = round(innerRadiusX);
+innerRadiusY = round(innerRadiusY);
+img = zeros(2*outerRadiusY, 2*outerRadiusX);
+theta = zeros(2*outerRadiusY, 2*outerRadiusX);
+coordinateCVonvertX = linspace(-1, 1, 2*outerRadiusX);
+coordinateCVonvertY = linspace(-1, 1, 2*outerRadiusY);
+[X, Y] = meshgrid(coordinateCVonvertX,-coordinateCVonvertY);
 rho = sqrt(X.^2+Y.^2);
+rhoInner = sqrt((X*outerRadiusX/innerRadiusX).^2+(Y*outerRadiusY/innerRadiusY).^2);
 
 % theta =
 theta(X>0) = atan(Y(X>0)./X(X>0));
@@ -30,17 +38,17 @@ maxColor = 2*avgLum/(1+1/ratio); % the number for the brightest color in range [
 % img(rho<=1 & rho>=1/outerRadius*innerRadius) = sin(theta(rho<=1 & rho>=1/outerRadius*innerRadius) * freq + phi)*(maxColor-avgLum)+avgLum;
 
 % square wave 
-img(rho<=1 & rho>=1/outerRadius*innerRadius) = square(theta(rho<=1 & rho>=1/outerRadius*innerRadius) * freq + phi)*(maxColor-avgLum)+avgLum;
+img(rho<=1 & rhoInner>=1) = square(theta(rho<=1 & rhoInner>=1) * freq + phi)*(maxColor-avgLum)+avgLum;
 
 img = img*255;
-imgReal = img(rho<=1 & rho>=1/outerRadius*innerRadius); % effective area of the image
-img(rho>1 | rho<1/outerRadius*innerRadius) = prm.screen.backgroundColour; % the same as the background colour
+imgReal = img(rho<=1 & rhoInner>=1); % effective area of the image
+img(rho>1 | rhoInner<1) = prm.screen.backgroundColour; % the same as the background colour
 % figure
 % imshow(img/255)
 
 % adding transparency
-trans = zeros(2*outerRadius);
-trans(rho<=1 & rho>=1/outerRadius*innerRadius) = 255;
+trans = zeros(2*outerRadiusY, 2*outerRadiusX);
+trans(rho<=1 & rhoInner>=1) = 255;
 
 % imgGrating = img;
 imgGrating(:, :, 1) = img;

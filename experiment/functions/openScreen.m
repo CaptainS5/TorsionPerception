@@ -28,6 +28,8 @@ prm.screen.refreshRate = 1/Screen('GetFlipInterval', prm.screen.windowPtr); % re
 % in Hz (frames per second: fps)
 
 % pixels per degree, calculated horizontally
-prm.screen.ppd = pi * (prm.screen.size(3)-prm.screen.size(1)) / atan(prm.screen.monitorWidth/2/prm.screen.viewDistance) / 360;
+prm.screen.ppdX = pi * (prm.screen.size(3)-prm.screen.size(1)) / atan(prm.screen.monitorWidth/2/prm.screen.viewDistance) / 360;
+% pixels per degree, calculated vertically
+prm.screen.ppdY = pi * (prm.screen.size(4)-prm.screen.size(2)) / atan(prm.screen.monitorHeight/2/prm.screen.viewDistance) / 360;
 
 end
