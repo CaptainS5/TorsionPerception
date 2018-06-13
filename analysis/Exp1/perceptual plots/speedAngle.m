@@ -12,51 +12,27 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-% names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
-names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
+names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 merged = 0; % whether initial direction is merged; 1=merged
-mergedSide = 0; % for Exp2
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 % loadData = 0; % whether get new fitting or using existing fitting
 howMany = -12;% include the first howMany trials for each condition*each initialDirection
 % using for pilot to see how many trials we need... the file name
 % would be 2*howMany as the total number of trials per condition (direction merged)
 % if not using this, set howMany to a negative number such as -1
-trialPerCon = 18; % trials per condition in the experiment; 30 for Exp1, 18 for Exp2
+trialPerCon = 30; % trials per condition in the experiment; 30 for Exp1, 18 for Exp2
 fontSize = 15; % for plot
 dirCons = [-1 1]; % initial counterclockwise and clockwise; in plots shows direction after reversal
 
-% if merged==1
-%     conditionNames = {'rotationSpeed'};
-%     %     conditionNames = {'flashOnset'}; % which conditions are different
-%     %     conditionNamesBase = {'flashOnset'}; % which conditions are different
-%     mergeName = 'merged';
-% else
-%     conditionNames = {'rotationSpeed', 'initialDirection'}; % which conditions are different
-%     %     conditionNamesBase = conditionNames;
-%     mergeName = 'notMerged';
-% end
-
 if merged==1
-    if mergedSide==1
-        conditionNames = {'rotationSpeed'}; % rotationSpeed here is the tilt angle
-        mergeName = 'mergedBoth';
-        legendName = {'allMerged'};
-    else
-        conditionNames = {'rotationSpeed', 'targetSide'}; % rotationSpeed here is the tilt angle
-        mergeName = 'mergedD';
-        legendName = {'L' 'R'};
-    end
+    conditionNames = {'rotationSpeed'};
+    %     conditionNames = {'flashOnset'}; % which conditions are different
+    %     conditionNamesBase = {'flashOnset'}; % which conditions are different
+    mergeName = 'merged';
 else
-    if mergedSide==1
-        conditionNames = {'rotationSpeed', 'initialDirection'}; % which conditions are different
-        mergeName = 'mergedS';
-        legendName = {'CC' 'CCW'};
-    else
-        conditionNames = {'rotationSpeed', 'initialDirection', 'targetSide'}; % which conditions are different
-        mergeName = 'notMerged';
-        legendName = {'CC-L' 'CC-R' 'CCW-L' 'CCW-R'};
-    end
+    conditionNames = {'rotationSpeed', 'initialDirection'}; % which conditions are different
+    %     conditionNamesBase = conditionNames;
+    mergeName = 'notMerged';
 end
 
 cd ..
@@ -71,7 +47,7 @@ cd(folder)
 dataPercept = table();
 dataPMFall = table(); % experiment
 dataPMFbaseAll = table(); % baseline
-for ii = 3:size(names, 2)
+for ii = 1:size(names, 2)
     % load raw data for each participant
     cd ..
     if howMany>0
@@ -128,37 +104,11 @@ for ii = 3:size(names, 2)
     else
         dataPercept = [dataPercept; data];
     end
-        
-%     % merged
-%     onset = unique(data.rotationSpeed);
-%     for ll = 1:length(onset)
-%         data.flashOnsetIdx(data.rotationSpeed==onset(ll), 1) = ll;
-%     end
-%     meanError = accumarray(data.flashOnsetIdx, data.angleError, [], @mean);
-%     stdError = accumarray(data.flashOnsetIdx, data.angleError, [], @std);
-%     
-%     % initial direction seperated
-%     onset = unique(data.rotationSpeed);
-%     for ll = 1:length(onset)
-%         data.flashOnsetIdx(data.rotationSpeed==onset(ll), 1) = ll;
-%     end
-%     for dirI = 1:2
-%         dataT = data(data.initialDirection==(dirCons(dirI)), :);
-%         meanErrorS(:, dirI) = accumarray(dataT.flashOnsetIdx, dataT.angleError, [], @mean);
-%         stdErrorS(:, dirI) = accumarray(dataT.flashOnsetIdx, dataT.angleError, [], @std);
-%     end
 
     cN = 1;
-    if strcmp(mergeName, 'mergedD')
-        dataCons = data.targetSide;
-        cN = 2;
-    elseif strcmp(mergeName, 'mergedS')
+    if strcmp(mergeName, 'notMerged')
         dataCons = data.initialDirection;
         cN = 2;
-    elseif strcmp(mergeName, 'notMerged')
-        dataCons = data.initialDirection;
-        dataCons = [dataCons data.targetSide];
-        cN = 4;
     end
     if cN>1
         sortCons = unique(dataCons, 'rows');

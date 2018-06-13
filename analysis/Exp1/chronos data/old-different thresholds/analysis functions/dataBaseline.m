@@ -4,29 +4,26 @@ clear all; close all; clc
 
 global trial
 
-% names = {'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
-names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
+names = {'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 conditions = [25 50 100 200 400];
 startT = 1;
 loadData = 0;
 individualPlots = 1;
-merged = -1;
+merged = 1;
 torsionThreshold = 10*ones(size(names));
 torsionFrames = 3*ones(size(names));
 direction = [-1 1]; % rotation direction
-trialPerCon = 12; % for each flash onset, all directions together though...
+trialPerCon = 10; % for each flash onset, all directions together though...
 % eyeName = {'L' 'R'};
 eyeName = {'R'};
 % change both paramters below, as well as time window in the loop around line 73
-% checkAngle = -1; % 1-for direction after reversal, -1 for direction before reversal
+checkAngle = -1; % 1-for direction after reversal, -1 for direction before reversal
 endName = 'baseline';
 
 if merged==0
     mergeName = 'notMerged';
 elseif merged==1
     mergeName = 'merged';
-else
-    mergeName = '';
 end
 
 cd ..
@@ -105,11 +102,11 @@ if loadData==0
                             trialData.eye(countLt, 1) = 2; % 2-right
                         end
                         
-%                         dirIdx = find(direction==resp.initialDirection(t)); % 1-clockwise, 2-counterclockwise
+                        dirIdx = find(direction==resp.initialDirection(t)); % 1-clockwise, 2-counterclockwise
                         conIdx = find(conditions==resp.rotationSpeed(t));
                         
                         trialData.rotationSpeed(countLt, 1) = resp.rotationSpeed(t);
-%                         trialData.afterReversalD(countLt, 1) = -direction(dirIdx); % 1-clockwise, -1 counterclockwise
+                        trialData.afterReversalD(countLt, 1) = -direction(dirIdx); % 1-clockwise, -1 counterclockwise
                         % in the exp code, used the after reversal direction for rotation; so this is the
                         % rotation direction in each trial in baseline
                         
@@ -126,12 +123,12 @@ if loadData==0
                         trialData.torsionAngleTotal(countLt, 1) = torsion.slowPhases.totalAngle;
                         trialData.torsionAngleCW(countLt, 1) = torsion.slowPhases.totalAngleCW;
                         trialData.torsionAngleCCW(countLt, 1) = torsion.slowPhases.totalAngleCCW;
-%                         % just take the one that is not zero
-%                         if torsion.slowPhases.totalAngleCW==0
-%                             trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
-%                         elseif torsion.slowPhases.totalAngleCCW==0
-%                             trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
-%                         end
+                        % just take the one that is not zero
+                        if torsion.slowPhases.totalAngleCW==0
+                            trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                        elseif torsion.slowPhases.totalAngleCCW==0
+                            trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                        end
                         
                         %% saccade numbers
                         trialData.sacNumT(countLt, 1) = trial.saccades.T.number;
@@ -160,10 +157,9 @@ if loadData==0
                         conData.eye(countLc, 1) = 2; % 2-right
                     end
                     conData.rotationSpeed(countLc, 1) = conditions(conI);
-%                     conData.afterReversalD(countLc, 1) = direction(ii); % 1-clockwise, -1 counterclockwise, direction after reversal
+                    conData.afterReversalD(countLc, 1) = direction(ii); % 1-clockwise, -1 counterclockwise, direction after reversal
                     
-                    % tempI = find(all(trialData{:, 1:4}==repmat(conData{countLc, 1:4}, [size(trialData, 1) 1]), 2));% for exp1
-                    tempI = find(all(trialData{:, 1:3}==repmat(conData{countLc, 1:3}, [size(trialData, 1) 1]), 2));
+                    tempI = find(all(trialData{:, 1:4}==repmat(conData{countLc, 1:4}, [size(trialData, 1) 1]), 2));% for exp1
                     
                     conData.torsionVelTMean(countLc, 1) = nanmean(trialData.torsionVelT(tempI, 1));
                     conData.torsionVelTStd(countLc, 1) = nanstd(trialData.torsionVelT(tempI, 1));
@@ -180,8 +176,8 @@ if loadData==0
                     conData.torsionAngleCCWMean(countLc, 1) = nanmean(trialData.torsionAngleCCW(tempI, 1));
                     conData.torsionAngleCCWStd(countLc, 1) = nanstd(trialData.torsionAngleCCW(tempI, 1));
                     
-%                     conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngle(tempI, 1));
-%                     conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngle(tempI, 1));
+                    conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngle(tempI, 1));
+                    conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngle(tempI, 1));
                     
                     conData.sacNumTMean(countLc, 1) = nanmean(trialData.sacNumT(tempI, 1));
                     conData.sacNumTStd(countLc, 1) = nanstd(trialData.sacNumT(tempI, 1));
@@ -202,66 +198,66 @@ if loadData==0
     end
     
     cd([analysisF '\analysis functions'])
-%     % merge directions, mark as 0
-%     trialData.torsionVelTMerged = trialData.torsionVelT.*trialData.afterReversalD;
-%     trialData.torsionVGainMerged = trialData.torsionVGain.*trialData.afterReversalD;
-%     trialData.torsionAngleMerged = trialData.torsionAngle.*trialData.afterReversalD;
-%     countLc = size(conData, 1)+1;
-%     for subj=1:size(names, 2)
-%         for eye = 1:size(eyeName, 2)
-%             for ii = 1:size(conditions, 2)
-%                 conData.sub(countLc, 1) = subj;
-%                 if strcmp(eyeName{eye}, 'L')
-%                     conData.eye(countLc, 1) = 1; % 1-left,
-%                 elseif strcmp(eyeName{eye}, 'R')
-%                     conData.eye(countLc, 1) = 2; % 2-right
-%                 end
-%                 conData.rotationSpeed(countLc, 1) = conditions(ii);
-%                 conData.afterReversalD(countLc, 1) = 0; % direction after reversal merged
-%                 
-%                 tempI = find(all(trialData{:, 1:3}==repmat(conData{countLc, 1:3}, [size(trialData, 1) 1]), 2));
-%                 
-%                 conData.torsionVelTMean(countLc, 1) = nanmean(trialData.torsionVelTMerged(tempI, 1));
-%                 conData.torsionVelTStd(countLc, 1) = nanstd(trialData.torsionVelTMerged(tempI, 1));
-%                 
-%                 conData.torsionVelTGainMean(countLc, 1) = nanmean(trialData.torsionVGainMerged(tempI, 1));
-%                 conData.torsionVelTGainStd(countLc, 1) = nanstd(trialData.torsionVGainMerged(tempI, 1));
-%                 
-%                 conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngleMerged(tempI, 1));
-%                 conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngleMerged(tempI, 1));
-%                 %
-%                 %             conData.torsionAngleCWMean(countLc, 1) = nanmean(trialData.torsionAngleCWMerged(tempI, 1));
-%                 %             conData.torsionAngleCWStd(countLc, 1) = nanstd(trialData.torsionAngleCWMerged(tempI, 1));
-%                 %
-%                 %             conData.torsionAngleCCWMean(countLc, 1) = nanmean(trialData.torsionAngleCCWMerged(tempI, 1));
-%                 %             conData.torsionAngleCCWStd(countLc, 1) = nanstd(trialData.torsionAngleCCWMerged(tempI, 1));
-%                 
-%                 conData.sacNumTMean(countLc, 1) = nanmean(trialData.sacNumT(tempI, 1));
-%                 conData.sacNumTStd(countLc, 1) = nanstd(trialData.sacNumT(tempI, 1));
-%                 
-%                 conData.sacAmpSumTMean(countLc, 1) = nanmean(trialData.sacAmpSumT(tempI, 1));
-%                 conData.sacAmpSumTStd(countLc, 1) = nanstd(trialData.sacAmpSumT(tempI, 1));
-%                 
-%                 conData.sacAmpMeanTMean(countLc, 1) = nanmean(trialData.sacAmpMeanT(tempI, 1));
-%                 conData.sacAmpMeanTStd(countLc, 1) = nanstd(trialData.sacAmpMeanT(tempI, 1));
-%                 
-%                 conData.nonErrorTrialN(countLc, 1) = length(tempI);
-%                 
-%                 countLc = countLc+1;
-%             end
-%         end
-%     end
+    % merge directions, mark as 0
+    trialData.torsionVelTMerged = trialData.torsionVelT.*trialData.afterReversalD;
+    trialData.torsionVGainMerged = trialData.torsionVGain.*trialData.afterReversalD;
+    trialData.torsionAngleMerged = trialData.torsionAngle.*trialData.afterReversalD;
+    countLc = size(conData, 1)+1;
+    for subj=1:size(names, 2)
+        for eye = 1:size(eyeName, 2)
+            for ii = 1:size(conditions, 2)
+                conData.sub(countLc, 1) = subj;
+                if strcmp(eyeName{eye}, 'L')
+                    conData.eye(countLc, 1) = 1; % 1-left,
+                elseif strcmp(eyeName{eye}, 'R')
+                    conData.eye(countLc, 1) = 2; % 2-right
+                end
+                conData.rotationSpeed(countLc, 1) = conditions(ii);
+                conData.afterReversalD(countLc, 1) = 0; % direction after reversal merged
+                
+                tempI = find(all(trialData{:, 1:3}==repmat(conData{countLc, 1:3}, [size(trialData, 1) 1]), 2));
+                
+                conData.torsionVelTMean(countLc, 1) = nanmean(trialData.torsionVelTMerged(tempI, 1));
+                conData.torsionVelTStd(countLc, 1) = nanstd(trialData.torsionVelTMerged(tempI, 1));
+                
+                conData.torsionVelTGainMean(countLc, 1) = nanmean(trialData.torsionVGainMerged(tempI, 1));
+                conData.torsionVelTGainStd(countLc, 1) = nanstd(trialData.torsionVGainMerged(tempI, 1));
+                
+                conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngleMerged(tempI, 1));
+                conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngleMerged(tempI, 1));
+                %
+                %             conData.torsionAngleCWMean(countLc, 1) = nanmean(trialData.torsionAngleCWMerged(tempI, 1));
+                %             conData.torsionAngleCWStd(countLc, 1) = nanstd(trialData.torsionAngleCWMerged(tempI, 1));
+                %
+                %             conData.torsionAngleCCWMean(countLc, 1) = nanmean(trialData.torsionAngleCCWMerged(tempI, 1));
+                %             conData.torsionAngleCCWStd(countLc, 1) = nanstd(trialData.torsionAngleCCWMerged(tempI, 1));
+                
+                conData.sacNumTMean(countLc, 1) = nanmean(trialData.sacNumT(tempI, 1));
+                conData.sacNumTStd(countLc, 1) = nanstd(trialData.sacNumT(tempI, 1));
+                
+                conData.sacAmpSumTMean(countLc, 1) = nanmean(trialData.sacAmpSumT(tempI, 1));
+                conData.sacAmpSumTStd(countLc, 1) = nanstd(trialData.sacAmpSumT(tempI, 1));
+                
+                conData.sacAmpMeanTMean(countLc, 1) = nanmean(trialData.sacAmpMeanT(tempI, 1));
+                conData.sacAmpMeanTStd(countLc, 1) = nanstd(trialData.sacAmpMeanT(tempI, 1));
+                
+                conData.nonErrorTrialN(countLc, 1) = length(tempI);
+                
+                countLc = countLc+1;
+            end
+        end
+    end
     
-%     % normalization
-%     for ii = 1:size(conData, 1)
-%         if conData.afterReversalD(ii, 1)==0
-%             arr = find(all(trialData{:, 1:3}==repmat(conData{ii, 1:3}, [size(trialData, 1) 1]), 2));
-%             trialData.torsionVelTMergedNorm(arr, 1) = (trialData.torsionVelTMerged(arr, 1)-conData.torsionVelTMean(ii, 1))./conData.torsionVelTStd(ii, 1);
-%         else
-%             arr = find(all(trialData{:, 1:4}==repmat(conData{ii, 1:4}, [size(trialData, 1) 1]), 2));
-%             trialData.torsionVelTNorm(arr, 1) = (trialData.torsionVelT(arr, 1)-conData.torsionVelTMean(ii, 1))./conData.torsionVelTStd(ii, 1);
-%         end
-%     end
+    % normalization
+    for ii = 1:size(conData, 1)
+        if conData.afterReversalD(ii, 1)==0
+            arr = find(all(trialData{:, 1:3}==repmat(conData{ii, 1:3}, [size(trialData, 1) 1]), 2));
+            trialData.torsionVelTMergedNorm(arr, 1) = (trialData.torsionVelTMerged(arr, 1)-conData.torsionVelTMean(ii, 1))./conData.torsionVelTStd(ii, 1);
+        else
+            arr = find(all(trialData{:, 1:4}==repmat(conData{ii, 1:4}, [size(trialData, 1) 1]), 2));
+            trialData.torsionVelTNorm(arr, 1) = (trialData.torsionVelT(arr, 1)-conData.torsionVelTMean(ii, 1))./conData.torsionVelTStd(ii, 1);
+        end
+    end
     save(['dataBaseLong', endName, '.mat'], 'trialData', 'conData');
 else
     cd([analysisF '\analysis functions'])
@@ -300,11 +296,6 @@ if individualPlots==1
                 [B sortI] = sort(conData.rotationSpeed(tempI));
                 tempD = conData(tempI, :);
                 
-                errorbar(conditions, tempD.torsionVelTMean(sortI, 1), tempD.torsionVelTStd(sortI, 1), 'LineWidth', 1.5)
-            else
-                tempI = find(conData.sub==t & conData.eye==eyeN); 
-                [B sortI] = sort(conData.rotationSpeed(tempI));
-                tempD = conData(tempI, :);
                 errorbar(conditions, tempD.torsionVelTMean(sortI, 1), tempD.torsionVelTStd(sortI, 1), 'LineWidth', 1.5)
             end
             xlabel('Rotation speed (deg/s)')
@@ -349,16 +340,6 @@ if individualPlots==1
                 tempD = conData(tempI, :);
                 
                 errorbar(conditions, tempD.torsionAngleMean(sortI, 1), tempD.torsionAngleStd(sortI, 1), 'LineWidth', 1.5)
-            else
-                tempI = find(conData.sub==t & conData.eye==eyeN); 
-                [B sortI] = sort(conData.rotationSpeed(tempI));
-                tempD = conData(tempI, :);
-                
-                errorbar(conditions, tempD.torsionAngleCWMean(sortI, 1), tempD.torsionAngleCWStd(sortI, 1), 'LineWidth', 1.5, 'LineStyle', '--')
-                hold on
-                errorbar(conditions, tempD.torsionAngleCCWMean(sortI, 1), tempD.torsionAngleCCWStd(sortI, 1), 'LineWidth', 1.5, 'LineStyle', '--')
-                errorbar(conditions, tempD.torsionAngleTotalMean(sortI, 1), tempD.torsionAngleTotalStd(sortI, 1), 'LineWidth', 1.5)
-                legend({'CW' 'CCW' 'Total'}, 'box', 'off', 'FontSize', 10)
             end
             xlabel('Rotation speed (deg/s)')
             ylabel('Torsion angle (deg)')
@@ -373,89 +354,89 @@ if individualPlots==1
         end
         saveas(gca, ['torsionAngle_' names{t} '_' endName '_' mergeName '.pdf'])
         
-%         % saccade number
-%         figure
-%         for eye = 1:size(eyeName, 2)
-%             subplot(1, size(eyeName, 2), eye)
-%             if strcmp(eyeName{eye}, 'L')
-%                 eyeN = 1; % 1-left,
-%             elseif strcmp(eyeName{eye}, 'R')
-%                 eyeN = 2; % 2-right
-%             end
-%             if merged==0
-%                 tempIc = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==1); % clockwise
-%                 tempIcc = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==-1); % counterclockwise
-%                 [Bc sortIc] = sort(conData.rotationSpeed(tempIc));
-%                 [Bcc sortIcc] = sort(conData.rotationSpeed(tempIcc));
-%                 tempDc = conData(tempIc, :);
-%                 tempDcc = conData(tempIcc, :);
-%                 
-%                 errorbar(conditions, tempDc.sacNumTMean(sortIc, 1), tempDc.sacNumTStd(sortIc, 1), 'LineWidth', 1.5)
-%                 hold on
-%                 errorbar(conditions, tempDcc.sacNumTMean(sortIcc, 1), tempDcc.sacNumTStd(sortIcc, 1), 'LineWidth', 1.5)
-%                 legend({['CW(' num2str(mean(tempDc.nonErrorTrialN(sortIc, 1))) ')'] ...
-%                     ['CCW(' num2str(mean(tempDcc.nonErrorTrialN(sortIcc, 1))) ')']}, ...
-%                     'box', 'off', 'FontSize', 10, 'Location', 'northwest')
-%             else
-%                 tempI = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==0); % merged
-%                 [B sortI] = sort(conData.rotationSpeed(tempI));
-%                 tempD = conData(tempI, :);
-%                 
-%                 errorbar(conditions, tempD.sacNumTMean(sortI, 1), tempD.sacNumTStd(sortI, 1), 'LineWidth', 1.5)
-%             end
-%             
-%             xlabel('Rotation speed (deg/s)')
-%             ylabel('Saccade number')
-%             if merged==0
-%                 title([eyeName{eye}, ' eye']);
-%             else
-%                 title([eyeName{eye}, ' eye, ', num2str(mean(tempD.nonErrorTrialN(sortI, 1))), ' trials'])
-%             end
-%         end
-%         saveas(gca, ['saccadeNumber_' names{t} '_' endName '_' mergeName '.pdf'])
-%         
-%         % saccade sum amplitude
-%         figure
-%         for eye = 1:size(eyeName, 2)
-%             subplot(1, size(eyeName, 2), eye)
-%             if strcmp(eyeName{eye}, 'L')
-%                 eyeN = 1; % 1-left,
-%             elseif strcmp(eyeName{eye}, 'R')
-%                 eyeN = 2; % 2-right
-%             end
-%             if merged==0
-%                 tempIc = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==1); % clockwise
-%                 tempIcc = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==-1); % counterclockwise
-%                 [Bc sortIc] = sort(conData.rotationSpeed(tempIc));
-%                 [Bcc sortIcc] = sort(conData.rotationSpeed(tempIcc));
-%                 tempDc = conData(tempIc, :);
-%                 tempDcc = conData(tempIcc, :);
-%                 
-%                 errorbar(conditions, tempDc.sacAmpSumTMean(sortIc, 1), tempDc.sacAmpSumTStd(sortIc, 1), 'LineWidth', 1.5)
-%                 hold on
-%                 errorbar(conditions, tempDcc.sacAmpSumTMean(sortIcc, 1), tempDcc.sacAmpSumTStd(sortIcc, 1), 'LineWidth', 1.5)
-%                 legend({['CW(' num2str(mean(tempDc.nonErrorTrialN(sortIc, 1))) ')'] ...
-%                     ['CCW(' num2str(mean(tempDcc.nonErrorTrialN(sortIcc, 1))) ')']}, ...
-%                     'box', 'off', 'FontSize', 10, 'Location', 'northwest')
-%             else
-%                 tempI = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==0); % merged
-%                 [Bc sortI] = sort(conData.rotationSpeed(tempI));
-%                 tempD = conData(tempI, :);
-%                 
-%                 errorbar(conditions, tempD.sacAmpSumTMean(sortI, 1), tempD.sacAmpSumTStd(sortI, 1), 'LineWidth', 1.5)
-%             end
-%             
-%             xlabel('Rotation speed (deg/s)')
-%             ylabel('Saccade sum amplitude (deg)')
-%             if merged==0
-%                 title([eyeName{eye}, ' eye']);
-%             else
-%                 title([eyeName{eye}, ' eye, ', num2str(mean(tempD.nonErrorTrialN(sortI, 1))), ' trials'])
-%             end
-%         end
-%         saveas(gca, ['saccadeSumAmplitude_' names{t} '_' endName '_' mergeName '.pdf'])
+        % saccade number
+        figure
+        for eye = 1:size(eyeName, 2)
+            subplot(1, size(eyeName, 2), eye)
+            if strcmp(eyeName{eye}, 'L')
+                eyeN = 1; % 1-left,
+            elseif strcmp(eyeName{eye}, 'R')
+                eyeN = 2; % 2-right
+            end
+            if merged==0
+                tempIc = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==1); % clockwise
+                tempIcc = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==-1); % counterclockwise
+                [Bc sortIc] = sort(conData.rotationSpeed(tempIc));
+                [Bcc sortIcc] = sort(conData.rotationSpeed(tempIcc));
+                tempDc = conData(tempIc, :);
+                tempDcc = conData(tempIcc, :);
+                
+                errorbar(conditions, tempDc.sacNumTMean(sortIc, 1), tempDc.sacNumTStd(sortIc, 1), 'LineWidth', 1.5)
+                hold on
+                errorbar(conditions, tempDcc.sacNumTMean(sortIcc, 1), tempDcc.sacNumTStd(sortIcc, 1), 'LineWidth', 1.5)
+                legend({['CW(' num2str(mean(tempDc.nonErrorTrialN(sortIc, 1))) ')'] ...
+                    ['CCW(' num2str(mean(tempDcc.nonErrorTrialN(sortIcc, 1))) ')']}, ...
+                    'box', 'off', 'FontSize', 10, 'Location', 'northwest')
+            else
+                tempI = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==0); % merged
+                [B sortI] = sort(conData.rotationSpeed(tempI));
+                tempD = conData(tempI, :);
+                
+                errorbar(conditions, tempD.sacNumTMean(sortI, 1), tempD.sacNumTStd(sortI, 1), 'LineWidth', 1.5)
+            end
+            
+            xlabel('Rotation speed (deg/s)')
+            ylabel('Saccade number')
+            if merged==0
+                title([eyeName{eye}, ' eye']);
+            else
+                title([eyeName{eye}, ' eye, ', num2str(mean(tempD.nonErrorTrialN(sortI, 1))), ' trials'])
+            end
+        end
+        saveas(gca, ['saccadeNumber_' names{t} '_' endName '_' mergeName '.pdf'])
         
-%         close all
+        % saccade sum amplitude
+        figure
+        for eye = 1:size(eyeName, 2)
+            subplot(1, size(eyeName, 2), eye)
+            if strcmp(eyeName{eye}, 'L')
+                eyeN = 1; % 1-left,
+            elseif strcmp(eyeName{eye}, 'R')
+                eyeN = 2; % 2-right
+            end
+            if merged==0
+                tempIc = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==1); % clockwise
+                tempIcc = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==-1); % counterclockwise
+                [Bc sortIc] = sort(conData.rotationSpeed(tempIc));
+                [Bcc sortIcc] = sort(conData.rotationSpeed(tempIcc));
+                tempDc = conData(tempIc, :);
+                tempDcc = conData(tempIcc, :);
+                
+                errorbar(conditions, tempDc.sacAmpSumTMean(sortIc, 1), tempDc.sacAmpSumTStd(sortIc, 1), 'LineWidth', 1.5)
+                hold on
+                errorbar(conditions, tempDcc.sacAmpSumTMean(sortIcc, 1), tempDcc.sacAmpSumTStd(sortIcc, 1), 'LineWidth', 1.5)
+                legend({['CW(' num2str(mean(tempDc.nonErrorTrialN(sortIc, 1))) ')'] ...
+                    ['CCW(' num2str(mean(tempDcc.nonErrorTrialN(sortIcc, 1))) ')']}, ...
+                    'box', 'off', 'FontSize', 10, 'Location', 'northwest')
+            else
+                tempI = find(conData.sub==t & conData.eye==eyeN & conData.afterReversalD==0); % merged
+                [Bc sortI] = sort(conData.rotationSpeed(tempI));
+                tempD = conData(tempI, :);
+                
+                errorbar(conditions, tempD.sacAmpSumTMean(sortI, 1), tempD.sacAmpSumTStd(sortI, 1), 'LineWidth', 1.5)
+            end
+            
+            xlabel('Rotation speed (deg/s)')
+            ylabel('Saccade sum amplitude (deg)')
+            if merged==0
+                title([eyeName{eye}, ' eye']);
+            else
+                title([eyeName{eye}, ' eye, ', num2str(mean(tempD.nonErrorTrialN(sortI, 1))), ' trials'])
+            end
+        end
+        saveas(gca, ['saccadeSumAmplitude_' names{t} '_' endName '_' mergeName '.pdf'])
+        
+        close all
     end
 end
 

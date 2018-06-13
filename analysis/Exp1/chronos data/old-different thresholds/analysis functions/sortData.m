@@ -8,26 +8,25 @@ global trial
 % conditions1 = [20 40 80 140 200];
 % conditions2 = [25 50 100 150 200];
 % conditions3 = [25 50 100 200 400];
-% names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
-names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
+names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 conditions = [25 50 100 200 400];
 cd ..
 analysisF = pwd;
 folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\Torsion&perception\data'};
 direction = [-1 1]; % initial direction; in the plot shows the direction after reversal
-trialPerCon = 72; % for each rotation speed, all directions together though...
+trialPerCon = 60; % for each rotation speed, all directions together though...
 torsionThreshold = 10*ones(size(names));
 torsionFrames = 3*ones(size(names));
 % eyeName = {'L' 'R'};
 eyeName = {'R'};
 % change both paramters below, as well as time window in the loop 
 % around line 100
-% checkAngle = -1; % 1-for direction after reversal, -1 for direction before reversal
+checkAngle = -1; % 1-for direction after reversal, -1 for direction before reversal
 % for the endName, also change around line70 for the time window used
-endName = '120msToReversal';
+% endName = '120msToReversal';
 % endName = '120msAroundReversal';
 % endName = '120msToEnd';
-% endName = 'atReversal';
+endName = 'atReversal';
 
 trialData = table(); % organize into long format
 conData = table();
@@ -37,7 +36,7 @@ countLc = 1; % for conData
 cd ..
 load(['dataBase_all', num2str(size(names, 2)), '.mat'])
 
-for subj = 3:length(names)
+for subj = 1:length(names)
     cd(analysisF)
     %     if subj <=2
     %         conditions = conditions0;
@@ -54,22 +53,22 @@ for subj = 3:length(names)
         
         counts = {zeros(size(conditions)) zeros(size(conditions))};
         
-        for block = 1:6
+        for block = 1:5
             % read in data and socscalexy
             filename = ['session_' num2str(block,'%.2i') '_' eyeName{eye} '.dat'];
-%             if subj==5 && block==5 % for KT, 5
-%                 data = readDataFile_KTb5(filename, [folder{:} '\' subject '\chronos']);
-%             elseif subj==6 && block==3 % for MS, 3-lost frames...
-%                 data = readDataFile_MSb3(filename, [folder{:} '\' subject '\chronos']);
-%             elseif subj==7 && block==1 % for IC, 1
-%                 data = readDataFile_ICb1(filename, [folder{:} '\' subject '\chronos']);
-%             elseif subj==9 && block==5 % for NY, 5-lost frames...
-%                 data = readDataFile_NYb5(filename, [folder{:} '\' subject '\chronos']);
-%             elseif subj==13 && block==4 % for NY, 5-lost frames...
-%                 data = readDataFile_RRb4(filename, [folder{:} '\' subject '\chronos']);
-%             else
+            if subj==5 && block==5 % for KT, 5
+                data = readDataFile_KTb5(filename, [folder{:} '\' subject '\chronos']);
+            elseif subj==6 && block==3 % for MS, 3-lost frames...
+                data = readDataFile_MSb3(filename, [folder{:} '\' subject '\chronos']);
+            elseif subj==7 && block==1 % for IC, 1
+                data = readDataFile_ICb1(filename, [folder{:} '\' subject '\chronos']);
+            elseif subj==9 && block==5 % for NY, 5-lost frames...
+                data = readDataFile_NYb5(filename, [folder{:} '\' subject '\chronos']);
+            elseif subj==13 && block==4 % for NY, 5-lost frames...
+                data = readDataFile_RRb4(filename, [folder{:} '\' subject '\chronos']);
+            else
                 data = readDataFile(filename, [folder{:} '\' subject '\chronos']);
-%             end
+            end
             data = socscalexy(data);
             [header, logData] = readLogFile(block, ['response' num2str(block,'%.2i') '_' subject] , [folder{:} '\' subject]);
             sampleRate = 200;
@@ -89,10 +88,10 @@ for subj = 3:length(names)
                     trial.torsionFrames = torsionFrames(subj);
                     
                     %% change the time window here
-%                                         trial.stim_offset = trial.stim_reversal+ms2frames(10); % reversal
-%                                         trial.stim_offset = trial.stim_reversal+ms2frames(50); % reversal
-                                        trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+120); % 120ms latency
-                                        trial.stim_offset = trial.stim_reversal; % reversal
+                    trial.stim_offset = trial.stim_reversal+ms2frames(10); % reversal
+                    trial.stim_offset = trial.stim_reversal+ms2frames(50); % reversal
+%                     trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+120); % 120ms latency
+%                     trial.stim_offset = trial.stim_reversal; % reversal
                     %                     trial.stim_onset = trial.stim_reversal - ms2frames((0.12)*1000); % 120ms before reversal
                     %                     trial.stim_offset = trial.stim_reversal + ms2frames((0.12)*1000); % 120ms after reversal
 %                     trial.stim_onset = trial.stim_reversal + ms2frames((0.12)*1000);
@@ -164,27 +163,24 @@ for subj = 3:length(names)
                         trialData.torsionAngleTotal(countLt, 1) = torsion.slowPhases.totalAngle;
                         trialData.torsionAngleCW(countLt, 1) = torsion.slowPhases.totalAngleCW;
                         trialData.torsionAngleCCW(countLt, 1) = torsion.slowPhases.totalAngleCCW;
-                        if trialData.afterReversalD(countLt, 1)==-1
-                            trialData.torsionAngleSame(countLt, 1) = torsion.slowPhases.totalAngleCCW; % same as afterReversal angle
-                            trialData.torsionAngleAnti(countLt, 1) = -torsion.slowPhases.totalAngleCW; % opposite to afterReversal angle
-                        else
-                            trialData.torsionAngleSame(countLt, 1) = torsion.slowPhases.totalAngleCW; % same as afterReversal angle
-                            trialData.torsionAngleAnti(countLt, 1) = -torsion.slowPhases.totalAngleCCW; % opposite to afterReversal angle
-                        end
-                        angles = [trialData.torsionAngleSame(countLt, 1) trialData.torsionAngleAnti(countLt, 1)];
-                        idx = find(abs(angles)==max(abs(angles(:))));
-                        trialData.torsionAngle(countLt, 1) = angles(idx);
-%                         % just take the one that is not zero, if both
-%                         % not zero, take the expected direction
-%                         if torsion.slowPhases.totalAngleCW==0
-%                             trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
-%                         elseif torsion.slowPhases.totalAngleCCW==0
-%                             trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
-%                         elseif trialData.afterReversalD(countLt, 1)*checkAngle==1
-%                             trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
-%                         elseif trialData.afterReversalD(countLt, 1)*checkAngle==-1
-%                             trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+%                         if trialData.afterReversalD(countLt, 1)==-1
+%                             trialData.torsionAngleSame(countLt, 1) = torsion.slowPhases.totalAngleCCW; % same as afterReversal angle
+%                             trialData.torsionAngleAnti(countLt, 1) = torsion.slowPhases.totalAngleCW; % opposite to afterReversal angle
+%                         else
+%                             trialData.torsionAngleSame(countLt, 1) = torsion.slowPhases.totalAngleCW; % same as afterReversal angle
+%                             trialData.torsionAngleAnti(countLt, 1) = torsion.slowPhases.totalAngleCCW; % opposite to afterReversal angle
 %                         end
+                        % just take the one that is not zero, if both
+                        % not zero, take the expected direction
+                        if torsion.slowPhases.totalAngleCW==0
+                            trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                        elseif torsion.slowPhases.totalAngleCCW==0
+                            trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                        elseif trialData.afterReversalD(countLt, 1)*checkAngle==1
+                            trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                        elseif trialData.afterReversalD(countLt, 1)*checkAngle==-1
+                            trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                        end
                         
                         %                     if checkAngle == -1 % the same as direction before reversal
                         %                         if trialData.afterReversalD(countLt, 1)==1 % direction after reversal is CW
@@ -252,11 +248,11 @@ for subj = 3:length(names)
                 conData.torsionAngleCCWMean(countLc, 1) = nanmean(trialData.torsionAngleCCW(tempI, 1));
                 conData.torsionAngleCCWStd(countLc, 1) = nanstd(trialData.torsionAngleCCW(tempI, 1));
                 
-                conData.torsionAngleSameMean(countLc, 1) = nanmean(trialData.torsionAngleSame(tempI, 1));
-                conData.torsionAngleSameStd(countLc, 1) = nanstd(trialData.torsionAngleSame(tempI, 1));
-                
-                conData.torsionAngleAntiMean(countLc, 1) = nanmean(trialData.torsionAngleAnti(tempI, 1));
-                conData.torsionAngleAntiStd(countLc, 1) = nanstd(trialData.torsionAngleAnti(tempI, 1));
+                %                 conData.torsionAngleSameMean(countLc, 1) = nanmean(trialData.torsionAngleSame(tempI, 1));
+                %                 conData.torsionAngleSameStd(countLc, 1) = nanstd(trialData.torsionAngleSame(tempI, 1));
+                %
+                %                 conData.torsionAngleAntiMean(countLc, 1) = nanmean(trialData.torsionAngleAnti(tempI, 1));
+                %                 conData.torsionAngleAntiStd(countLc, 1) = nanstd(trialData.torsionAngleAnti(tempI, 1));
                 
                 conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngle(tempI, 1));
                 conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngle(tempI, 1));
@@ -322,14 +318,14 @@ for subj=1:size(names, 2)
             conData.torsionVelTGainMean(countLc, 1) = nanmean(trialData.torsionVGainMerged(tempI, 1));
             conData.torsionVelTGainStd(countLc, 1) = nanstd(trialData.torsionVGainMerged(tempI, 1));
             
-            conData.torsionAngleSameMean(countLc, 1) = nanmean(trialData.torsionAngleSame(tempI, 1));
-            conData.torsionAngleSameStd(countLc, 1) = nanstd(trialData.torsionAngleSame(tempI, 1));
+%             conData.torsionAngleSameMean(countLc, 1) = nanmean(trialData.torsionAngleSame(tempI, 1));
+%             conData.torsionAngleSameStd(countLc, 1) = nanstd(trialData.torsionAngleSame(tempI, 1));
+%             
+%             conData.torsionAngleAntiMean(countLc, 1) = nanmean(trialData.torsionAngleAnti(tempI, 1));
+%             conData.torsionAngleAntiStd(countLc, 1) = nanstd(trialData.torsionAngleAnti(tempI, 1));
             
-            conData.torsionAngleAntiMean(countLc, 1) = nanmean(trialData.torsionAngleAnti(tempI, 1));
-            conData.torsionAngleAntiStd(countLc, 1) = nanstd(trialData.torsionAngleAnti(tempI, 1));
-            
-            conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngleMerged(tempI, 1));
-            conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngleMerged(tempI, 1));
+                        conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngleMerged(tempI, 1));
+                        conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngleMerged(tempI, 1));
             %
             %             conData.torsionAngleCWMean(countLc, 1) = nanmean(trialData.torsionAngleCWMerged(tempI, 1));
             %             conData.torsionAngleCWStd(countLc, 1) = nanstd(trialData.torsionAngleCWMerged(tempI, 1));
@@ -353,17 +349,17 @@ for subj=1:size(names, 2)
     end
 end
 % 
-% % normalization
-% for ii = 1:size(conData, 1)
-%     if conData.afterReversalD(ii, 1)==0
-%         arr = find(all(trialData{:, 1:3}==repmat(conData{ii, 1:3}, [size(trialData, 1) 1]), 2));
-%         trialData.perceptualErrMergedNorm(arr, 1) = (trialData.perceptualError(arr, 1)-conData.perceptualErrorMean(ii, 1))./conData.perceptualErrorStd(ii, 1);
-%         trialData.torsionVelTMergedNorm(arr, 1) = (trialData.torsionVelTMerged(arr, 1)-conData.torsionVelTMean(ii, 1))./conData.torsionVelTStd(ii, 1);
-%     else
-%         arr = find(all(trialData{:, 1:4}==repmat(conData{ii, 1:4}, [size(trialData, 1) 1]), 2));
-%         trialData.perceptualErrNorm(arr, 1) = (trialData.perceptualError(arr, 1)-conData.perceptualErrorMean(ii, 1))./conData.perceptualErrorStd(ii, 1);
-%         trialData.torsionVelTNorm(arr, 1) = (trialData.torsionVelT(arr, 1)-conData.torsionVelTMean(ii, 1))./conData.torsionVelTStd(ii, 1);
-%     end
-% end
+% normalization
+for ii = 1:size(conData, 1)
+    if conData.afterReversalD(ii, 1)==0
+        arr = find(all(trialData{:, 1:3}==repmat(conData{ii, 1:3}, [size(trialData, 1) 1]), 2));
+        trialData.perceptualErrMergedNorm(arr, 1) = (trialData.perceptualError(arr, 1)-conData.perceptualErrorMean(ii, 1))./conData.perceptualErrorStd(ii, 1);
+        trialData.torsionVelTMergedNorm(arr, 1) = (trialData.torsionVelTMerged(arr, 1)-conData.torsionVelTMean(ii, 1))./conData.torsionVelTStd(ii, 1);
+    else
+        arr = find(all(trialData{:, 1:4}==repmat(conData{ii, 1:4}, [size(trialData, 1) 1]), 2));
+        trialData.perceptualErrNorm(arr, 1) = (trialData.perceptualError(arr, 1)-conData.perceptualErrorMean(ii, 1))./conData.perceptualErrorStd(ii, 1);
+        trialData.torsionVelTNorm(arr, 1) = (trialData.torsionVelT(arr, 1)-conData.torsionVelTMean(ii, 1))./conData.torsionVelTStd(ii, 1);
+    end
+end
 
 save(['dataLong', endName, '.mat'], 'trialData', 'conData');
