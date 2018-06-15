@@ -7,7 +7,7 @@ clc; clear all; close all;
 try
     global trigger info;
     setupTrigger();
-    currentBlock = 1;
+    currentBlock = 4;
     rStyleDefault = 1; 
     expTyp = 1.5;
     eyeTracker = 1;
