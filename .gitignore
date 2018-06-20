@@ -13,3 +13,4 @@
 *.dat
 *.jpg
 data/*
+results/*
