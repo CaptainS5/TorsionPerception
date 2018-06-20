@@ -78,7 +78,7 @@ try
         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
             length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
             length(prm.rotation.freq);
-        prm.trialPerCondition = 18; % 360 trials in total, 60 trials each block
+        prm.trialPerCondition = 18; % 288 trials in total, 48 trials each block
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         
         prm.fileName.folder = ['data\', info.subID{1}];
@@ -268,7 +268,7 @@ try
             save(prm.fileName.disp, 'display');
             save(prm.fileName.resp, 'resp');
             
-            trialN = trialN+1;
+            trialN = trialN+1
             tempN = tempN+1;
             
             % quit, only for debugging
