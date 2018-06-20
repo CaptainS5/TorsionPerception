@@ -13,7 +13,8 @@ folder = pwd;
 
 % basic setting
 % names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
-names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
+% names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
+names = {'SMcontrol'};
 merged = 0; % whether initial direction is merged; 1=merged
 mergedSide = 0; % for Exp2
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
@@ -71,7 +72,7 @@ cd(folder)
 dataPercept = table();
 dataPMFall = table(); % experiment
 dataPMFbaseAll = table(); % baseline
-for ii = 3:size(names, 2)
+for ii = 1:size(names, 2)
     % load raw data for each participant
     cd ..
     if howMany>0
@@ -192,7 +193,7 @@ for ii = 3:size(names, 2)
         legend(legendName, 'box', 'off', 'Location', 'northwest')
 %         ylim([-25, 25])
         xlabel('Rotation speed (°/s)')
-        ylabel('Absolute perceived shift (°)')
+        ylabel('Perceived shift in direction (°)')
         set(gca, 'FontSize', fontSize, 'box', 'off')
         saveas(gca, [names{ii}, '_', mergeName, '_speedSameDirection.pdf'])
 end

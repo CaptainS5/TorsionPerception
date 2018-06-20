@@ -10,18 +10,19 @@ clear all; close all; clc
 
 % basic setting
 % names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
-names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
+% names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
+names = {'SMcontrol'};
 folder = pwd;
 howMany = -13; % include the first howMany trials for each condition*each initialDirection
 % using for pilot to see how many trials we need...
 % if not using this, set howMany to a negative number such as -1
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
-trialPerBlock = 60; % ignore unfinished blocks
+trialPerBlock = 48; % ignore unfinished blocks
 trialPerBlockBase = 60; % ignore unfinished blocks
 
 dataRawAll = table();
 dataRawBaseAll = table();
-for ii = 3:size(names, 2)
+for ii = 1:size(names, 2)
     % Read all raw data
     cd ..
     % read Experiment data

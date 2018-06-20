@@ -5,8 +5,10 @@ clear all; close all; clc
 global trial
 
 % names = {'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
-names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
-conditions = [25 50 100 200 400];
+% names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
+% conditions = [25 50 100 200 400];
+names = {'SMcontrol'};
+conditions = [25 50 100 200];
 startT = 1;
 loadData = 0;
 individualPlots = 1;
@@ -15,8 +17,8 @@ torsionThreshold = 10*ones(size(names));
 torsionFrames = 3*ones(size(names));
 direction = [-1 1]; % rotation direction
 trialPerCon = 12; % for each flash onset, all directions together though...
-% eyeName = {'L' 'R'};
-eyeName = {'R'};
+eyeName = {'L' 'R'};
+% eyeName = {'R'};
 % change both paramters below, as well as time window in the loop around line 73
 % checkAngle = -1; % 1-for direction after reversal, -1 for direction before reversal
 endName = 'baseline';

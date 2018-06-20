@@ -9,8 +9,10 @@ global trial
 % conditions2 = [25 50 100 150 200];
 % conditions3 = [25 50 100 200 400];
 % names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
-names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
-conditions = [25 50 100 200 400];
+% names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
+% conditions = [25 50 100 200 400];
+names = {'SMcontrol'};
+conditions = [25 50 100 200];
 cd ..
 analysisF = pwd;
 folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\Torsion&perception\data'};
@@ -18,16 +20,16 @@ direction = [-1 1]; % initial direction; in the plot shows the direction after r
 trialPerCon = 72; % for each rotation speed, all directions together though...
 torsionThreshold = 10*ones(size(names));
 torsionFrames = 3*ones(size(names));
-% eyeName = {'L' 'R'};
-eyeName = {'R'};
+eyeName = {'L' 'R'};
+% eyeName = {'R'};
 % change both paramters below, as well as time window in the loop 
 % around line 100
 % checkAngle = -1; % 1-for direction after reversal, -1 for direction before reversal
 % for the endName, also change around line70 for the time window used
-endName = '120msToReversal';
+% endName = '120msToReversal';
 % endName = '120msAroundReversal';
 % endName = '120msToEnd';
-% endName = 'atReversal';
+endName = 'atReversal';
 
 trialData = table(); % organize into long format
 conData = table();
@@ -37,7 +39,7 @@ countLc = 1; % for conData
 cd ..
 load(['dataBase_all', num2str(size(names, 2)), '.mat'])
 
-for subj = 3:length(names)
+for subj = 1:length(names)
     cd(analysisF)
     %     if subj <=2
     %         conditions = conditions0;
@@ -89,12 +91,16 @@ for subj = 3:length(names)
                     trial.torsionFrames = torsionFrames(subj);
                     
                     %% change the time window here
-%                                         trial.stim_offset = trial.stim_reversal+ms2frames(10); % reversal
-%                                         trial.stim_offset = trial.stim_reversal+ms2frames(50); % reversal
-                                        trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+120); % 120ms latency
-                                        trial.stim_offset = trial.stim_reversal; % reversal
-                    %                     trial.stim_onset = trial.stim_reversal - ms2frames((0.12)*1000); % 120ms before reversal
-                    %                     trial.stim_offset = trial.stim_reversal + ms2frames((0.12)*1000); % 120ms after reversal
+                    % at reversal
+                    trial.stim_offset = trial.stim_reversal+ms2frames(10); % reversal
+                    trial.stim_offset = trial.stim_reversal+ms2frames(50); % reversal
+%                     % 120ms to reversal
+%                     trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+120); % 120ms latency
+%                     trial.stim_offset = trial.stim_reversal; % reversal
+%                     % 120ms around reversal
+%                     trial.stim_onset = trial.stim_reversal - ms2frames((0.12)*1000); % 120ms before reversal
+%                     trial.stim_offset = trial.stim_reversal + ms2frames((0.12)*1000); % 120ms after reversal
+%                     % reversal to end
 %                     trial.stim_onset = trial.stim_reversal + ms2frames((0.12)*1000);
 %                     trial.stim_offset = trial.stim_onset + ms2frames((logData.durationAfter(currentTrial)-0.12)*1000); % end of display
                     

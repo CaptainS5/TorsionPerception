@@ -10,9 +10,10 @@ folder = pwd;
 
 % basic setting
 % names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
-names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
-merged = 1; % whether initial direction is merged; 1=merged
-mergedSide = 1; % for Exp2
+% names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
+names = {'SMcontrol'};
+merged = 0; % whether initial direction is merged; 1=merged
+mergedSide = 0; % for Exp2
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 trialPerCon = 5; % trials per condition (separate for directions) in the experiment; 6 for Exp1, 5 for Exp2
 % for baseline, initialDirection IS the direction of displacement
@@ -135,7 +136,7 @@ for t = 1:size(names, 2)
     legend(legendName, 'box', 'off')
 %     ylim([-5, 10])
     xlabel('Tilt angle (°)')
-    ylabel('Absolute report error (°)')
+    ylabel('Report error in direction (°)')
 %     if cN==1
 %     title(['mean=', num2str(dataBase.baseErrorMean(t, 1))])
 %     end

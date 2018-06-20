@@ -8,7 +8,7 @@ timeInMs = linspace(0, trial.length*1000/sampleRate, 5);
 tickStep = (2000/5)/(length(timeInMs)-1)*2; %?...
 % tickStep = (2000/5)/(length(timeInMs)-1); %?...
 %% position plot
-subplot(3,1,1,'replace');
+subplot(2,2,2,'replace');
 
 axis([startFrame endFrame -15 15]);
 %change frames to ms
@@ -46,40 +46,40 @@ end
 
 
 %% velocity plot
-% subplot(2,3,4,'replace');
-% axis([startFrame endFrame -60 60]);
-% %change frames to ms
-% set(gca,'Xtick',startFrame:tickStep:endFrame,'XTickLabel',timeInMs);
-% 
-% hold on;
-% xlabel('Time(ms)', 'fontsize', 12);
-% ylabel('Speed (degree/second)', 'fontsize', 12);
-% plot(startFrame:endFrame,trial.frames.DX_filt(startFrame:endFrame),'k');
-% 
-% plot(startFrame:endFrame,trial.frames.DY_filt(startFrame:endFrame),'b');
-% plot(pursuit.onset,trial.frames.DX_filt(pursuit.onset),'r:+');
-% 
-% 
-% plot(trial.saccades.X.onsets,trial.frames.DX_filt(trial.saccades.X.onsets),'g*');
-% plot(trial.saccades.X.offsets,trial.frames.DX_filt(trial.saccades.X.offsets),'k*');
-% 
-% plot(trial.saccades.Y.onsets,trial.frames.DY_filt(trial.saccades.Y.onsets),'y*');
-% plot(trial.saccades.Y.offsets,trial.frames.DY_filt(trial.saccades.Y.offsets),'b*');
-% 
+subplot(2,2,1,'replace');
+axis([startFrame endFrame -60 60]);
+%change frames to ms
+set(gca,'Xtick',startFrame:tickStep:endFrame,'XTickLabel',timeInMs);
+
+hold on;
+xlabel('Time(ms)', 'fontsize', 12);
+ylabel('Speed (degree/second)', 'fontsize', 12);
+plot(startFrame:endFrame,trial.frames.DX_filt(startFrame:endFrame),'k');
+
+plot(startFrame:endFrame,trial.frames.DY_filt(startFrame:endFrame),'b');
+plot(pursuit.onset,trial.frames.DX_filt(pursuit.onset),'r:+');
+
+
+plot(trial.saccades.X.onsets,trial.frames.DX_filt(trial.saccades.X.onsets),'g*');
+plot(trial.saccades.X.offsets,trial.frames.DX_filt(trial.saccades.X.offsets),'k*');
+
+plot(trial.saccades.Y.onsets,trial.frames.DY_filt(trial.saccades.Y.onsets),'y*');
+plot(trial.saccades.Y.offsets,trial.frames.DY_filt(trial.saccades.Y.offsets),'b*');
+
 % if pursuit.onsetOnSaccade
 %     plot(trial.saccades.firstSaccadeOffset+trial.stim_onset,trial.frames.DX_filt(trial.saccades.firstSaccadeOffset+trial.stim_onset),'r:+');
 % else
 %     plot(pursuit.onset,trial.frames.DX_filt(pursuit.onset),'r:+');
 % end
-% 
+
 % plot(startFrame:endFrame,trial.frames.DS(startFrame:endFrame),'k-.');
-% 
-% line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle',':');
-% line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle',':');
-% line([startFrame endFrame], [0 0],'Color','k','LineStyle',':');
+
+line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle',':');
+line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle',':');
+line([startFrame endFrame], [0 0],'Color','k','LineStyle',':');
 
 %% torsion plot
-subplot(3,1,2,'replace');
+subplot(2,2,3,'replace');
 % subplot(2,1,1,'replace');
 
 axis([startFrame endFrame -5 5]);
@@ -124,7 +124,7 @@ set(gca, 'FontSize', 15)
 
 %% torsion velocity plot
 % subplot(2,3,5,'replace');
-subplot(3,1,3,'replace');
+subplot(2,2,4,'replace');
 axis([startFrame endFrame -20 20]);
 %change frames to ms
 set(gca,'Xtick',startFrame:tickStep:endFrame,'XTickLabel',timeInMs);

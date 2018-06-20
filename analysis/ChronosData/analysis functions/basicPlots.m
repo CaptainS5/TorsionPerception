@@ -3,18 +3,20 @@
 clear all; close all; clc
 
 names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
-startT = 3; % start from which participant for individual plots
 conditions = [25 50 100 200 400];
+% names = {'SMcontrol'};
+% conditions = [25 50 100 200];
+startT = 3; % start from which participant for individual plots
 individualPlots = 1; % whether plot individual data
 averagedPlots = 0;
 merged = 0;
 direction = [-1 1]; % initial direction; in the plot shows the direction after reversal
 trialPerCon = 60; % for each flash onset, all directions together though...
-% eyeName = {'L' 'R'};
-eyeName = {'R'};
-endName = '120msToReversal'; % from beginning of stimulus to reversal
+eyeName = {'L' 'R'};
+% eyeName = {'R'};
+% endName = '120msToReversal'; % from beginning of stimulus to reversal
 % endName = '120msAroundReversal';
-% endName = '120msToEnd'; % 120ms after reversal to end of display
+endName = '120msToEnd'; % 120ms after reversal to end of display
 % endName = 'atReversal';
 
 if merged==0
@@ -89,7 +91,7 @@ if individualPlots==1
                 
                 errorbar(conditions, tempDc.perceptualErrorMean(sortIc, 1), tempDc.perceptualErrorStd(sortIc, 1), 'LineWidth', 1.5)
                 hold on
-                errorbar(conditions, -tempDcc.perceptualErrorMean(sortIcc, 1), tempDcc.perceptualErrorStd(sortIcc, 1), 'LineWidth', 1.5)
+                errorbar(conditions, tempDcc.perceptualErrorMean(sortIcc, 1), tempDcc.perceptualErrorStd(sortIcc, 1), 'LineWidth', 1.5)
                 legend({['CW(' num2str(mean(tempDc.nonErrorTrialN(sortIc, 1))) ')'] ...
                     ['CCW(' num2str(mean(tempDcc.nonErrorTrialN(sortIcc, 1))) ')']}, ...
                     'box', 'off', 'FontSize', 10, 'Location', 'northwest')
@@ -102,7 +104,7 @@ if individualPlots==1
             end
             
             xlabel('Rotation speed (deg/s)')
-            ylabel('Perceptual error (deg)')
+            ylabel('Perceptual error in direction (deg)')
             set(gca, 'FontSize', 15, 'box', 'off')
             %             xlim([0 420])
             ylim([-25 25])
