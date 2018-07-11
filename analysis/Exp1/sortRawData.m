@@ -11,7 +11,7 @@ clear all; close all; clc
 % basic setting
 % names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 % names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
-names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol'};
+names = {'SMcontrol' 'MScontrol' 'KTcontrol'};
 folder = pwd;
 howMany = -13; % include the first howMany trials for each condition*each initialDirection
 % using for pilot to see how many trials we need...

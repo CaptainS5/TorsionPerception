@@ -1,6 +1,6 @@
 % function baselinePlot
 
-% 06/12/2018, Xiuyun Wu
+% 07/10/2018, Xiuyun Wu
 
 % some (maybe) useful codes from the past...
 % arr = find(all(tabdata{:, 3:6}==cont(:,1:4),2));
@@ -11,11 +11,11 @@ folder = pwd;
 % basic setting
 % names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 % names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
-names = {'SMcontrol'};
-merged = 0; % whether initial direction is merged; 1=merged
-mergedSide = 0; % for Exp2
+names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol'};
+merged = 1; % whether initial direction is merged; 1=merged
+mergedSide = 1; % for Exp2
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
-trialPerCon = 5; % trials per condition (separate for directions) in the experiment; 6 for Exp1, 5 for Exp2
+trialPerCon = 6; % trials per condition (separate for directions) in the experiment; 6 for Exp1, 5 for Exp2
 % for baseline, initialDirection IS the direction of displacement
 fontSize = 15; % for plot
 dirCons = [-1 1]; % initial counterclockwise and clockwise; in plots shows direction after reversal
@@ -49,6 +49,7 @@ end
 % % back into the folder
 % cd(folder)
 dataBase = table();
+dataBaseTrial = table();
 for t = 1:size(names, 2)
     % load raw data for each participant
     cd ..
@@ -79,8 +80,14 @@ for t = 1:size(names, 2)
         
         data.angleError(tt, 1) = (data.reportAngle(tt)-data.reversalAngle(tt))*data.initialDirection(tt);
     end
-    idxt = find((data.reportAngle<90 & data.reversalAngle>90) | (data.reportAngle>90 & data.reversalAngle<90) | abs(data.angleError)>15);
+    idxt = find((data.reportAngle<87 & data.reversalAngle>90) | (data.reportAngle>93 & data.reversalAngle<90) | abs(data.angleError)>15);
     data(idxt, :) = [];
+    
+    if t==1
+        dataBaseTrial = data;
+    else
+        dataBaseTrial = [dataBaseTrial; data];
+    end
     
     cN = 1;
     if strcmp(mergeName, 'mergedD')
@@ -115,15 +122,21 @@ for t = 1:size(names, 2)
             end
         end
     end
+%     
+%     if cN==1
+%         % just use the average...
+%         dataBase.sub(t, 1) = t;
+%         dataBase.baseErrorMean(t, 1) = mean(data.angleError);
+%         dataBase.baseErrorStd(t, 1) = std(data.angleError);
+%     end
+
+    % fit the curve
+    [dataFit.fitobject{t}, dataFit.gof{t}, dataFit.output{t}] = fit(data.rotationSpeed, data.angleError, 'poly1', 'lower', [-inf, -inf], 'upper', [inf, inf]); % f(x) = p1*x + p2
     
-    if cN==1
-        % just use the average...
-        dataBase.sub(t, 1) = t;
-        dataBase.baseErrorMean(t, 1) = mean(data.angleError);
-        dataBase.baseErrorStd(t, 1) = std(data.angleError);
-    end
-%     % fit the curve
-%     [dataFit.fitobject{t}, dataFit.gof{t}, dataFit.output{t}] = fit(data.rotationSpeed, data.angleError, 'lowess', 'lower', [-inf, -inf, 0], 'upper', [inf, inf, 0]); % f(x) = p1*x^2 + p2*x + p3
+    dataBase.sub(t, 1) = t;
+    dataBase.a(t, 1) = dataFit.fitobject{t}.p1;
+    dataBase.b(t, 1) = dataFit.fitobject{t}.p2;
+    dataBase.asympt(t, 1) = dataBase.a(t, 1)*16+dataBase.b(t, 1)+16;
     
     % draw plots
     figure
@@ -132,7 +145,7 @@ for t = 1:size(names, 2)
         errorbar(onset, meanError(:, cI), stdError(:, cI), 'LineWidth', 1.5)
         hold on
     end
-%     plot(dataFit.fitobject{t});%, 'LineWidth', 2)
+    plot(dataFit.fitobject{t});%, 'LineWidth', 2)
     legend(legendName, 'box', 'off')
 %     ylim([-5, 10])
     xlabel('Tilt angle (°)')
@@ -145,5 +158,5 @@ for t = 1:size(names, 2)
 end
 if cN==1
     cd ..
-    save(['dataBase_all', num2str(t), '.mat'], 'dataBase')
+    save(['dataBase_all', num2str(t), '.mat'], 'dataBase', 'dataBaseTrial')
 end

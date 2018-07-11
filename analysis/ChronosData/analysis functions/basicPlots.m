@@ -1,17 +1,17 @@
 % Draw plots
-% Xiuyun Wu, 06/13/2018
+% Xiuyun Wu, 07/10/2018
 clear all; close all; clc
 
-names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
-conditions = [25 50 100 200 400];
-% names = {'SMcontrol'};
-% conditions = [25 50 100 200];
-startT = 3; % start from which participant for individual plots
+% names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
+% conditions = [25 50 100 200 400];
+names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol'};
+conditions = [25 50 100 200];
+startT = 2; % start from which participant for individual plots
 individualPlots = 1; % whether plot individual data
 averagedPlots = 0;
 merged = 0;
 direction = [-1 1]; % initial direction; in the plot shows the direction after reversal
-trialPerCon = 60; % for each flash onset, all directions together though...
+trialPerCon = 72; % for each flash onset, all directions together though...
 eyeName = {'L' 'R'};
 % eyeName = {'R'};
 % endName = '120msToReversal'; % from beginning of stimulus to reversal

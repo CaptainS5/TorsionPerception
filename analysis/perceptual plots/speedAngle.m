@@ -3,7 +3,7 @@
 % reversal
 % Then save the data, and draw the plots
 
-% 06/12/2018, Xiuyun Wu
+% 07/10/2018, Xiuyun Wu
 
 % some (maybe) useful codes from the past...
 % arr = find(all(tabdata{:, 3:6}==cont(:,1:4),2));
@@ -14,9 +14,9 @@ folder = pwd;
 % basic setting
 % names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 % names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
-names = {'SMcontrol'};
-merged = 0; % whether initial direction is merged; 1=merged
-mergedSide = 0; % for Exp2
+names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol'};
+merged = 1; % whether initial direction is merged; 1=merged
+mergedSide = 1; % for Exp2
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 % loadData = 0; % whether get new fitting or using existing fitting
 howMany = -12;% include the first howMany trials for each condition*each initialDirection
@@ -115,10 +115,21 @@ for ii = 1:size(names, 2)
         data.angleError(tt, 1) = -(data.reportAngle(tt)-data.reversalAngle(tt))*data.initialDirection(tt);
     end
     % corrected for baseline
-    temp1 = find(data.angleError>dataBase.baseErrorMean(ii, 1));
-    temp2 = find(data.angleError<-dataBase.baseErrorMean(ii, 1));
-    data.angleError(temp1) = data.angleError(temp1)-dataBase.baseErrorMean(ii, 1);
-    data.angleError(temp2) = data.angleError(temp2)+dataBase.baseErrorMean(ii, 1);
+    if dataBase.a(ii, 1)~=0
+    temp11 = find(data.angleError>dataBase.b(ii, 1) & data.angleError<=dataBase.asympt(ii, 1));
+    temp21 = find(data.angleError>dataBase.asympt(ii, 1));
+    temp12 = find(data.angleError<-dataBase.b(ii, 1) & data.angleError>=-dataBase.asympt(ii, 1));
+    temp22 = find(data.angleError<-dataBase.asympt(ii, 1));
+    data.angleError(temp11) = (data.angleError(temp11)-dataBase.b(ii, 1))./(dataBase.a(ii, 1)+1);
+    data.angleError(temp21) = data.angleError(temp21)-(dataBase.asympt(ii, 1)-16);
+    data.angleError(temp12) = (data.angleError(temp12)+dataBase.b(ii, 1))./(dataBase.a(ii, 1)+1);
+    data.angleError(temp22) = data.angleError(temp22)+(dataBase.asympt(ii, 1)-16);
+    else
+        temp1 = find(data.angleError>dataBase.b(ii, 1));
+        temp2 = find(data.angleError<-dataBase.b(ii, 1));
+        data.angleError(temp1) = data.angleError(temp1)-dataBase.b(ii, 1);
+        data.angleError(temp2) = data.angleError(temp2)+dataBase.b(ii, 1);
+    end
     
     idxt = find(data.angleError<-10);
     data(idxt, :) = [];
