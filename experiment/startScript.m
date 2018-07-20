@@ -7,10 +7,10 @@ clc; clear all; close all;
 try
     global trigger info;
     setupTrigger();
-    currentBlock = 4;
+    currentBlock = 1;
     rStyleDefault = 1; 
-    expTyp = 1.5;
-    eyeTracker = 1;
+    expTyp = -0.5;
+    eyeTracker = 0;
        
     while(true)
         if currentBlock>6
