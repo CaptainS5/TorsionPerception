@@ -1,29 +1,32 @@
-% Xiuyun Wu, 07/10/2018
+% Xiuyun Wu, 07/12/2018
+% direction, initial angle1, reversal angle1, all are target
+% properties--needs to check the target side to see which side the
+% stimulus is
 clear all; close all; clc
 
 global trial
 
 % names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
 % conditions = [25 50 100 200 400];
-names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol'};
+names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol' 'FScontrol' 'XWcontrol' 'SCcontrol' 'JFcontrol'};
 conditions = [25 50 100 200];
 cd ..
 analysisF = pwd;
-folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\data\Exp1'};
+folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\data'};
 direction = [-1 1]; % initial direction; in the plot shows the direction after reversal
 trialPerCon = 72; % for each rotation speed, all directions together though...
 torsionThreshold = 8*ones(size(names));
 torsionFrames = 3*ones(size(names));
 eyeName = {'L' 'R'};
 % eyeName = {'R'};
-% change both paramters below, as well as time window in the loop 
+% change both paramters below, as well as time window in the loop
 % around line 100
 % checkAngle = -1; % 1-for direction after reversal, -1 for direction before reversal
 % for the endName, also change around line70 for the time window used
-endName = '120msToReversal';
+% endName = '120msToReversal';
 % endName = '120msAroundReversal';
 % endName = '120msToEnd';
-% endName = 'atReversal';
+endName = 'atReversal';
 
 trialData = table(); % organize into long format
 conData = table();
@@ -53,19 +56,19 @@ for subj = 1:length(names)
         for block = 1:6
             % read in data and socscalexy
             filename = ['session_' num2str(block,'%.2i') '_' eyeName{eye} '.dat'];
-%             if subj==5 && block==5 % for KT, 5
-%                 data = readDataFile_KTb5(filename, [folder{:} '\' subject '\chronos']);
-%             elseif subj==6 && block==3 % for MS, 3-lost frames...
-%                 data = readDataFile_MSb3(filename, [folder{:} '\' subject '\chronos']);
-%             elseif subj==7 && block==1 % for IC, 1
-%                 data = readDataFile_ICb1(filename, [folder{:} '\' subject '\chronos']);
-%             elseif subj==9 && block==5 % for NY, 5-lost frames...
-%                 data = readDataFile_NYb5(filename, [folder{:} '\' subject '\chronos']);
-%             elseif subj==13 && block==4 % for NY, 5-lost frames...
-%                 data = readDataFile_RRb4(filename, [folder{:} '\' subject '\chronos']);
-%             else
-                data = readDataFile(filename, [folder{:} '\' subject '\chronos']);
-%             end
+            %             if subj==5 && block==5 % for KT, 5
+            %                 data = readDataFile_KTb5(filename, [folder{:} '\' subject '\chronos']);
+            %             elseif subj==6 && block==3 % for MS, 3-lost frames...
+            %                 data = readDataFile_MSb3(filename, [folder{:} '\' subject '\chronos']);
+            %             elseif subj==7 && block==1 % for IC, 1
+            %                 data = readDataFile_ICb1(filename, [folder{:} '\' subject '\chronos']);
+            %             elseif subj==9 && block==5 % for NY, 5-lost frames...
+            %                 data = readDataFile_NYb5(filename, [folder{:} '\' subject '\chronos']);
+            %             elseif subj==13 && block==4 % for NY, 5-lost frames...
+            %                 data = readDataFile_RRb4(filename, [folder{:} '\' subject '\chronos']);
+            %             else
+            data = readDataFile(filename, [folder{:} '\' subject '\chronos']);
+            %             end
             data = socscalexy(data);
             [header, logData] = readLogFile(block, ['response' num2str(block,'%.2i') '_' subject] , [folder{:} '\' subject]);
             sampleRate = 200;
@@ -85,21 +88,22 @@ for subj = 1:length(names)
                     trial.torsionFrames = torsionFrames(subj);
                     
                     %% change the time window here
-%                     % at reversal
-%                     trial.stim_onset = trial.stim_reversal; % reversal
-%                     trial.stim_offset = trial.stim_reversal+ms2frames(40+120); % reversal
-% %                     trial.stim_onset = trial.stim_reversal+ms2frames(10); % reversal--if taken delay into account...
-% %                     trial.stim_offset = trial.stim_reversal+ms2frames(50); % reversal
-% % 120ms to reversal
+                                        % at reversal
+                                        trial.stim_onset = trial.stim_reversal; % reversal
+                                        trial.stim_offset = trial.stim_reversal+ms2frames(40+120); % reversal
+                    %
+                    % %                     trial.stim_onset = trial.stim_reversal+ms2frames(10); % reversal--if taken delay into account...
+                    % %                     trial.stim_offset = trial.stim_reversal+ms2frames(50); % reversal
+%                     % 120ms to reversal
 %                     trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+120); % 120ms latency
 %                     trial.stim_offset = trial.stim_reversal; % reversal
-% % around reversal                    
-%                     trial.stim_onset = trial.stim_reversal; 
-%                     trial.stim_offset = trial.stim_reversal + ms2frames((0.12)*1000); % 120ms after reversal
-                    % 120ms to end
-                    trial.stim_onset = trial.stim_reversal + ms2frames((0.12+0.04)*1000);
-                    trial.stim_offset = trial.stim_onset + ms2frames((logData.durationAfter(currentTrial)-0.12)*1000); % end of display
-                                      
+                    % % around reversal
+                    %                     trial.stim_onset = trial.stim_reversal;
+                    %                     trial.stim_offset = trial.stim_reversal + ms2frames((0.12)*1000); % 120ms after reversal
+%                                                             % 120ms to end
+%                                                             trial.stim_onset = trial.stim_reversal + ms2frames((0.12+0.04)*1000);
+%                                                             trial.stim_offset = trial.stim_onset + ms2frames((logData.durationAfter(currentTrial)-0.12)*1000); % end of display
+                    
                     find saccades;
                     [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
                     % [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DX_filt, trial.frames.DDX_filt, 20, trial.stimulusMeanVelocity);
@@ -130,6 +134,14 @@ for subj = 1:length(names)
                     
                     trialData.rotationSpeed(countLt, 1) = resp.rotationSpeed(t);
                     trialData.afterReversalD(countLt, 1) = -direction(dirIdx); % 1-clockwise, -1 counterclockwise
+                    % this is the direction of the stimulus on the same side as the eye
+                    if (trialData.eye(countLt, 1)==1 && resp.targetSide(t)==-1) || (trialData.eye(countLt, 1)==2 && resp.targetSide(t)==1) % same side
+                        trialData.sameSideAfterReversalD(countLt, 1) = -direction(dirIdx); % 1-clockwise, -1 counterclockwise
+                    else % different side
+                        trialData.sameSideAfterReversalD(countLt, 1) = direction(dirIdx); % 1-clockwise, -1 counterclockwise
+                    end
+                    
+                    trialData.targetSide(countLt, 1) = resp.targetSide(t);
                     
                     startFrame = trial.stim_onset;
                     endFrame = trial.stim_offset;
@@ -177,28 +189,97 @@ for subj = 1:length(names)
                         %% torsion magnitude
                         trialData.torsionAngleTotal(countLt, 1) = torsion.slowPhases.totalAngle;
                         trialData.torsionAngleCW(countLt, 1) = torsion.slowPhases.totalAngleCW;
-                        trialData.torsionAngleCCW(countLt, 1) = torsion.slowPhases.totalAngleCCW;
+                        trialData.torsionAngleCCW(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                        % angle in the direction of target motion...
                         if trialData.afterReversalD(countLt, 1)==-1
-                            trialData.torsionAngleSame(countLt, 1) = torsion.slowPhases.totalAngleCCW; % same as afterReversal angle
-                            trialData.torsionAngleAnti(countLt, 1) = -torsion.slowPhases.totalAngleCW; % opposite to afterReversal angle
+                            trialData.torsionAngleTSame(countLt, 1) = -torsion.slowPhases.totalAngleCCW; % same as afterReversal angle
+                            trialData.torsionAngleTAnti(countLt, 1) = torsion.slowPhases.totalAngleCW; % opposite to afterReversal angle
+                            
+                            trialData.sacNumTTSame(countLt, 1) = trial.saccades.T_CCW.number;
+                            trialData.sacAmpSumTTSame(countLt, 1) = trial.saccades.T_CCW.sum;
+                            trialData.sacAmpMeanTTSame(countLt, 1) = trial.saccades.T_CCW.meanAmplitude;
+                            
+                            trialData.sacNumTTAnti(countLt, 1) = trial.saccades.T_CW.number;
+                            trialData.sacAmpSumTTAnti(countLt, 1) = trial.saccades.T_CW.sum;
+                            trialData.sacAmpMeanTTAnti(countLt, 1) = trial.saccades.T_CW.meanAmplitude;
                         else
-                            trialData.torsionAngleSame(countLt, 1) = torsion.slowPhases.totalAngleCW; % same as afterReversal angle
-                            trialData.torsionAngleAnti(countLt, 1) = -torsion.slowPhases.totalAngleCCW; % opposite to afterReversal angle
+                            trialData.torsionAngleTSame(countLt, 1) = torsion.slowPhases.totalAngleCW; % same as afterReversal angle
+                            trialData.torsionAngleTAnti(countLt, 1) = -torsion.slowPhases.totalAngleCCW; % opposite to afterReversal angle
+                            
+                            trialData.sacNumTTSame(countLt, 1) = trial.saccades.T_CW.number;
+                            trialData.sacAmpSumTTSame(countLt, 1) = trial.saccades.T_CW.sum;
+                            trialData.sacAmpMeanTTSame(countLt, 1) = trial.saccades.T_CW.meanAmplitude;
+                            
+                            trialData.sacNumTTAnti(countLt, 1) = trial.saccades.T_CCW.number;
+                            trialData.sacAmpSumTTAnti(countLt, 1) = trial.saccades.T_CCW.sum;
+                            trialData.sacAmpMeanTTAnti(countLt, 1) = trial.saccades.T_CCW.meanAmplitude;
                         end
-                        angles = [trialData.torsionAngleSame(countLt, 1) trialData.torsionAngleAnti(countLt, 1)];
-                        idx = find(abs(angles)==max(abs(angles(:))));
-                        trialData.torsionAngle(countLt, 1) = angles(idx);
-%                         % just take the one that is not zero, if both
-%                         % not zero, take the expected direction
-%                         if torsion.slowPhases.totalAngleCW==0
-%                             trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
-%                         elseif torsion.slowPhases.totalAngleCCW==0
-%                             trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
-%                         elseif trialData.afterReversalD(countLt, 1)*checkAngle==1
-%                             trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
-%                         elseif trialData.afterReversalD(countLt, 1)*checkAngle==-1
-%                             trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
-%                         end
+                        %                         angles = [trialData.torsionAngleSame(countLt, 1) trialData.torsionAngleAnti(countLt, 1)];
+                        %                         idx = find(abs(angles)==max(abs(angles(:))));
+                        %                         trialData.torsionAngle(countLt, 1) = angles(idx);
+                        
+                        % angle in the direction of the rotation on the same side as the eye...
+                        if (trialData.eye(countLt, 1)==1 && resp.targetSide(t)==-1) || (trialData.eye(countLt, 1)==2 && resp.targetSide(t)==1) % same side
+                            if trialData.afterReversalD(countLt, 1)==-1
+                                trialData.torsionAngleSSame(countLt, 1) = -torsion.slowPhases.totalAngleCCW; % same as afterReversal angle
+                                trialData.torsionAngleSAnti(countLt, 1) = torsion.slowPhases.totalAngleCW; % opposite to afterReversal angle
+                                
+                                trialData.sacNumTSSame(countLt, 1) = trial.saccades.T_CCW.number;
+                                trialData.sacAmpSumTSSame(countLt, 1) = trial.saccades.T_CCW.sum;
+                                trialData.sacAmpMeanTSSame(countLt, 1) = trial.saccades.T_CCW.meanAmplitude;
+                                
+                                trialData.sacNumTSAnti(countLt, 1) = trial.saccades.T_CW.number;
+                                trialData.sacAmpSumTSAnti(countLt, 1) = trial.saccades.T_CW.sum;
+                                trialData.sacAmpMeanTSAnti(countLt, 1) = trial.saccades.T_CW.meanAmplitude;
+                            else
+                                trialData.torsionAngleSSame(countLt, 1) = torsion.slowPhases.totalAngleCW; % same as afterReversal angle
+                                trialData.torsionAngleSAnti(countLt, 1) = -torsion.slowPhases.totalAngleCCW; % opposite to afterReversal angle
+                                
+                                trialData.sacNumTSSame(countLt, 1) = trial.saccades.T_CW.number;
+                                trialData.sacAmpSumTSSame(countLt, 1) = trial.saccades.T_CW.sum;
+                                trialData.sacAmpMeanTSSame(countLt, 1) = trial.saccades.T_CW.meanAmplitude;
+                                
+                                trialData.sacNumTSAnti(countLt, 1) = trial.saccades.T_CCW.number;
+                                trialData.sacAmpSumTSAnti(countLt, 1) = trial.saccades.T_CCW.sum;
+                                trialData.sacAmpMeanTSAnti(countLt, 1) = trial.saccades.T_CCW.meanAmplitude;
+                            end
+                        else % different side
+                            if trialData.afterReversalD(countLt, 1)==-1
+                                trialData.torsionAngleSSame(countLt, 1) = torsion.slowPhases.totalAngleCW; % same as afterReversal angle
+                                trialData.torsionAngleSAnti(countLt, 1) = -torsion.slowPhases.totalAngleCCW; % opposite to afterReversal angle
+                                
+                                trialData.sacNumTSSame(countLt, 1) = trial.saccades.T_CW.number;
+                                trialData.sacAmpSumTSSame(countLt, 1) = trial.saccades.T_CW.sum;
+                                trialData.sacAmpMeanTSSame(countLt, 1) = trial.saccades.T_CW.meanAmplitude;
+                                
+                                trialData.sacNumTSAnti(countLt, 1) = trial.saccades.T_CCW.number;
+                                trialData.sacAmpSumTSAnti(countLt, 1) = trial.saccades.T_CCW.sum;
+                                trialData.sacAmpMeanTSAnti(countLt, 1) = trial.saccades.T_CCW.meanAmplitude;
+                            else
+                                trialData.torsionAngleSSame(countLt, 1) = -torsion.slowPhases.totalAngleCCW; % same as afterReversal angle
+                                trialData.torsionAngleSAnti(countLt, 1) = torsion.slowPhases.totalAngleCW; % opposite to afterReversal angle
+                                
+                                trialData.sacNumTSSame(countLt, 1) = trial.saccades.T_CCW.number;
+                                trialData.sacAmpSumTSSame(countLt, 1) = trial.saccades.T_CCW.sum;
+                                trialData.sacAmpMeanTSSame(countLt, 1) = trial.saccades.T_CCW.meanAmplitude;
+                                
+                                trialData.sacNumTSAnti(countLt, 1) = trial.saccades.T_CW.number;
+                                trialData.sacAmpSumTSAnti(countLt, 1) = trial.saccades.T_CW.sum;
+                                trialData.sacAmpMeanTSAnti(countLt, 1) = trial.saccades.T_CW.meanAmplitude;
+                            end
+                        end
+                        
+                        %                         % just take the one that is not zero, if both
+                        %                         % not zero, take the expected direction
+                        %                         if torsion.slowPhases.totalAngleCW==0
+                        %                             trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                        %                         elseif torsion.slowPhases.totalAngleCCW==0
+                        %                             trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                        %                         elseif trialData.afterReversalD(countLt, 1)*checkAngle==1
+                        %                             trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                        %                         elseif trialData.afterReversalD(countLt, 1)*checkAngle==-1
+                        %                             trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                        %                         end
                         
                         %                     if checkAngle == -1 % the same as direction before reversal
                         %                         if trialData.afterReversalD(countLt, 1)==1 % direction after reversal is CW
@@ -216,12 +297,18 @@ for subj = 1:length(names)
                         
                         %% saccade numbers
                         trialData.sacNumT(countLt, 1) = trial.saccades.T.number;
+                        trialData.sacNumTCW(countLt, 1) = trial.saccades.T_CW.number;
+                        trialData.sacNumTCCW(countLt, 1) = trial.saccades.T_CCW.number;
                         
                         %% saccade sum amplitudes
                         trialData.sacAmpSumT(countLt, 1) = trial.saccades.T.sum;
+                        trialData.sacAmpSumTCW(countLt, 1) = trial.saccades.T_CW.sum;
+                        trialData.sacAmpSumTCCW(countLt, 1) = trial.saccades.T_CCW.sum;
                         
                         %% saccade mean amplitudes
                         trialData.sacAmpMeanT(countLt, 1) = trial.saccades.T.meanAmplitude;
+                        trialData.sacAmpMeanTCW(countLt, 1) = trial.saccades.T_CW.meanAmplitude;
+                        trialData.sacAmpMeanTCCW(countLt, 1) = trial.saccades.T_CCW.meanAmplitude;
                         
                         countLt = countLt+1;
                     end
@@ -234,6 +321,7 @@ for subj = 1:length(names)
     for ii = 1:2 % two directions
         for eye = 1:size(eyeName, 2)
             for conI = 1:size(conditions, 2)
+                % target motion as the reference direction
                 conData.sub(countLc, 1) = subj;
                 if strcmp(eyeName{eye}, 'L')
                     conData.eye(countLc, 1) = 1; % 1-left,
@@ -242,6 +330,7 @@ for subj = 1:length(names)
                 end
                 conData.rotationSpeed(countLc, 1) = conditions(conI);
                 conData.afterReversalD(countLc, 1) = -direction(ii); % 1-clockwise, -1 counterclockwise, direction after reversal
+                conData.sameSideAfterReversalD(countLc, 1) = -999;
                 
                 tempI = find(all(trialData{:, 1:4}==repmat(conData{countLc, 1:4}, [size(trialData, 1) 1]), 2));
                 
@@ -266,23 +355,196 @@ for subj = 1:length(names)
                 conData.torsionAngleCCWMean(countLc, 1) = nanmean(trialData.torsionAngleCCW(tempI, 1));
                 conData.torsionAngleCCWStd(countLc, 1) = nanstd(trialData.torsionAngleCCW(tempI, 1));
                 
-                conData.torsionAngleSameMean(countLc, 1) = nanmean(trialData.torsionAngleSame(tempI, 1));
-                conData.torsionAngleSameStd(countLc, 1) = nanstd(trialData.torsionAngleSame(tempI, 1));
+                conData.torsionAngleTSameMean(countLc, 1) = nanmean(trialData.torsionAngleTSame(tempI, 1));
+                conData.torsionAngleTSameStd(countLc, 1) = nanstd(trialData.torsionAngleTSame(tempI, 1));
                 
-                conData.torsionAngleAntiMean(countLc, 1) = nanmean(trialData.torsionAngleAnti(tempI, 1));
-                conData.torsionAngleAntiStd(countLc, 1) = nanstd(trialData.torsionAngleAnti(tempI, 1));
+                conData.torsionAngleTAntiMean(countLc, 1) = nanmean(trialData.torsionAngleTAnti(tempI, 1));
+                conData.torsionAngleTAntiStd(countLc, 1) = nanstd(trialData.torsionAngleTAnti(tempI, 1));
                 
-                conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngle(tempI, 1));
-                conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngle(tempI, 1));
+                conData.torsionAngleSSameMean(countLc, 1) = -999;
+                conData.torsionAngleSSameStd(countLc, 1) = -999;
+                
+                conData.torsionAngleSAntiMean(countLc, 1) = -999;
+                conData.torsionAngleSAntiStd(countLc, 1) = -999;
+                %
+                %                 conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngle(tempI, 1));
+                %                 conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngle(tempI, 1));
                 
                 conData.sacNumTMean(countLc, 1) = nanmean(trialData.sacNumT(tempI, 1));
                 conData.sacNumTStd(countLc, 1) = nanstd(trialData.sacNumT(tempI, 1));
                 
+                conData.sacNumTCWMean(countLc, 1) = nanmean(trialData.sacNumTCW(tempI, 1));
+                conData.sacNumTCWStd(countLc, 1) = nanstd(trialData.sacNumTCW(tempI, 1));
+                
+                conData.sacNumTCCWMean(countLc, 1) = nanmean(trialData.sacNumTCCW(tempI, 1));
+                conData.sacNumTCCWStd(countLc, 1) = nanstd(trialData.sacNumTCCW(tempI, 1));
+                
+                conData.sacNumTTSameMean(countLc, 1) = nanmean(trialData.sacNumTTSame(tempI, 1));
+                conData.sacNumTTSameStd(countLc, 1) = nanstd(trialData.sacNumTTSame(tempI, 1));
+                
+                conData.sacNumTTAntiMean(countLc, 1) = nanmean(trialData.sacNumTTAnti(tempI, 1));
+                conData.sacNumTTAntiStd(countLc, 1) = nanstd(trialData.sacNumTTAnti(tempI, 1));
+                
+                conData.sacNumTSSameMean(countLc, 1) = -999;
+                conData.sacNumTSSameStd(countLc, 1) = -999;
+                
+                conData.sacNumTSAntiMean(countLc, 1) = -999;
+                conData.sacNumTSAntiStd(countLc, 1) = -999;
+                
                 conData.sacAmpSumTMean(countLc, 1) = nanmean(trialData.sacAmpSumT(tempI, 1));
                 conData.sacAmpSumTStd(countLc, 1) = nanstd(trialData.sacAmpSumT(tempI, 1));
                 
+                conData.sacAmpSumTCWMean(countLc, 1) = nanmean(trialData.sacAmpSumTCW(tempI, 1));
+                conData.sacAmpSumTCWStd(countLc, 1) = nanstd(trialData.sacAmpSumTCW(tempI, 1));
+                
+                conData.sacAmpSumTCCWMean(countLc, 1) = nanmean(trialData.sacAmpSumTCCW(tempI, 1));
+                conData.sacAmpSumTCCWStd(countLc, 1) = nanstd(trialData.sacAmpSumTCCW(tempI, 1));
+                
+                conData.sacAmpSumTTSameMean(countLc, 1) = nanmean(trialData.sacAmpSumTTSame(tempI, 1));
+                conData.sacAmpSumTTSameStd(countLc, 1) = nanstd(trialData.sacAmpSumTTSame(tempI, 1));
+                
+                conData.sacAmpSumTTAntiMean(countLc, 1) = nanmean(trialData.sacAmpSumTTAnti(tempI, 1));
+                conData.sacAmpSumTTAntiStd(countLc, 1) = nanstd(trialData.sacAmpSumTTAnti(tempI, 1));
+                
+                conData.sacAmpSumTSSameMean(countLc, 1) = -999;
+                conData.sacAmpSumTSSameStd(countLc, 1) = -999;
+                
+                conData.sacAmpSumTSAntiMean(countLc, 1) = -999;
+                conData.sacAmpSumTSAntiStd(countLc, 1) = -999;
+                
                 conData.sacAmpMeanTMean(countLc, 1) = nanmean(trialData.sacAmpMeanT(tempI, 1));
                 conData.sacAmpMeanTStd(countLc, 1) = nanstd(trialData.sacAmpMeanT(tempI, 1));
+                
+                conData.sacAmpMeanTCWMean(countLc, 1) = nanmean(trialData.sacAmpMeanTCW(tempI, 1));
+                conData.sacAmpMeanTCWStd(countLc, 1) = nanstd(trialData.sacAmpMeanTCW(tempI, 1));
+                
+                conData.sacAmpMeanTCCWMean(countLc, 1) = nanmean(trialData.sacAmpMeanTCCW(tempI, 1));
+                conData.sacAmpMeanTCCWStd(countLc, 1) = nanstd(trialData.sacAmpMeanTCCW(tempI, 1));
+                
+                conData.sacAmpMeanTTSameMean(countLc, 1) = nanmean(trialData.sacAmpMeanTTSame(tempI, 1));
+                conData.sacAmpMeanTTSameStd(countLc, 1) = nanstd(trialData.sacAmpMeanTTSame(tempI, 1));
+                
+                conData.sacAmpMeanTTAntiMean(countLc, 1) = nanmean(trialData.sacAmpMeanTTAnti(tempI, 1));
+                conData.sacAmpMeanTTAntiStd(countLc, 1) = nanstd(trialData.sacAmpMeanTTAnti(tempI, 1));
+                
+                conData.sacAmpMeanTSSameMean(countLc, 1) = -999;
+                conData.sacAmpMeanTSSameStd(countLc, 1) = -999;
+                
+                conData.sacAmpMeanTSAntiMean(countLc, 1) = -999;
+                conData.sacAmpMeanTSAntiStd(countLc, 1) = -999;
+                
+                conData.nonErrorTrialN(countLc, 1) = length(tempI);
+                
+                countLc = countLc+1;
+                
+                % same side stimulus motion as the direction reference
+                conData.sub(countLc, 1) = subj;
+                if strcmp(eyeName{eye}, 'L')
+                    conData.eye(countLc, 1) = 1; % 1-left,
+                elseif strcmp(eyeName{eye}, 'R')
+                    conData.eye(countLc, 1) = 2; % 2-right
+                end
+                conData.rotationSpeed(countLc, 1) = conditions(conI);
+                conData.afterReversalD(countLc, 1) = -999; % 1-clockwise, -1 counterclockwise, direction after reversal
+                conData.sameSideAfterReversalD(countLc, 1) = -direction(ii); % 1-clockwise, -1 counterclockwise, direction after reversal
+                
+                tempI = find(all(trialData{:, 1:3}==repmat(conData{countLc, 1:3}, [size(trialData, 1) 1]), 2) & trialData.sameSideAfterReversalD==conData.sameSideAfterReversalD(countLc, 1));
+                
+                conData.perceptualErrorMean(countLc, 1) = nanmean(trialData.perceptualError(tempI, 1));
+                conData.perceptualErrorStd(countLc, 1) = nanstd(trialData.perceptualError(tempI, 1));
+                
+                conData.torsionPosMean(countLc, 1) = nanmean(trialData.torsionPosition(tempI, 1));
+                conData.torsionPosStd(countLc, 1) = nanstd(trialData.torsionPosition(tempI, 1));
+                
+                conData.torsionVelTMean(countLc, 1) = nanmean(trialData.torsionVelT(tempI, 1));
+                conData.torsionVelTStd(countLc, 1) = nanstd(trialData.torsionVelT(tempI, 1));
+                
+                conData.torsionVelTGainMean(countLc, 1) = nanmean(trialData.torsionVGain(tempI, 1));
+                conData.torsionVelTGainStd(countLc, 1) = nanstd(trialData.torsionVGain(tempI, 1));
+                
+                conData.torsionAngleTotalMean(countLc, 1) = nanmean(trialData.torsionAngleTotal(tempI, 1));
+                conData.torsionAngleTotalStd(countLc, 1) = nanstd(trialData.torsionAngleTotal(tempI, 1));
+                
+                conData.torsionAngleCWMean(countLc, 1) = nanmean(trialData.torsionAngleCW(tempI, 1));
+                conData.torsionAngleCWStd(countLc, 1) = nanstd(trialData.torsionAngleCW(tempI, 1));
+                
+                conData.torsionAngleCCWMean(countLc, 1) = nanmean(trialData.torsionAngleCCW(tempI, 1));
+                conData.torsionAngleCCWStd(countLc, 1) = nanstd(trialData.torsionAngleCCW(tempI, 1));
+                
+                conData.torsionAngleTSameMean(countLc, 1) = -999;
+                conData.torsionAngleTSameStd(countLc, 1) = -999;
+                
+                conData.torsionAngleTAntiMean(countLc, 1) = -999;
+                conData.torsionAngleTAntiStd(countLc, 1) = -999;
+                
+                conData.torsionAngleSSameMean(countLc, 1) = nanmean(trialData.torsionAngleSSame(tempI, 1));
+                conData.torsionAngleSSameStd(countLc, 1) = nanstd(trialData.torsionAngleSSame(tempI, 1));
+                
+                conData.torsionAngleSAntiMean(countLc, 1) = nanmean(trialData.torsionAngleSAnti(tempI, 1));
+                conData.torsionAngleSAntiStd(countLc, 1) = nanstd(trialData.torsionAngleSAnti(tempI, 1));
+                
+                conData.sacNumTMean(countLc, 1) = nanmean(trialData.sacNumT(tempI, 1));
+                conData.sacNumTStd(countLc, 1) = nanstd(trialData.sacNumT(tempI, 1));
+                
+                conData.sacNumTCWMean(countLc, 1) = nanmean(trialData.sacNumTCW(tempI, 1));
+                conData.sacNumTCWStd(countLc, 1) = nanstd(trialData.sacNumTCW(tempI, 1));
+                
+                conData.sacNumTCCWMean(countLc, 1) = nanmean(trialData.sacNumTCCW(tempI, 1));
+                conData.sacNumTCCWStd(countLc, 1) = nanstd(trialData.sacNumTCCW(tempI, 1));
+                
+                conData.sacNumTTSameMean(countLc, 1) = -999;
+                conData.sacNumTTSameStd(countLc, 1) = -999;
+                
+                conData.sacNumTTAntiMean(countLc, 1) = -999;
+                conData.sacNumTTAntiStd(countLc, 1) = -999;
+                
+                conData.sacNumTSSameMean(countLc, 1) = nanmean(trialData.sacNumTSSame(tempI, 1));
+                conData.sacNumTSSameStd(countLc, 1) = nanstd(trialData.sacNumTSSame(tempI, 1));
+                
+                conData.sacNumTSAntiMean(countLc, 1) = nanmean(trialData.sacNumTSAnti(tempI, 1));
+                conData.sacNumTSAntiStd(countLc, 1) = nanstd(trialData.sacNumTSAnti(tempI, 1));
+                
+                conData.sacAmpSumTMean(countLc, 1) = nanmean(trialData.sacAmpSumT(tempI, 1));
+                conData.sacAmpSumTStd(countLc, 1) = nanstd(trialData.sacAmpSumT(tempI, 1));
+                
+                conData.sacAmpSumTCWMean(countLc, 1) = nanmean(trialData.sacAmpSumTCW(tempI, 1));
+                conData.sacAmpSumTCWStd(countLc, 1) = nanstd(trialData.sacAmpSumTCW(tempI, 1));
+                
+                conData.sacAmpSumTCCWMean(countLc, 1) = nanmean(trialData.sacAmpSumTCCW(tempI, 1));
+                conData.sacAmpSumTCCWStd(countLc, 1) = nanstd(trialData.sacAmpSumTCCW(tempI, 1));
+                
+                conData.sacAmpSumTTSameMean(countLc, 1) = -999;
+                conData.sacAmpSumTTSameStd(countLc, 1) = -999;
+                
+                conData.sacAmpSumTTAntiMean(countLc, 1) = -999;
+                conData.sacAmpSumTTAntiStd(countLc, 1) = -999;
+                
+                conData.sacAmpSumTSSameMean(countLc, 1) = nanmean(trialData.sacAmpSumTSSame(tempI, 1));
+                conData.sacAmpSumTSSameStd(countLc, 1) = nanstd(trialData.sacAmpSumTSSame(tempI, 1));
+                
+                conData.sacAmpSumTSAntiMean(countLc, 1) = nanmean(trialData.sacAmpSumTSAnti(tempI, 1));
+                conData.sacAmpSumTSAntiStd(countLc, 1) = nanstd(trialData.sacAmpSumTSAnti(tempI, 1));
+                
+                conData.sacAmpMeanTMean(countLc, 1) = nanmean(trialData.sacAmpMeanT(tempI, 1));
+                conData.sacAmpMeanTStd(countLc, 1) = nanstd(trialData.sacAmpMeanT(tempI, 1));
+                
+                conData.sacAmpMeanTCWMean(countLc, 1) = nanmean(trialData.sacAmpMeanTCW(tempI, 1));
+                conData.sacAmpMeanTCWStd(countLc, 1) = nanstd(trialData.sacAmpMeanTCW(tempI, 1));
+                
+                conData.sacAmpMeanTCCWMean(countLc, 1) = nanmean(trialData.sacAmpMeanTCCW(tempI, 1));
+                conData.sacAmpMeanTCCWStd(countLc, 1) = nanstd(trialData.sacAmpMeanTCCW(tempI, 1));
+                
+                conData.sacAmpMeanTTSameMean(countLc, 1) = -999;
+                conData.sacAmpMeanTTSameStd(countLc, 1) = -999;
+                
+                conData.sacAmpMeanTTAntiMean(countLc, 1) = -999;
+                conData.sacAmpMeanTTAntiStd(countLc, 1) = -999;
+                
+                conData.sacAmpMeanTSSameMean(countLc, 1) = nanmean(trialData.sacAmpMeanTSSame(tempI, 1));
+                conData.sacAmpMeanTSSameStd(countLc, 1) = nanstd(trialData.sacAmpMeanTSSame(tempI, 1));
+                
+                conData.sacAmpMeanTSAntiMean(countLc, 1) = nanmean(trialData.sacAmpMeanTSAnti(tempI, 1));
+                conData.sacAmpMeanTSAntiStd(countLc, 1) = nanstd(trialData.sacAmpMeanTSAnti(tempI, 1));
                 
                 conData.nonErrorTrialN(countLc, 1) = length(tempI);
                 
@@ -297,8 +559,17 @@ cd([analysisF '\analysis functions'])
 % merge directions, mark as 0
 trialData.torsionVelTMerged = trialData.torsionVelT.*trialData.afterReversalD;
 trialData.torsionVGainMerged = trialData.torsionVGain.*trialData.afterReversalD;
-trialData.torsionAngleMerged = trialData.torsionAngle.*trialData.afterReversalD;
 trialData.torsionPositionMerged = trialData.torsionPosition.*trialData.afterReversalD;
+
+% target as a reference
+tempI = find(trialData.afterReversalD==-1);
+trialData.torsionAngleTSameMerged(tempI, 1) = -trialData.torsionAngleCCW(tempI, 1);
+trialData.torsionAngleTAntiMerged(tempI, 1) = -trialData.torsionAngleCW(tempI, 1);
+
+% same side stimulus as a reference
+tempI = find(trialData.sameSideAfterReversalD==-1);
+trialData.torsionAngleSSameMerged(tempI, 1) = -trialData.torsionAngleCCW(tempI, 1);
+trialData.torsionAngleSAntiMerged(tempI, 1) = -trialData.torsionAngleCW(tempI, 1);
 
 countLc = size(conData, 1)+1;
 for subj=1:size(names, 2)
@@ -313,6 +584,7 @@ for subj=1:size(names, 2)
     %     end
     for eye = 1:size(eyeName, 2)
         for ii = 1:size(conditions, 2)
+            % target reference
             conData.sub(countLc, 1) = subj;
             if strcmp(eyeName{eye}, 'L')
                 conData.eye(countLc, 1) = 1; % 1-left,
@@ -321,6 +593,7 @@ for subj=1:size(names, 2)
             end
             conData.rotationSpeed(countLc, 1) = conditions(ii);
             conData.afterReversalD(countLc, 1) = 0; % direction after reversal merged
+            conData.sameSideAfterReversalD(countLc, 1) = -999;
             
             tempI = find(all(trialData{:, 1:3}==repmat(conData{countLc, 1:3}, [size(trialData, 1) 1]), 2));
             
@@ -336,29 +609,209 @@ for subj=1:size(names, 2)
             conData.torsionVelTGainMean(countLc, 1) = nanmean(trialData.torsionVGainMerged(tempI, 1));
             conData.torsionVelTGainStd(countLc, 1) = nanstd(trialData.torsionVGainMerged(tempI, 1));
             
-            conData.torsionAngleSameMean(countLc, 1) = nanmean(trialData.torsionAngleSame(tempI, 1));
-            conData.torsionAngleSameStd(countLc, 1) = nanstd(trialData.torsionAngleSame(tempI, 1));
+            conData.torsionAngleTotalMean(countLc, 1) = nanmean(trialData.torsionAngleTotal(tempI, 1));
+            conData.torsionAngleTotalStd(countLc, 1) = nanstd(trialData.torsionAngleTotal(tempI, 1));
             
-            conData.torsionAngleAntiMean(countLc, 1) = nanmean(trialData.torsionAngleAnti(tempI, 1));
-            conData.torsionAngleAntiStd(countLc, 1) = nanstd(trialData.torsionAngleAnti(tempI, 1));
+            conData.torsionAngleCWMean(countLc, 1) = nanmean(trialData.torsionAngleCW(tempI, 1));
+            conData.torsionAngleCWStd(countLc, 1) = nanstd(trialData.torsionAngleCW(tempI, 1));
             
-            conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngleMerged(tempI, 1));
-            conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngleMerged(tempI, 1));
-            %
-            %             conData.torsionAngleCWMean(countLc, 1) = nanmean(trialData.torsionAngleCWMerged(tempI, 1));
-            %             conData.torsionAngleCWStd(countLc, 1) = nanstd(trialData.torsionAngleCWMerged(tempI, 1));
-            %
-            %             conData.torsionAngleCCWMean(countLc, 1) = nanmean(trialData.torsionAngleCCWMerged(tempI, 1));
-            %             conData.torsionAngleCCWStd(countLc, 1) = nanstd(trialData.torsionAngleCCWMerged(tempI, 1));
+            conData.torsionAngleCCWMean(countLc, 1) = nanmean(trialData.torsionAngleCCW(tempI, 1));
+            conData.torsionAngleCCWStd(countLc, 1) = nanstd(trialData.torsionAngleCCW(tempI, 1));
+            
+            conData.torsionAngleTSameMean(countLc, 1) = nanmean(trialData.torsionAngleTSameMerged(tempI, 1));
+            conData.torsionAngleTSameStd(countLc, 1) = nanstd(trialData.torsionAngleTSameMerged(tempI, 1));
+            
+            conData.torsionAngleTAntiMean(countLc, 1) = nanmean(trialData.torsionAngleTAntiMerged(tempI, 1));
+            conData.torsionAngleTAntiStd(countLc, 1) = nanstd(trialData.torsionAngleTAntiMerged(tempI, 1));
+            
+            conData.torsionAngleSSameMean(countLc, 1) = -999;
+            conData.torsionAngleSSameStd(countLc, 1) = -999;
+            
+            conData.torsionAngleSAntiMean(countLc, 1) = -999;
+            conData.torsionAngleSAntiStd(countLc, 1) = -999;
+            
+            %             conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngleMerged(tempI, 1));
+            %             conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngleMerged(tempI, 1));
             
             conData.sacNumTMean(countLc, 1) = nanmean(trialData.sacNumT(tempI, 1));
             conData.sacNumTStd(countLc, 1) = nanstd(trialData.sacNumT(tempI, 1));
             
+            conData.sacNumTCWMean(countLc, 1) = nanmean(trialData.sacNumTCW(tempI, 1));
+            conData.sacNumTCWStd(countLc, 1) = nanstd(trialData.sacNumTCW(tempI, 1));
+            
+            conData.sacNumTCCWMean(countLc, 1) = nanmean(trialData.sacNumTCCW(tempI, 1));
+            conData.sacNumTCCWStd(countLc, 1) = nanstd(trialData.sacNumTCCW(tempI, 1));
+            
+            conData.sacNumTTSameMean(countLc, 1) = nanmean(trialData.sacNumTTSame(tempI, 1));
+            conData.sacNumTTSameStd(countLc, 1) = nanstd(trialData.sacNumTTSame(tempI, 1));
+            
+            conData.sacNumTTAntiMean(countLc, 1) = nanmean(trialData.sacNumTTAnti(tempI, 1));
+            conData.sacNumTTAntiStd(countLc, 1) = nanstd(trialData.sacNumTTAnti(tempI, 1));
+            
+            conData.sacNumTSSameMean(countLc, 1) = -999;
+            conData.sacNumTSSameStd(countLc, 1) = -999;
+            
+            conData.sacNumTSAntiMean(countLc, 1) = -999;
+            conData.sacNumTSAntiStd(countLc, 1) = -999;
+            
             conData.sacAmpSumTMean(countLc, 1) = nanmean(trialData.sacAmpSumT(tempI, 1));
             conData.sacAmpSumTStd(countLc, 1) = nanstd(trialData.sacAmpSumT(tempI, 1));
             
+            conData.sacAmpSumTCWMean(countLc, 1) = nanmean(trialData.sacAmpSumTCW(tempI, 1));
+            conData.sacAmpSumTCWStd(countLc, 1) = nanstd(trialData.sacAmpSumTCW(tempI, 1));
+            
+            conData.sacAmpSumTCCWMean(countLc, 1) = nanmean(trialData.sacAmpSumTCCW(tempI, 1));
+            conData.sacAmpSumTCCWStd(countLc, 1) = nanstd(trialData.sacAmpSumTCCW(tempI, 1));
+            
+            conData.sacAmpSumTTSameMean(countLc, 1) = nanmean(trialData.sacAmpSumTTSame(tempI, 1));
+            conData.sacAmpSumTTSameStd(countLc, 1) = nanstd(trialData.sacAmpSumTTSame(tempI, 1));
+            
+            conData.sacAmpSumTTAntiMean(countLc, 1) = nanmean(trialData.sacAmpSumTTAnti(tempI, 1));
+            conData.sacAmpSumTTAntiStd(countLc, 1) = nanstd(trialData.sacAmpSumTTAnti(tempI, 1));
+            
+            conData.sacAmpSumTSSameMean(countLc, 1) = -999;
+            conData.sacAmpSumTSSameStd(countLc, 1) = -999;
+            
+            conData.sacAmpSumTSAntiMean(countLc, 1) = -999;
+            conData.sacAmpSumTSAntiStd(countLc, 1) = -999;
+            
             conData.sacAmpMeanTMean(countLc, 1) = nanmean(trialData.sacAmpMeanT(tempI, 1));
             conData.sacAmpMeanTStd(countLc, 1) = nanstd(trialData.sacAmpMeanT(tempI, 1));
+            
+            conData.sacAmpMeanTCWMean(countLc, 1) = nanmean(trialData.sacAmpMeanTCW(tempI, 1));
+            conData.sacAmpMeanTCWStd(countLc, 1) = nanstd(trialData.sacAmpMeanTCW(tempI, 1));
+            
+            conData.sacAmpMeanTCCWMean(countLc, 1) = nanmean(trialData.sacAmpMeanTCCW(tempI, 1));
+            conData.sacAmpMeanTCCWStd(countLc, 1) = nanstd(trialData.sacAmpMeanTCCW(tempI, 1));
+            
+            conData.sacAmpMeanTTSameMean(countLc, 1) = nanmean(trialData.sacAmpMeanTTSame(tempI, 1));
+            conData.sacAmpMeanTTSameStd(countLc, 1) = nanstd(trialData.sacAmpMeanTTSame(tempI, 1));
+            
+            conData.sacAmpMeanTTAntiMean(countLc, 1) = nanmean(trialData.sacAmpMeanTTAnti(tempI, 1));
+            conData.sacAmpMeanTTAntiStd(countLc, 1) = nanstd(trialData.sacAmpMeanTTAnti(tempI, 1));
+            
+            conData.sacAmpMeanTSSameMean(countLc, 1) = -999;
+            conData.sacAmpMeanTSSameStd(countLc, 1) = -999;
+            
+            conData.sacAmpMeanTSAntiMean(countLc, 1) = -999;
+            conData.sacAmpMeanTSAntiStd(countLc, 1) = -999;
+            
+            conData.nonErrorTrialN(countLc, 1) = length(tempI);
+            
+            countLc = countLc+1;
+            
+            
+            % same side stimulus reference
+            conData.sub(countLc, 1) = subj;
+            if strcmp(eyeName{eye}, 'L')
+                conData.eye(countLc, 1) = 1; % 1-left,
+            elseif strcmp(eyeName{eye}, 'R')
+                conData.eye(countLc, 1) = 2; % 2-right
+            end
+            conData.rotationSpeed(countLc, 1) = conditions(ii);
+            conData.afterReversalD(countLc, 1) = -999; % direction after reversal merged
+            conData.sameSideAfterReversalD(countLc, 1) = 0;
+            
+            tempI = find(all(trialData{:, 1:3}==repmat(conData{countLc, 1:3}, [size(trialData, 1) 1]), 2));
+            
+            conData.perceptualErrorMean(countLc, 1) = nanmean(trialData.perceptualError(tempI, 1));
+            conData.perceptualErrorStd(countLc, 1) = nanstd(trialData.perceptualError(tempI, 1));
+            
+            conData.torsionPosMean(countLc, 1) = nanmean(trialData.torsionPositionMerged(tempI, 1));
+            conData.torsionPosStd(countLc, 1) = nanstd(trialData.torsionPositionMerged(tempI, 1));
+            
+            conData.torsionVelTMean(countLc, 1) = nanmean(trialData.torsionVelTMerged(tempI, 1));
+            conData.torsionVelTStd(countLc, 1) = nanstd(trialData.torsionVelTMerged(tempI, 1));
+            
+            conData.torsionVelTGainMean(countLc, 1) = nanmean(trialData.torsionVGainMerged(tempI, 1));
+            conData.torsionVelTGainStd(countLc, 1) = nanstd(trialData.torsionVGainMerged(tempI, 1));
+            
+            conData.torsionAngleTotalMean(countLc, 1) = nanmean(trialData.torsionAngleTotal(tempI, 1));
+            conData.torsionAngleTotalStd(countLc, 1) = nanstd(trialData.torsionAngleTotal(tempI, 1));
+            
+            conData.torsionAngleCWMean(countLc, 1) = nanmean(trialData.torsionAngleCW(tempI, 1));
+            conData.torsionAngleCWStd(countLc, 1) = nanstd(trialData.torsionAngleCW(tempI, 1));
+            
+            conData.torsionAngleCCWMean(countLc, 1) = nanmean(trialData.torsionAngleCCW(tempI, 1));
+            conData.torsionAngleCCWStd(countLc, 1) = nanstd(trialData.torsionAngleCCW(tempI, 1));
+            
+            conData.torsionAngleTSameMean(countLc, 1) = -999;
+            conData.torsionAngleTSameStd(countLc, 1) = -999;
+            
+            conData.torsionAngleTAntiMean(countLc, 1) = -999;
+            conData.torsionAngleTAntiStd(countLc, 1) = -999;
+            
+            conData.torsionAngleSSameMean(countLc, 1) = nanmean(trialData.torsionAngleSSameMerged(tempI, 1));
+            conData.torsionAngleSSameStd(countLc, 1) = nanstd(trialData.torsionAngleSSameMerged(tempI, 1));
+            
+            conData.torsionAngleSAntiMean(countLc, 1) = nanmean(trialData.torsionAngleSAntiMerged(tempI, 1));
+            conData.torsionAngleSAntiStd(countLc, 1) = nanstd(trialData.torsionAngleSAntiMerged(tempI, 1));
+            
+            %             conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngleMerged(tempI, 1));
+            %             conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngleMerged(tempI, 1));
+            
+            conData.sacNumTMean(countLc, 1) = nanmean(trialData.sacNumT(tempI, 1));
+            conData.sacNumTStd(countLc, 1) = nanstd(trialData.sacNumT(tempI, 1));
+            
+            conData.sacNumTCWMean(countLc, 1) = nanmean(trialData.sacNumTCW(tempI, 1));
+            conData.sacNumTCWStd(countLc, 1) = nanstd(trialData.sacNumTCW(tempI, 1));
+            
+            conData.sacNumTCCWMean(countLc, 1) = nanmean(trialData.sacNumTCCW(tempI, 1));
+            conData.sacNumTCCWStd(countLc, 1) = nanstd(trialData.sacNumTCCW(tempI, 1));
+            
+            conData.sacNumTTSameMean(countLc, 1) = -999;
+            conData.sacNumTTSameStd(countLc, 1) = -999;
+            
+            conData.sacNumTTAntiMean(countLc, 1) = -999;
+            conData.sacNumTTAntiStd(countLc, 1) = -999;
+            
+            conData.sacNumTSSameMean(countLc, 1) = nanmean(trialData.sacNumTSSame(tempI, 1));
+            conData.sacNumTSSameStd(countLc, 1) = nanstd(trialData.sacNumTSSame(tempI, 1));
+            
+            conData.sacNumTSAntiMean(countLc, 1) = nanmean(trialData.sacNumTSAnti(tempI, 1));
+            conData.sacNumTSAntiStd(countLc, 1) = nanstd(trialData.sacNumTSAnti(tempI, 1));
+            
+            conData.sacAmpSumTMean(countLc, 1) = nanmean(trialData.sacAmpSumT(tempI, 1));
+            conData.sacAmpSumTStd(countLc, 1) = nanstd(trialData.sacAmpSumT(tempI, 1));
+            
+            conData.sacAmpSumTCWMean(countLc, 1) = nanmean(trialData.sacAmpSumTCW(tempI, 1));
+            conData.sacAmpSumTCWStd(countLc, 1) = nanstd(trialData.sacAmpSumTCW(tempI, 1));
+            
+            conData.sacAmpSumTCCWMean(countLc, 1) = nanmean(trialData.sacAmpSumTCCW(tempI, 1));
+            conData.sacAmpSumTCCWStd(countLc, 1) = nanstd(trialData.sacAmpSumTCCW(tempI, 1));
+            
+            conData.sacAmpSumTTSameMean(countLc, 1) = -999;
+            conData.sacAmpSumTTSameStd(countLc, 1) = -999;
+            
+            conData.sacAmpSumTTAntiMean(countLc, 1) = -999;
+            conData.sacAmpSumTTAntiStd(countLc, 1) = -999;
+            
+            conData.sacAmpSumTSSameMean(countLc, 1) = nanmean(trialData.sacAmpSumTSSame(tempI, 1));
+            conData.sacAmpSumTSSameStd(countLc, 1) = nanstd(trialData.sacAmpSumTSSame(tempI, 1));
+            
+            conData.sacAmpSumTSAntiMean(countLc, 1) = nanmean(trialData.sacAmpSumTSAnti(tempI, 1));
+            conData.sacAmpSumTSAntiStd(countLc, 1) = nanstd(trialData.sacAmpSumTSAnti(tempI, 1));
+            
+            conData.sacAmpMeanTMean(countLc, 1) = nanmean(trialData.sacAmpMeanT(tempI, 1));
+            conData.sacAmpMeanTStd(countLc, 1) = nanstd(trialData.sacAmpMeanT(tempI, 1));
+            
+            conData.sacAmpMeanTCWMean(countLc, 1) = nanmean(trialData.sacAmpMeanTCW(tempI, 1));
+            conData.sacAmpMeanTCWStd(countLc, 1) = nanstd(trialData.sacAmpMeanTCW(tempI, 1));
+            
+            conData.sacAmpMeanTCCWMean(countLc, 1) = nanmean(trialData.sacAmpMeanTCCW(tempI, 1));
+            conData.sacAmpMeanTCCWStd(countLc, 1) = nanstd(trialData.sacAmpMeanTCCW(tempI, 1));
+            
+            conData.sacAmpMeanTTSameMean(countLc, 1) = -999;
+            conData.sacAmpMeanTTSameStd(countLc, 1) = -999;
+            
+            conData.sacAmpMeanTTAntiMean(countLc, 1) = -999;
+            conData.sacAmpMeanTTAntiStd(countLc, 1) = -999;
+            
+            conData.sacAmpMeanTSSameMean(countLc, 1) = nanmean(trialData.sacAmpMeanTSSame(tempI, 1));
+            conData.sacAmpMeanTSSameStd(countLc, 1) = nanstd(trialData.sacAmpMeanTSSame(tempI, 1));
+            
+            conData.sacAmpMeanTSAntiMean(countLc, 1) = nanmean(trialData.sacAmpMeanTSAnti(tempI, 1));
+            conData.sacAmpMeanTSAntiStd(countLc, 1) = nanstd(trialData.sacAmpMeanTSAnti(tempI, 1));
             
             conData.nonErrorTrialN(countLc, 1) = length(tempI);
             
@@ -366,7 +819,7 @@ for subj=1:size(names, 2)
         end
     end
 end
-% 
+%
 % % normalization
 % for ii = 1:size(conData, 1)
 %     if conData.afterReversalD(ii, 1)==0

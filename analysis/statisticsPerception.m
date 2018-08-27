@@ -1,5 +1,5 @@
-% all statistic analysis and results for perception Exp1
-% 07/08/2018 Xiuyun Wu
+% all statistic analysis and results for perception Exp2
+% 07/12/2018 Xiuyun Wu
 clear all; close all; clc
 % might be useful as a reference...
 % % one-way repeated measure anova...
@@ -18,14 +18,14 @@ clear all; close all; clc
 %     [c{1} m{1} h{1} nms{1}] = multcompare(stats{1});
 %     saveas(h{1}, ['sf_', fCons{j}, colN, '_', csf, '.pdf'])
 
-names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
-conditions = [25 50 100 200 400];
+names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol'};
+conditions = [25 50 100 200];
 trialBaseAll = 60;
-trialExpAll = 300;
+trialExpAll = 288;
 
 % load data
-load dataBase_all15
-load dataPercept_all15
+load(['dataBase_all', num2str(size(names, 2))]);
+load(['dataPercept_all', num2str(size(names, 2))]);
 
 %% valid trial numbers
 for t = 1:size(names, 2)
@@ -38,10 +38,10 @@ end
 disp(['baseline excluded trial number: ', num2str(mean(1-validBase/trialBaseAll)), ' +- ', num2str(std(1-validBase/trialBaseAll))])
 disp(['exp excluded trial number: ', num2str(mean(1-validExp/trialExpAll)), ' +- ', num2str(std(1-validExp/trialExpAll))])
 
-%% repeated measures ANOVA with speed and direction
-data = dataPercept;
-for t = 1:size(names, 2)
-    tempI = find(strcmp(data.sub, names{t}));
-    data.subN(tempI, 1) = t;
-end
-stats = rm_anova2(data.angleError, data.subN, data.rotationSpeed, -data.initialDirection, {'rotationSpeed', 'afterDirection'})
+% %% repeated measures ANOVA with speed and direction
+% data = dataPercept;
+% for t = 1:size(names, 2)
+%     tempI = find(strcmp(data.sub, names{t}));
+%     data.subN(tempI, 1) = t;
+% end
+% stats = rm_anova2(data.angleError, data.subN, data.rotationSpeed, -data.initialDirection, {'rotationSpeed', 'afterDirection'})

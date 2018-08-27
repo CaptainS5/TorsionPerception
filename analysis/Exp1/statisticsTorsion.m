@@ -8,7 +8,6 @@ names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' '
 conditions = [25 50 100 200 400];
 eyeName = {'L' 'R'};
 eye = 2;
-endName = '120msToEnd';
 trialBaseAll = 50; % total trial numbers
 trialExpAll = 300;
 
@@ -57,64 +56,83 @@ tempI = find(dataAll.afterReversalD~=0);
 dataAll.torsionVelTMean(tempI) = dataAll.torsionVelTMean(tempI).*dataAll.afterReversalD(tempI);
 dataAll.torsionAngleMean(tempI) = dataAll.torsionAngleMean(tempI).*dataAll.afterReversalD(tempI);
 
-% one way anova of time window
-for t = 1:size(names, 2)
-    for ii = 1:3
-    tempI = find(dataAll.sub==t & dataAll.timeWindow==ii & dataAll.afterReversalD~=0);
-    dataV(t, ii) = mean(dataAll.torsionVelTMean(tempI));
-    dataA(t, ii) = mean(dataAll.torsionAngleMean(tempI));
-    end
-end
-WM = table([1 2 3]', 'VariableNames', {'timeWindow'});
-dataV = mat2cell(dataV, size(dataV, 1), ones(1, size(dataV, 2)));
-dataV = table(dataV{:}, 'VariableNames', {'t1', 't2', 't3'});
-dataA = mat2cell(dataA, size(dataA, 1), ones(1, size(dataA, 2)));
-dataA = table(dataA{:}, 'VariableNames', {'t1', 't2', 't3'});
-rmV = fitrm(dataV, 't1-t3~1', 'WithinDesign', WM);
-rmA = fitrm(dataA, 't1-t3~1', 'WithinDesign', WM);
-ranovatblV = ranova(rmV)
-ranovatblA = ranova(rmA)
-
-% two-way anovas of speed and direction
-% before-reversal
-tempI = find(dataAll.timeWindow==1 & dataAll.afterReversalD~=0);
-dataT = dataAll(tempI, :);
-statsV1 = rm_anova2(dataT.torsionVelTMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
-statsA1 = rm_anova2(dataT.torsionAngleMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
-
-% at-revresal
-tempI = find(dataAll.timeWindow==2 & dataAll.afterReversalD~=0);
-dataT = dataAll(tempI, :);
-statsV2 = rm_anova2(dataT.torsionVelTMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
-statsA2 = rm_anova2(dataT.torsionAngleMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
-
-% after-reversal
-tempI = find(dataAll.timeWindow==3 & dataAll.afterReversalD~=0);
-dataT = dataAll(tempI, :);
-statsV3 = rm_anova2(dataT.torsionVelTMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
-statsA3 = rm_anova2(dataT.torsionAngleMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
-
-% % three way anova...
-% speedI = unique(dataAll.rotationSpeed);
-% for ii = 1:length(speedI)
-%     tempI = find(dataAll.rotationSpeed==speedI(ii));
-%     dataAll.rotationSpeed(tempI) = ii;
-% end
-% for ii = 1:size(dataAll, 1)
-%     if dataAll.afterReversalD(ii, 1) == -1;
-%         dataAll.afterReversalD(ii, 1) = 1; % CCW
-%     elseif dataAll.afterReversalD(ii, 1) == 1;
-%         dataAll.afterReversalD(ii, 1) = 2; % CW
+% % one way anova of time window
+% for t = 1:size(names, 2)
+%     for ii = 1:3
+%     tempI = find(dataAll.sub==t & dataAll.timeWindow==ii & dataAll.afterReversalD~=0);
+%     dataV(t, ii) = mean(dataAll.torsionVelTMean(tempI));
+%     dataA(t, ii) = mean(dataAll.torsionAngleMean(tempI));
+%     % corrective saccades
+%     dataSacNum(t, ii) = mean(dataAll.sacNumTMean(tempI));
+%     dataSacAmpSum(t, ii) = mean(dataAll.sacAmpSumTMean(tempI));
+%     dataSacAmpMean(t, ii) = mean(dataAll.sacAmpMeanTMean(tempI));
 %     end
 % end
+% WM = table([1 2 3]', 'VariableNames', {'timeWindow'});
+% dataV = mat2cell(dataV, size(dataV, 1), ones(1, size(dataV, 2)));
+% dataV = table(dataV{:}, 'VariableNames', {'t1', 't2', 't3'});
+% dataA = mat2cell(dataA, size(dataA, 1), ones(1, size(dataA, 2)));
+% dataA = table(dataA{:}, 'VariableNames', {'t1', 't2', 't3'});
+% rmV = fitrm(dataV, 't1-t3~1', 'WithinDesign', WM);
+% rmA = fitrm(dataA, 't1-t3~1', 'WithinDesign', WM);
+% ranovatblV = ranova(rmV)
+% ranovatblA = ranova(rmA)
 % 
-% % torsional velocity
-% dataV = [dataAll.torsionVelTMean, dataAll.rotationSpeed, dataAll.afterReversalD, dataAll.timeWindow, dataAll.sub];
-% RMAOV33(dataV, 0.05)
+% % corrective saccades
+% dataSacNum = mat2cell(dataSacNum, size(dataSacNum, 1), ones(1, size(dataSacNum, 2)));
+% dataSacNum = table(dataSacNum{:}, 'VariableNames', {'t1', 't2', 't3'});
+% dataSacAmpSum = mat2cell(dataSacAmpSum, size(dataSacAmpSum, 1), ones(1, size(dataSacAmpSum, 2)));
+% dataSacAmpSum = table(dataSacAmpSum{:}, 'VariableNames', {'t1', 't2', 't3'});
+% dataSacAmpMean = mat2cell(dataSacAmpMean, size(dataSacAmpMean, 1), ones(1, size(dataSacAmpMean, 2)));
+% dataSacAmpMean = table(dataSacAmpMean{:}, 'VariableNames', {'t1', 't2', 't3'});
+% rmSacNum = fitrm(dataSacNum, 't1-t3~1', 'WithinDesign', WM);
+% rmSacAmpSum = fitrm(dataSacAmpSum, 't1-t3~1', 'WithinDesign', WM);
+% rmSacAmpMean = fitrm(dataSacAmpMean, 't1-t3~1', 'WithinDesign', WM);
+% ranovatblSacNum = ranova(rmSacNum)
+% ranovatblSacAmpSum = ranova(rmSacAmpSum)
+% ranovatblSacAmpMean = ranova(rmSacAmpMean)
 % 
-% % torsional angle
-% dataV = [dataAll.torsionAngleMean, dataAll.rotationSpeed, dataAll.afterReversalD, dataAll.timeWindow, dataAll.sub];
-% RMAOV33(dataV, 0.05)
+% % two-way anovas of speed and direction
+% % before-reversal
+% tempI = find(dataAll.timeWindow==1 & dataAll.afterReversalD~=0);
+% dataT = dataAll(tempI, :);
+% statsV1 = rm_anova2(dataT.torsionVelTMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
+% statsA1 = rm_anova2(dataT.torsionAngleMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
+% 
+% % at-revresal
+% tempI = find(dataAll.timeWindow==2 & dataAll.afterReversalD~=0);
+% dataT = dataAll(tempI, :);
+% statsV2 = rm_anova2(dataT.torsionVelTMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
+% statsA2 = rm_anova2(dataT.torsionAngleMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
+% 
+% % after-reversal
+% tempI = find(dataAll.timeWindow==3 & dataAll.afterReversalD~=0);
+% dataT = dataAll(tempI, :);
+% statsV3 = rm_anova2(dataT.torsionVelTMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
+% statsA3 = rm_anova2(dataT.torsionAngleMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
+
+% three way anova...
+speedI = unique(dataAll.rotationSpeed);
+for ii = 1:length(speedI)
+    tempI = find(dataAll.rotationSpeed==speedI(ii));
+    dataAll.rotationSpeed(tempI) = ii;
+end
+for ii = 1:size(dataAll, 1)
+    if dataAll.afterReversalD(ii, 1) == -1;
+        dataAll.afterReversalD(ii, 1) = 1; % CCW
+    elseif dataAll.afterReversalD(ii, 1) == 1;
+        dataAll.afterReversalD(ii, 1) = 2; % CW
+    end
+end
+tempI = find(dataAll.afterReversalD~=0);
+
+% torsional velocity
+dataV = [dataAll.torsionVelTMean(tempI), dataAll.rotationSpeed(tempI), dataAll.afterReversalD(tempI), dataAll.timeWindow(tempI), dataAll.sub(tempI)];
+RMAOV33(dataV, 0.05)
+
+% torsional angle
+dataV = [dataAll.torsionAngleMean(tempI), dataAll.rotationSpeed(tempI), dataAll.afterReversalD(tempI), dataAll.timeWindow(tempI), dataAll.sub(tempI)];
+RMAOV33(dataV, 0.05)
 
 %% ANOVA for perception
 tempI = find(dataAll.timeWindow==3 & dataAll.afterReversalD~=0);

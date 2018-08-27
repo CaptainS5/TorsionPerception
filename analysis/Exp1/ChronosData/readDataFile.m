@@ -1,11 +1,5 @@
 function [data] = readDataFile(selectedDataFile, experimentFolder)
-% adapted by Xiuyun Wu 08/21/2018
-% to deal with repetitive frames when there are lost frames...
-% just delete the repetitive ones--first find out which frames, then
-% delete the first appearance of the repetitive ones
-
-% experimentFolder = ['C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\data\FScontrol\chronos\'];%[folder{:} '\' subject '\chronos']; % for debug
-% selectedDataFile = ['session_02_L.dat'];
+% experimentFolder = ['C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\Torsion&perception\data\MS\chronos'];%[folder{:} '\' subject '\chronos']; % for debug
 %% Part1: read number of segments
 %Open Data file
 path = fullfile(experimentFolder,selectedDataFile);
@@ -24,21 +18,15 @@ textscan(fid, '%*[^\n]', 1);
 numberOfSegments = textscan(fid, '%*s%*s%*s%*s %d %*[^\n]', 1);
 numberOfSegments = numberOfSegments{1};
 
-%skip 4 lines
-textscan(fid, '%*[^\n]', 4);
-
-% number of lost frames
-numberOfLostFrames = textscan(fid, '%*s%*s%*s%*s%*s %d %*[^\n]', 1);
-numberOfLostFrames = numberOfLostFrames{1};
-
-% skip 6 lines
-textscan(fid, '%*[^\n]', 6);
+%skip 11 lines
+textscan(fid, '%*[^\n]', 11);
 
 %% Part2: read number of recorded and not recorded blocks
 triggeredFrames = textscan(fid, '%*s%*s%*s%*s%*s%*s %d %*[^\n]', 1);
 triggeredFrames = triggeredFrames{1};
 nonTriggeredFrames = textscan(fid, '%*s%*s%*s%*s%*s%*s%*s %d %*[^\n]', 1);
 nonTriggeredFrames = nonTriggeredFrames{1};
+data.totalFrames = triggeredFrames + nonTriggeredFrames;
 
 recordedBlocks = textscan(fid, '%*s%*s%*s%*s%*s %d %*[^\n]', 1);
 recordedBlocks = recordedBlocks{1};  
@@ -46,7 +34,7 @@ notRecordedBlocks = textscan(fid, '%*s%*s%*s%*s%*s %d %*[^\n]', 1);
 notRecordedBlocks = notRecordedBlocks{1};
 
 %skip line ("--blocks recorded--" and calibration block line)
-textscan(fid, '%*[^\n]', 1); % original was 2--calibration is in separate file!
+textscan(fid, '%*[^\n]', 1); % original was 2--but what calibration??? calibration is in separate file!!!
 
 %% Part3: read start frames and end frames
 
@@ -56,16 +44,11 @@ data.endFrames = [];
 for i = 1:recordedBlocks
     frame = textscan(fid, '%*s%*s%*s%*s %d %*s %*s %d %*[^\n]', 1);
     
-    data.startFrames(i) = frame{1};
-    data.endFrames(i) = frame{2};
+%     if % skip lost frames
+        data.startFrames(i) = frame{1};
+        data.endFrames(i) = frame{2};
+%     end
 end
-
-% number of total frames
-% if numberOfLostFrames>0
-data.totalFrames = data.endFrames(end)+1;
-% else
-%     data.totalFrames = triggeredFrames + nonTriggeredFrames;
-% end
 
 % %skip line ("--blocks not recorded--")
 textscan(fid, '%*[^\n]', 1);
@@ -85,25 +68,7 @@ for i = 1:numberOfSegments
 end
 
 % read every single data frame
-frameData = textscan(fid, format);%, data.totalFrames);
-if size(frameData{1}, 1)>data.totalFrames % delete repetitive frames
-    frameCount = 0;
-    currentF = 1;
-    while currentF <= size(frameData{1}, 1)
-        if frameData{1}(currentF)==frameCount
-            frameCount = frameCount+1;            
-        elseif frameData{1}(currentF)<frameCount
-            repeatStart = frameData{1}(currentF);
-            for tt = 1:size(frameData, 2)
-                frameData{tt}(repeatStart+1:currentF-1) = [];
-            end
-            currentF = repeatStart+1;
-            frameCount = currentF;
-        end
-        currentF = currentF+1;
-    end
-end
-
+frameData = textscan(fid, format, data.totalFrames);
 %
 %
 data.segments = ones(data.totalFrames,numberOfSegments);

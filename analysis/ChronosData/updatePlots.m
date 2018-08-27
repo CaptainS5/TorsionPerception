@@ -1,11 +1,11 @@
 function [] = updatePlots(trial, torsion, pursuit, data)
 
-startFrame = 1;
-endFrame = min(trial.length, trial.stim_offset+400);
+startFrame = trial.stim_onset; % 1;
+endFrame = min(trial.length, trial.stim_offset+40);
 
 sampleRate = evalin('base','sampleRate');
-timeInMs = linspace(0, trial.length*1000/sampleRate, 5); 
-tickStep = (2000/5)/(length(timeInMs)-1)*2; %?...
+timeInMs = linspace(0, (endFrame-startFrame+1)*1000/sampleRate, 5); 
+tickStep = (2000/5)/(length(timeInMs)-1);
 % tickStep = (2000/5)/(length(timeInMs)-1); %?...
 %% position plot
 subplot(2,2,2,'replace');
@@ -97,7 +97,12 @@ plot(startFrame:endFrame,data.segments(startFrame+data.startFrames(trial.number)
 plot(startFrame:endFrame,data.segments(startFrame+data.startFrames(trial.number):endFrame+data.startFrames(trial.number),4),'m:');
 
 
-plot(startFrame:endFrame,trial.frames.T_filt(startFrame:endFrame)); %, 'LineWidth', 2);
+plot(startFrame:endFrame,trial.frames.T_filt(startFrame:endFrame));%, 'LineWidth', 2);
+
+% mark saccade trace
+for ii = 1:length(trial.saccades.T.onsets)
+    plot(trial.saccades.T.onsets(ii):trial.saccades.T.offsets(ii), trial.frames.T_filt(trial.saccades.T.onsets(ii):trial.saccades.T.offsets(ii)), 'm', 'LineWidth', 2)
+end
 
 plot(trial.saccades.T.onsets,trial.frames.T_filt(trial.saccades.T.onsets),'g*', 'MarkerSize', 10);
 plot(trial.saccades.T.offsets,trial.frames.T_filt(trial.saccades.T.offsets),'k*', 'MarkerSize', 10);

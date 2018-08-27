@@ -11,7 +11,7 @@ clear all; close all; clc
 % basic setting
 % names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 % names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
-names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol'};
+names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol' 'FScontrol' 'XWcontrol' 'SCcontrol' 'JFcontrol'};
 folder = pwd;
 howMany = -13; % include the first howMany trials for each condition*each initialDirection
 % using for pilot to see how many trials we need...
@@ -111,15 +111,15 @@ for ii = 1:size(names, 2)
     end
     save(['dataRawBase_', names{ii}], 'dataRawBase') % baseline
     
-%     % collapse all data
-%     if ii==1
-%         dataRawAll = dataRaw; % experiment
-%         dataRawBaseAll = dataRawBase; % baseline
-%     else
-%         dataRawAll = [dataRawAll; dataRaw]; % experiment
-%         dataRawBaseAll = [dataRawBaseAll; dataRawBase]; % baseline
-%     end
+    % collapse all data
+    if ii==1
+        dataRawAll = dataRaw; % experiment
+        dataRawBaseAll = dataRawBase; % baseline
+    else
+        dataRawAll = [dataRawAll; dataRaw]; % experiment
+        dataRawBaseAll = [dataRawBaseAll; dataRawBase]; % baseline
+    end
     
 end
-% save(['dataRaw_all', num2str(size(names, 2))], 'dataRawAll')
-% save(['dataRawBase_all', num2str(size(names, 2))], 'dataRawBaseAll')
+save(['dataRaw_all', num2str(size(names, 2))], 'dataRawAll')
+save(['dataRawBase_all', num2str(size(names, 2))], 'dataRawBaseAll')
