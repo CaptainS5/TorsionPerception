@@ -51,3 +51,5 @@ ggplot(dataAll, aes(x=rotationSpeed, y=perceptualErrorMean, fill=exp)) +
 #         panel.border = element_blank(),
 #         panel.background = element_blank()) 
 # dev.off()
+
+# how the fxck was it not saved??? all the scripts for my perfect plots!!!

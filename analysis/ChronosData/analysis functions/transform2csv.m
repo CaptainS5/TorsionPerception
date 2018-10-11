@@ -3,6 +3,7 @@
 
 names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol' 'FScontrol' 'XWcontrol' 'SCcontrol' 'JFcontrol'};
 conditions = [25 50 100 200];
+dirI = [-1 1];
 eyeName = {'L' 'R'};
 trialBaseAll = 48; % total trial numbers
 trialExpAll = 288;
@@ -43,6 +44,23 @@ for tw = 1:3
     for t = 1:size(names, 2)
         for sI = 1:4
             dataBoth = trialDataBothEyes(trialDataBothEyes.sub==t & trialDataBothEyes.timeWindow==tw-2 & trialDataBothEyes.rotationSpeed==speed(sI), :);
+            for directionI = 1:2
+                dataBothDir = dataBoth(dataBoth.afterReversalD==dirI(directionI), :);
+                
+                conDataBothEyes.sub(count, 1) = t;
+                conDataBothEyes.timeWindow(count, 1) = tw-2;
+                conDataBothEyes.exp(count, 1) = 2;
+                conDataBothEyes.afterReversalD(count, 1) = dirI(directionI);
+                conDataBothEyes.rotationSpeed(count, 1) = speed(sI);
+                conDataBothEyes.torsionVelTMean(count, 1) = mean(dataBothDir.torsionVelTMerged);
+                conDataBothEyes.torsionAngleSameMean(count, 1) = mean(dataBothDir.torsionAngleTSameMerged);
+                conDataBothEyes.torsionAngleAntiMean(count, 1) = mean(dataBothDir.torsionAngleTAntiMerged);
+                conDataBothEyes.torsionAngleTotalMean(count, 1) = mean(dataBothDir.torsionAngleTotal);
+                conDataBothEyes.perceptualErrorMean(count, 1) = mean(dataBothDir.perceptualError);
+                conDataBothEyes.sacNumTMean(count, 1) = mean(dataBothDir.sacNumT);
+                conDataBothEyes.sacAmpSumTMean(count, 1) = mean(dataBothDir.sacAmpSumT);
+                count = count+1;
+            end
             conDataBothEyes.sub(count, 1) = t;
             conDataBothEyes.timeWindow(count, 1) = tw-2;
             conDataBothEyes.exp(count, 1) = 2;
@@ -63,9 +81,9 @@ end
 conDataBase = dataBase.conData;
 conDataBase.exp(:, 1) = repmat(2, size(conDataBase.sub));
 
-% merge and save csv
+% % merge and save csv
 cd('C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\analysis')
-writetable(trialData, 'trialDataAllExp2.csv')
-writetable(trialDataBothEyes, 'trialDataAllExp2BothEyes.csv')
+% writetable(trialData, 'trialDataAllExp2.csv')
+% writetable(trialDataBothEyes, 'trialDataAllExp2BothEyes.csv')
 writetable(conDataBothEyes, 'conDataAllExp2BothEyes.csv')
-writetable(conDataBase, 'conDataBaseAllExp2.csv')
+% writetable(conDataBase, 'conDataBaseAllExp2.csv')
