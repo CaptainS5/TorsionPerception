@@ -3,7 +3,7 @@
 % reversal
 % Then save the data, and draw the plots
 
-% 07/10/2018, Xiuyun Wu
+% 10/17/2018, Xiuyun Wu
 
 % some (maybe) useful codes from the past...
 % arr = find(all(tabdata{:, 3:6}==cont(:,1:4),2));
@@ -96,10 +96,9 @@ for ii = 1:size(names, 2)
 %         %         eval(['consBase{jj} = unique(roundn(dataRawBase.', conditionNamesBase{jj}, ', roundN));']) % baseline
 %     end
     
-    %% Experiment data, flash onset is important
+    %% Experiment data
     data = dataRaw;
     for tt = 1:size(data, 1)
-        %         % only for the first pilot testXW
         data.reportAngle(tt) = data.reportAngle(tt)-90;
         if data.reportAngle(tt) < 0
             data.reportAngle(tt) = data.reportAngle(tt)+180;
@@ -108,9 +107,6 @@ for ii = 1:size(names, 2)
         if data.reversalAngle(tt) < 0
             data.reversalAngle(tt) = data.reversalAngle(tt)+180;
         end
-        %         if data.reversalAngle(tt) > 180
-        %             data.reversalAngle(tt) = data.reversalAngle(tt)-180;
-        %         end
         
         data.angleError(tt, 1) = -(data.reportAngle(tt)-data.reversalAngle(tt))*data.initialDirection(tt);
     end
@@ -133,6 +129,7 @@ for ii = 1:size(names, 2)
     
     idxt = find(data.angleError<-10);
     data(idxt, :) = [];
+    [data trialDeleted(ii)]= cleanData(data, 'angleError'); % excluding outliers 3 sd away
     
     % save the generated data
     if ii==1
@@ -210,4 +207,4 @@ for ii = 1:size(names, 2)
 end
 
 cd ..
-save(['dataPercept_all', num2str(ii), '.mat'], 'dataPercept')
+save(['dataPercept_all', num2str(ii), '.mat'], 'dataPercept', 'trialDeleted')

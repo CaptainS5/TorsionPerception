@@ -16,12 +16,11 @@ data1 = load(['dataLong120msToReversal.mat']);
 data2 = load(['dataLongatReversal.mat']);
 data3 = load(['dataLong120msToEnd.mat']);
 
-trialN = size(data1.trialData, 1);
 conN = size(data1.conData, 1);
 
-data1.trialData.timeWindow = -1*ones(trialN, 1); % before reversal
-data2.trialData.timeWindow = 0*ones(trialN, 1); % at reversal
-data3.trialData.timeWindow = 1*ones(trialN, 1); % after reversal
+data1.trialData.timeWindow = -1*ones(size(data1.trialData, 1), 1); % before reversal
+data2.trialData.timeWindow = 0*ones(size(data2.trialData, 1), 1); % at reversal
+data3.trialData.timeWindow = 1*ones(size(data2.trialData, 1), 1); % after reversal
 
 data1.conData.timeWindow = -1*ones(conN, 1);
 data2.conData.timeWindow = 0*ones(conN, 1);
@@ -83,7 +82,7 @@ conDataBase.exp(:, 1) = repmat(2, size(conDataBase.sub));
 
 % % merge and save csv
 cd('C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\analysis')
-% writetable(trialData, 'trialDataAllExp2.csv')
-% writetable(trialDataBothEyes, 'trialDataAllExp2BothEyes.csv')
+writetable(trialData, 'trialDataAllExp2.csv')
+writetable(trialDataBothEyes, 'trialDataAllExp2BothEyes.csv')
 writetable(conDataBothEyes, 'conDataAllExp2BothEyes.csv')
-% writetable(conDataBase, 'conDataBaseAllExp2.csv')
+writetable(conDataBase, 'conDataBaseAllExp2.csv')

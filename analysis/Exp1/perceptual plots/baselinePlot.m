@@ -67,6 +67,7 @@ for t = 1:size(names, 2)
     end
     idxt = find((data.reportAngle<88 & data.reversalAngle>90) | (data.reportAngle>92 & data.reversalAngle<90) | abs(data.angleError)>10);
     data(idxt, :) = [];
+    [data trialDeleted(t)]= cleanData(data, 'angleError'); % excluding outliers 3 sd away
     
     if t==1
         dataBaseTrial = data;
@@ -129,5 +130,5 @@ for t = 1:size(names, 2)
 end
 if cN==1
     cd ..
-    save(['dataBase_all', num2str(t), '.mat'], 'dataBase', 'dataBaseTrial')
+    save(['dataBase_all', num2str(t), '.mat'], 'dataBase', 'dataBaseTrial', 'trialDeleted')
 end

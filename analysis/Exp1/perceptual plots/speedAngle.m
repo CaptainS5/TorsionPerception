@@ -110,6 +110,7 @@ for ii = 1:size(names, 2)
     
     idxt = find(data.angleError<-10);
     data(idxt, :) = [];
+    [data trialDeleted(ii)]= cleanData(data, 'angleError'); % excluding outliers 3 sd away
     
     % save the generated data
     if ii==1
@@ -161,4 +162,4 @@ for ii = 1:size(names, 2)
 end
 
 cd ..
-save(['dataPercept_all', num2str(ii), '.mat'], 'dataPercept')
+save(['dataPercept_all', num2str(ii), '.mat'], 'dataPercept', 'trialDeleted')
