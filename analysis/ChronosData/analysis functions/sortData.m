@@ -49,10 +49,11 @@ for subj = 1:length(names)
     %     end
     for eye = 1:size(eyeName, 2)
         % Subject details
-        subject = names{subj};
-        
+        subject = names{subj};        
         counts = {zeros(size(conditions)) zeros(size(conditions))};
         
+        countLt = 1;
+        dataTemp = table();
         for block = 1:6
             % read in data and socscalexy
             filename = ['session_' num2str(block,'%.2i') '_' eyeName{eye} '.dat'];
@@ -80,8 +81,6 @@ for subj = 1:length(names)
             % get mean velocities for each eye
             errors = load(['Errorfiles\Exp' num2str(block) '_Subject' num2str(subj,'%.2i') '_Block' num2str(block,'%.2i') '_' eyeName{eye} '_errorFile.mat']);
             
-            countLt = 1;
-            dataTemp = table();
             for t = 1:size(resp, 1) % trial number
                 if errors.errorStatus(t)==0 % valid eye data trial
                     currentTrial = t;
@@ -177,7 +176,7 @@ for subj = 1:length(names)
                     end
                     %                     dataTemp.perceptualError(countLt, 1) = -(resp.reportAngle(t)-resp.reversalAngle(t))*resp.initialDirection(t)-dataBase.baseErrorMean(subj, 1);
                     
-                    if dataTemp.perceptualError(countLt, 1)>-10
+                    if dataTemp.perceptualError(countLt, 1)>-10 && abs(torsion.slowPhases.meanSpeed)<30
                         
                         %% retinal torsion angle
                         dataTemp.torsionPosition(countLt, 1) = nanmean(torsion.slowPhases.onsetPosition);
@@ -316,11 +315,11 @@ for subj = 1:length(names)
                     end
                 end
             end
-            [dataTemp, trialDeletedP] = cleanData(dataTemp, 'perceptualError');
-            [dataTemp, trialDeletedT] = cleanData(dataTemp, 'torsionVelT');
-            trialDeleted(subj) = trialDeleted(subj) + trialDeletedP + trialDeletedT;
-            trialData = [trialData; dataTemp];
         end
+        [dataTemp, trialDeletedP] = cleanData(dataTemp, 'perceptualError');
+        [dataTemp, trialDeletedT] = cleanData(dataTemp, 'torsionVelT');
+        trialDeleted(subj) = trialDeleted(subj) + trialDeletedP + trialDeletedT;
+        trialData = [trialData; dataTemp];
     end
     
     %%
@@ -339,7 +338,7 @@ for subj = 1:length(names)
                 conData.sameSideAfterReversalD(countLc, 1) = -999;
                 
                 tempI = find(all(trialData{:, 1:4}==repmat(conData{countLc, 1:4}, [size(trialData, 1) 1]), 2));
-                
+
                 conData.perceptualErrorMean(countLc, 1) = nanmean(trialData.perceptualError(tempI, 1));
                 conData.perceptualErrorStd(countLc, 1) = nanstd(trialData.perceptualError(tempI, 1));
                 

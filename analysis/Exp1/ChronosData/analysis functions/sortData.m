@@ -1,4 +1,4 @@
-% Xiuyun Wu, 06/12/2018
+% Xiuyun Wu, 10/21/2018
 clear all; close all; clc
 
 global trial
@@ -21,7 +21,7 @@ torsionFrames = 3*ones(size(names));
 eyeName = {'R'};
 % change both paramters below, as well as time window in the loop 
 % around line 100
-checkAngle = -1; % 1-for direction after reversal, -1 for direction before reversal
+checkAngle = 1; % 1-for direction after reversal, -1 for direction before reversal
 % for the endName, also change around line70 for the time window used
 % endName = '120msToReversal';
 % endName = 'aroundReversal';
@@ -50,9 +50,10 @@ for subj = 1:length(names)
     for eye = 1:size(eyeName, 2)
         % Subject details
         subject = names{subj};
-        
         counts = {zeros(size(conditions)) zeros(size(conditions))};
         
+        countLt = 1;
+        dataTemp = table();
         for block = 1:5
             % read in data and socscalexy
             filename = ['session_' num2str(block,'%.2i') '_' eyeName{eye} '.dat'];
@@ -80,8 +81,7 @@ for subj = 1:length(names)
             % get mean velocities for each eye
             errors = load(['Errorfiles\Exp' num2str(block) '_Subject' num2str(subj,'%.2i') '_Block' num2str(block,'%.2i') '_' eyeName{eye} '_errorFile.mat']);
             
-            countLt = 1;
-            dataTemp = table();
+
             for t = 1:size(resp, 1) % trial number
                 if errors.errorStatus(t)==0 % valid eye data trial
                     currentTrial = t;
@@ -95,7 +95,7 @@ for subj = 1:length(names)
 %                     trial.stim_offset = trial.stim_reversal+ms2frames(40+120); % reversal
 % %                     trial.stim_onset = trial.stim_reversal+ms2frames(10); % reversal--if taken delay into account...
 % %                     trial.stim_offset = trial.stim_reversal+ms2frames(50); % reversal
-% % 120ms to reversal
+%                     % 120ms to reversal
 %                     trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+120); % 120ms latency
 %                     trial.stim_offset = trial.stim_reversal; % reversal
 % % around reversal                    
@@ -168,7 +168,7 @@ for subj = 1:length(names)
                     end
                     %                     dataTemp.perceptualError(countLt, 1) = -(resp.reportAngle(t)-resp.reversalAngle(t))*resp.initialDirection(t)-dataBase.baseErrorMean(subj, 1);
                     
-                    if dataTemp.perceptualError(countLt, 1)>-10
+                    if dataTemp.perceptualError(countLt, 1)>-10 && abs(torsion.slowPhases.meanSpeed)<30
                         
                         %% retinal torsion angle
                         dataTemp.torsionPosition(countLt, 1) = nanmean(torsion.slowPhases.onsetPosition);
@@ -229,11 +229,11 @@ for subj = 1:length(names)
                     end
                 end
             end
-            [dataTemp, trialDeletedP] = cleanData(dataTemp, 'perceptualError');
-            [dataTemp, trialDeletedT] = cleanData(dataTemp, 'torsionVelT');
-            trialDeleted(subj) = trialDeleted(subj) + trialDeletedP + trialDeletedT;
-            trialData = [trialData; dataTemp];
         end
+        [dataTemp, trialDeletedP] = cleanData(dataTemp, 'perceptualError');
+        [dataTemp, trialDeletedT] = cleanData(dataTemp, 'torsionVelT');
+        trialDeleted(subj) = trialDeleted(subj) + trialDeletedP + trialDeletedT;
+        trialData = [trialData; dataTemp];
     end
     
     %%

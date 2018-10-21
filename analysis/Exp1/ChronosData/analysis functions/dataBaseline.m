@@ -7,7 +7,7 @@ global trial
 names = {'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 conditions = [25 50 100 200 400];
 startT = 1;
-loadData = 1;
+loadData = 0;
 individualPlots = 1;
 merged = 1;
 torsionThreshold = 8*ones(size(names));
@@ -32,8 +32,8 @@ folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\d
 
 trialData = table(); % organize into long format
 conData = table();
-countLt = 1; % for trialData
 countLc = 1; % for conData
+trialDeleted = zeros(1, length(names));
 
 if loadData==0
     for subj = 1:length(names)
@@ -42,9 +42,10 @@ if loadData==0
         for eye = 1:size(eyeName, 2)
             % Subject details
             subject = names{subj};
-            
             counts = {zeros(size(conditions)) zeros(size(conditions))};
             
+            countLt = 1;
+            dataTemp = table();
             for block = 1:1 % only one block now
                 % read in data and socscalexy
                 filename = ['session_' num2str(block,'%.2i') '_' eyeName{eye} '.dat'];
@@ -64,7 +65,7 @@ if loadData==0
                 for t = 1:size(resp, 1) % trial number
                     if errors.errorStatus(t)==0 % valid trial
                         currentTrial = t;
-
+                        
                         % setup trial
                         trial = setupTrial(data, header, logData, currentTrial);
                         trial.torsionFrames = torsionFrames(subj);
@@ -91,55 +92,60 @@ if loadData==0
                         [torsion, trial] = analyzeTorsion(trial, pursuit);
                         % end of analyzeTrial
                         
-                        trialData.sub(countLt, 1) = subj;
+                        dataTemp.sub(countLt, 1) = subj;
                         if strcmp(eyeName{eye}, 'L')
-                            trialData.eye(countLt, 1) = 1; % 1-left,
+                            dataTemp.eye(countLt, 1) = 1; % 1-left,
                         elseif strcmp(eyeName{eye}, 'R')
-                            trialData.eye(countLt, 1) = 2; % 2-right
+                            dataTemp.eye(countLt, 1) = 2; % 2-right
                         end
                         
                         dirIdx = find(direction==resp.initialDirection(t)); % 1-clockwise, 2-counterclockwise
                         conIdx = find(conditions==resp.rotationSpeed(t));
                         
-                        trialData.rotationSpeed(countLt, 1) = resp.rotationSpeed(t);
-                        trialData.afterReversalD(countLt, 1) = -direction(dirIdx); % 1-clockwise, -1 counterclockwise
+                        dataTemp.rotationSpeed(countLt, 1) = resp.rotationSpeed(t);
+                        dataTemp.afterReversalD(countLt, 1) = -direction(dirIdx); % 1-clockwise, -1 counterclockwise
                         % in the exp code, used the after reversal direction for rotation; so this is the
                         % rotation direction in each trial in baseline
                         
                         startFrame = trial.stim_onset;
                         endFrame = trial.stim_offset;
                         
-                        %% torsion velocity
-                        trialData.torsionVelT(countLt, 1) = torsion.slowPhases.meanSpeed;
-                        
-                        %% torsion velocity gain
-                        trialData.torsionVGain(countLt, 1) = torsion.slowPhases.meanSpeed/conditions(conIdx);
-                        
-                        %% torsion magnitude
-                        trialData.torsionAngleTotal(countLt, 1) = torsion.slowPhases.totalAngle;
-                        trialData.torsionAngleCW(countLt, 1) = torsion.slowPhases.totalAngleCW;
-                        trialData.torsionAngleCCW(countLt, 1) = torsion.slowPhases.totalAngleCCW;
-                        % just take the one that is not zero
-                        if torsion.slowPhases.totalAngleCW==0
-                            trialData.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
-                        elseif torsion.slowPhases.totalAngleCCW==0
-                            trialData.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                        if abs(torsion.slowPhases.meanSpeed)<30
+                            %% torsion velocity
+                            dataTemp.torsionVelT(countLt, 1) = torsion.slowPhases.meanSpeed;
+                            
+                            %% torsion velocity gain
+                            dataTemp.torsionVGain(countLt, 1) = torsion.slowPhases.meanSpeed/conditions(conIdx);
+                            
+                            %% torsion magnitude
+                            dataTemp.torsionAngleTotal(countLt, 1) = torsion.slowPhases.totalAngle;
+                            dataTemp.torsionAngleCW(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                            dataTemp.torsionAngleCCW(countLt, 1) = torsion.slowPhases.totalAngleCCW;
+                            % just take the one that is not zero
+                            if torsion.slowPhases.totalAngleCW==0
+                                dataTemp.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                            elseif torsion.slowPhases.totalAngleCCW==0
+                                dataTemp.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                            end
+                            
+                            %% saccade numbers
+                            dataTemp.sacNumT(countLt, 1) = trial.saccades.T.number;
+                            
+                            %% saccade sum amplitudes
+                            dataTemp.sacAmpSumT(countLt, 1) = trial.saccades.T.sum;
+                            
+                            %% saccade mean amplitudes
+                            dataTemp.sacAmpMeanT(countLt, 1) = trial.saccades.T.meanAmplitude;
+                            
+                            countLt = countLt+1;
+                            %                     end
                         end
-                        
-                        %% saccade numbers
-                        trialData.sacNumT(countLt, 1) = trial.saccades.T.number;
-                        
-                        %% saccade sum amplitudes
-                        trialData.sacAmpSumT(countLt, 1) = trial.saccades.T.sum;
-                        
-                        %% saccade mean amplitudes
-                        trialData.sacAmpMeanT(countLt, 1) = trial.saccades.T.meanAmplitude;
-                        
-                        countLt = countLt+1;
-                        %                     end
                     end
                 end
             end
+            [dataTemp, trialDeletedT] = cleanData(dataTemp, 'torsionVelT');
+            trialDeleted(subj) = trialDeleted(subj) + trialDeletedT;
+            trialData = [trialData; dataTemp];
         end
         
         %%
@@ -254,7 +260,7 @@ if loadData==0
             trialData.torsionVelTNorm(arr, 1) = (trialData.torsionVelT(arr, 1)-conData.torsionVelTMean(ii, 1))./conData.torsionVelTStd(ii, 1);
         end
     end
-    save(['dataBaseLong', endName, '.mat'], 'trialData', 'conData');
+    save(['dataBaseLong', endName, '.mat'], 'trialData', 'conData', 'trialDeleted');
 else
     cd([analysisF '\analysis functions'])
     load(['dataBaseLong', endName, '.mat']);
@@ -305,7 +311,7 @@ if individualPlots==1
                 title([eyeName{eye}, ' eye, ', num2str(mean(tempD.nonErrorTrialN(sortI, 1))), ' trials'])
             end
         end
-            saveas(gca, ['torsionVelocity_' names{t} '_' endName '_' mergeName '.pdf'])
+        saveas(gca, ['torsionVelocity_' names{t} '_' endName '_' mergeName '.pdf'])
         
         % torsion angle
         figure
