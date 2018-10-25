@@ -1,7 +1,4 @@
-library(utils)
 library(ggplot2)
-library(dplyr)
-library(ppcor)
 
 ## clear environment
 rm(list = ls())
