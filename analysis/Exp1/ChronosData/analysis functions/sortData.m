@@ -90,20 +90,21 @@ for subj = 1:length(names)
                     trial.torsionFrames = torsionFrames(subj);
                     
                     %% change the time window here
-%                     % at reversal
-%                     trial.stim_onset = trial.stim_reversal; % reversal
-%                     trial.stim_offset = trial.stim_reversal+ms2frames(40+120); % reversal
-% %                     trial.stim_onset = trial.stim_reversal+ms2frames(10); % reversal--if taken delay into account...
-% %                     trial.stim_offset = trial.stim_reversal+ms2frames(50); % reversal
-%                     % 120ms to reversal
-%                     trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+120); % 120ms latency
-%                     trial.stim_offset = trial.stim_reversal; % reversal
-% % around reversal                    
-%                     trial.stim_onset = trial.stim_reversal; 
-%                     trial.stim_offset = trial.stim_reversal + ms2frames((0.12)*1000); % 120ms after reversal
-                    % 120ms to end
-                    trial.stim_onset = trial.stim_reversal + ms2frames((0.12+0.04)*1000);
-                    trial.stim_offset = trial.stim_onset + ms2frames((logData.durationAfter(currentTrial)-0.12)*1000); % end of display
+                    if strcmp(endName, 'atReversal') % at reversal
+                        trial.stim_onset = trial.stim_reversal; % reversal
+                        trial.stim_offset = trial.stim_reversal+ms2frames(40+120); % reversal
+                        % %                     trial.stim_onset = trial.stim_reversal+ms2frames(10); % reversal--if taken delay into account...
+                        % %                     trial.stim_offset = trial.stim_reversal+ms2frames(50); % reversal
+                    elseif strcmp(endName, '120msToReversal')% 120ms to reversal
+                        trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+120); % 120ms latency
+                        trial.stim_offset = trial.stim_reversal; % reversal
+                        % % around reversal
+                        %                     trial.stim_onset = trial.stim_reversal;
+                        %                     trial.stim_offset = trial.stim_reversal + ms2frames((0.12)*1000); % 120ms after reversal
+                    elseif strcmp(endName, '120msToEnd') % 120ms to end
+                        trial.stim_onset = trial.stim_reversal + ms2frames((0.12+0.04)*1000);
+                        trial.stim_offset = trial.stim_onset + ms2frames((logData.durationAfter(currentTrial)-0.12)*1000); % end of display
+                    end
                     
                     find saccades;
                     [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
@@ -230,9 +231,11 @@ for subj = 1:length(names)
                 end
             end
         end
-        [dataTemp, trialDeletedP] = cleanData(dataTemp, 'perceptualError');
-        [dataTemp, trialDeletedT] = cleanData(dataTemp, 'torsionVelT');
-        trialDeleted(subj) = trialDeleted(subj) + trialDeletedP + trialDeletedT;
+        [dataTempP, trialDeletedP, idxP] = cleanData(dataTemp, 'perceptualError');
+        [dataTempT, trialDeletedT, idxT] = cleanData(dataTemp, 'torsionVelT');
+        idxD = unique([idxP; idxT]);
+        dataTemp(idxD, :) = [];
+        trialDeleted(subj) = length(idxD);
         trialData = [trialData; dataTemp];
     end
     

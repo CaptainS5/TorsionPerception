@@ -31,7 +31,8 @@ prm.grating.innerRadius = 0; % no fixation
 % prm.grating.outerRadius = [7, 7, 7]; % in degree of visual angle (dva)
 % prm.grating.innerRadius = 1/2; % in dva
 prm.grating.freq = 8; % frequency of the stimulus
-prm.grating.contrast = 0.25; % measured to be about 0.985 (max-min)/(max+min); 
+prm.grating.contrast = 0.25; 
+% ?(when still using the flash drag effect...) measured to be about 0.985 (max-min)/(max+min); 
 % 0.99 corresponds to actual 0.9876, quite stable...
 % and even 0.989 measures actual around 0.979, so...
 prm.grating.averageLum = 0.5; %1-prm.grating.contrast/2; % average luminance of the grating

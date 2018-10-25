@@ -10,79 +10,75 @@ trialExpAll = 288;
 
 % load data
 % baseline
-dataBase = load('dataBaseLongbaseline.mat');
+dataBase = load('dataBaseLong.mat');
 % experiment
 data1 = load(['dataLong120msToReversal.mat']);
 data2 = load(['dataLongatReversal.mat']);
 data3 = load(['dataLong120msToEnd.mat']);
 
-conN = size(data1.conData, 1);
-
 data1.trialData.timeWindow = -1*ones(size(data1.trialData, 1), 1); % before reversal
 data2.trialData.timeWindow = 0*ones(size(data2.trialData, 1), 1); % at reversal
 data3.trialData.timeWindow = 1*ones(size(data3.trialData, 1), 1); % after reversal
-
-data1.conData.timeWindow = -1*ones(conN, 1);
-data2.conData.timeWindow = 0*ones(conN, 1);
-data3.conData.timeWindow = 1*ones(conN, 1);
 
 trialData = data1.trialData;
 trialData = [trialData; data2.trialData];
 trialData = [trialData; data3.trialData];
 trialData.exp(:, 1) = repmat(2, size(trialData.sub));
 
-tempIL = find(trialData.eye==1 & trialData.targetSide==-1);
-tempIR = find(trialData.eye==2 & trialData.targetSide==1);
-tempAll = [tempIL; tempIR];
-trialDataBothEyes = trialData(tempAll, :);
+trialDataBase = dataBase.trialData;
+trialDataBase.exp(:, 1) = repmat(2, size(trialDataBase.sub));
 
+trialDataBoth = table();
 count = 1;
-speed = [25 50 100 200];
-conDataBothEyes = table();
-for tw = 1:3
-    for t = 1:size(names, 2)
-        for sI = 1:4
-            dataBoth = trialDataBothEyes(trialDataBothEyes.sub==t & trialDataBothEyes.timeWindow==tw-2 & trialDataBothEyes.rotationSpeed==speed(sI), :);
-            for directionI = 1:2
-                dataBothDir = dataBoth(dataBoth.afterReversalD==dirI(directionI), :);
-                
-                conDataBothEyes.sub(count, 1) = t;
-                conDataBothEyes.timeWindow(count, 1) = tw-2;
-                conDataBothEyes.exp(count, 1) = 2;
-                conDataBothEyes.afterReversalD(count, 1) = dirI(directionI);
-                conDataBothEyes.rotationSpeed(count, 1) = speed(sI);
-                conDataBothEyes.torsionVelTMean(count, 1) = mean(dataBothDir.torsionVelTMerged);
-                conDataBothEyes.torsionAngleSameMean(count, 1) = mean(dataBothDir.torsionAngleTSameMerged);
-                conDataBothEyes.torsionAngleAntiMean(count, 1) = mean(dataBothDir.torsionAngleTAntiMerged);
-                conDataBothEyes.torsionAngleTotalMean(count, 1) = mean(dataBothDir.torsionAngleTotal);
-                conDataBothEyes.perceptualErrorMean(count, 1) = mean(dataBothDir.perceptualError);
-                conDataBothEyes.sacNumTMean(count, 1) = mean(dataBothDir.sacNumT);
-                conDataBothEyes.sacAmpSumTMean(count, 1) = mean(dataBothDir.sacAmpSumT);
-                count = count+1;
-            end
-            conDataBothEyes.sub(count, 1) = t;
-            conDataBothEyes.timeWindow(count, 1) = tw-2;
-            conDataBothEyes.exp(count, 1) = 2;
-            conDataBothEyes.afterReversalD(count, 1) = 0;
-            conDataBothEyes.rotationSpeed(count, 1) = speed(sI);
-            conDataBothEyes.torsionVelTMean(count, 1) = mean(dataBoth.torsionVelTMerged);
-            conDataBothEyes.torsionAngleSameMean(count, 1) = mean(dataBoth.torsionAngleTSameMerged);
-            conDataBothEyes.torsionAngleAntiMean(count, 1) = mean(dataBoth.torsionAngleTAntiMerged);
-            conDataBothEyes.torsionAngleTotalMean(count, 1) = mean(dataBoth.torsionAngleTotal);
-            conDataBothEyes.perceptualErrorMean(count, 1) = mean(dataBoth.perceptualError);
-            conDataBothEyes.sacNumTMean(count, 1) = mean(dataBoth.sacNumT);
-            conDataBothEyes.sacAmpSumTMean(count, 1) = mean(dataBoth.sacAmpSumT);
-            count = count+1;
+for ii = 1:size(trialData)
+    if ((~isnan(trialData.LtorsionVelT(ii, 1)) && trialData.targetSide(ii, 1) == -1) || ...
+            (~isnan(trialData.RtorsionVelT(ii, 1)) && trialData.targetSide(ii, 1) == 1))
+        trialDataBoth.sub(count, 1) = trialData.sub(ii, 1);
+        trialDataBoth.rotationSpeed(count, 1) = trialData.rotationSpeed(ii, 1);
+        trialDataBoth.afterReversalD(count, 1) = trialData.afterReversalD(ii, 1);
+        trialDataBoth.targetSide(count, 1) = trialData.targetSide(ii, 1);
+        trialDataBoth.timeWindow(count, 1) = trialData.timeWindow(ii, 1);
+        trialDataBoth.exp(count, 1) = 2;
+        trialDataBoth.perceptualError(count, 1) = trialData.perceptualError(ii, 1);
+        if ~isnan(trialData.LtorsionVelT(ii, 1)) && trialData.targetSide(ii, 1) == -1
+            trialDataBoth.eye(count, 1) = 1; % left eye
+            trialDataBoth.torsionPosition(count, 1) = trialData.LtorsionPosition(ii, 1);           
+            trialDataBoth.torsionVelT(count, 1) = trialData.LtorsionVelT(ii, 1);           
+            trialDataBoth.torsionAngleTotal(count, 1) = trialData.LtorsionAngleTotal(ii, 1);
+            trialDataBoth.torsionAngleCW(count, 1) = trialData.LtorsionAngleCW(ii, 1);
+            trialDataBoth.torsionAngleCCW(count, 1) = trialData.LtorsionAngleCCW(ii, 1);          
+            trialDataBoth.sacNumT(count, 1) = trialData.LsacNumT(ii, 1);
+            trialDataBoth.sacNumTCW(count, 1) = trialData.LsacNumTCW(ii, 1);
+            trialDataBoth.sacNumTCCW(count, 1) = trialData.LsacNumTCCW(ii, 1);           
+            trialDataBoth.sacAmpSumT(count, 1) = trialData.LsacAmpSumT(ii, 1);
+            trialDataBoth.sacAmpSumTCW(count, 1) = trialData.LsacAmpSumTCW(ii, 1);
+            trialDataBoth.sacAmpSumTCCW(count, 1) = trialData.LsacAmpSumTCCW(ii, 1);           
+            trialDataBoth.sacAmpMeanT(count, 1) = trialData.LsacAmpMeanT(ii, 1);
+            trialDataBoth.sacAmpMeanTCW(count, 1) = trialData.LsacAmpMeanTCW(ii, 1);
+            trialDataBoth.sacAmpMeanTCCW(count, 1) = trialData.LsacAmpMeanTCCW(ii, 1);
+        elseif ~isnan(trialData.RtorsionVelT(ii, 1)) && trialData.targetSide(ii, 1) == 1
+            trialDataBoth.eye(count, 1) = 2; % right eye
+            trialDataBoth.torsionPosition(count, 1) = trialData.RtorsionPosition(ii, 1);           
+            trialDataBoth.torsionVelT(count, 1) = trialData.RtorsionVelT(ii, 1);           
+            trialDataBoth.torsionAngleTotal(count, 1) = trialData.RtorsionAngleTotal(ii, 1);
+            trialDataBoth.torsionAngleCW(count, 1) = trialData.RtorsionAngleCW(ii, 1);
+            trialDataBoth.torsionAngleCCW(count, 1) = trialData.RtorsionAngleCCW(ii, 1);          
+            trialDataBoth.sacNumT(count, 1) = trialData.RsacNumT(ii, 1);
+            trialDataBoth.sacNumTCW(count, 1) = trialData.RsacNumTCW(ii, 1);
+            trialDataBoth.sacNumTCCW(count, 1) = trialData.RsacNumTCCW(ii, 1);           
+            trialDataBoth.sacAmpSumT(count, 1) = trialData.RsacAmpSumT(ii, 1);
+            trialDataBoth.sacAmpSumTCW(count, 1) = trialData.RsacAmpSumTCW(ii, 1);
+            trialDataBoth.sacAmpSumTCCW(count, 1) = trialData.RsacAmpSumTCCW(ii, 1);           
+            trialDataBoth.sacAmpMeanT(count, 1) = trialData.RsacAmpMeanT(ii, 1);
+            trialDataBoth.sacAmpMeanTCW(count, 1) = trialData.RsacAmpMeanTCW(ii, 1);
+            trialDataBoth.sacAmpMeanTCCW(count, 1) = trialData.RsacAmpMeanTCCW(ii, 1);
         end
+        count = count+1;
     end
 end
 
-conDataBase = dataBase.conData;
-conDataBase.exp(:, 1) = repmat(2, size(conDataBase.sub));
-
 % % merge and save csv
 cd('C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\analysis')
-writetable(trialData, 'trialDataAllExp2.csv')
-writetable(trialDataBothEyes, 'trialDataAllExp2BothEyes.csv')
-writetable(conDataBothEyes, 'conDataAllExp2BothEyes.csv')
-writetable(conDataBase, 'conDataBaseAllExp2.csv')
+% writetable(trialData, 'trialDataAllExp2.csv')
+writetable(trialDataBoth, 'trialDataAllBothEyeExp2.csv')
+% writetable(trialDataBase, 'trialDataBaseAllExp2.csv')

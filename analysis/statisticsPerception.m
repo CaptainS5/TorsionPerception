@@ -1,5 +1,5 @@
 % all statistic analysis and results for perception Exp2
-% 07/12/2018 Xiuyun Wu
+% 10/23/2018 Xiuyun Wu
 clear all; close all; clc
 % might be useful as a reference...
 % % one-way repeated measure anova...
@@ -18,7 +18,7 @@ clear all; close all; clc
 %     [c{1} m{1} h{1} nms{1}] = multcompare(stats{1});
 %     saveas(h{1}, ['sf_', fCons{j}, colN, '_', csf, '.pdf'])
 
-names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol'};
+names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol' 'FScontrol' 'XWcontrol' 'SCcontrol' 'JFcontrol'};
 conditions = [25 50 100 200];
 trialBaseAll = 60;
 trialExpAll = 288;

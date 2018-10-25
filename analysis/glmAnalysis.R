@@ -4,7 +4,6 @@ library(ggplot2)
 library(car)
 library(MASS)
 library(multcomp)
-library(lsm)
 
 ## clear environment
 rm(list=ls())
@@ -32,7 +31,7 @@ dataExp1$sub <- as.factor(dataExp1$sub)
 dataExp1$afterReversalD <- as.factor(dataExp1$afterReversalD)
 dataExp1$rotationSpeed <- as.factor(dataExp1$rotationSpeed)
 
-perceptExp1 <- lmer(perceptualError ~ afterReversalD + rotationSpeed + rotationSpeed*afterReversalD + (1|afterReversalD:sub) + (1|rotationSpeed:sub), 
+perceptExp1 <- lmer(perceptualError ~ afterReversalD + rotationSpeed + rotationSpeed*afterReversalD + (1|afterReversalD:sub) + (1|rotationSpeed:sub),
       data = dataExp1, REML = FALSE)
 summary(perceptExp1)
 anova(perceptExp1, type = 3)
@@ -53,7 +52,7 @@ lsmeans(perceptExp1, list(pairwise~rotationSpeed:afterReversalD), adjust = "tuke
 dataExp1Fit <- dataExp1
 dataExp1Fit$perceptualErrorFit <- predict(perceptExp1)
 
-dataAgg1 <- aggregate(.~rotationSpeed*afterReversalD*sub, data = dataExp1Fit, FUN = "mean") 
+dataAgg1 <- aggregate(.~rotationSpeed*afterReversalD*sub, data = dataExp1Fit, FUN = "mean")
 dataAgg1$sd <- aggregate(perceptualError~rotationSpeed*afterReversalD*sub, data = dataExp1Fit, FUN = "sd")$perceptualError
 dataAgg1$sdFit <- aggregate(perceptualErrorFit~rotationSpeed*afterReversalD*sub, data = dataExp1Fit, FUN = "sd")$perceptualErrorFit
 
@@ -95,7 +94,7 @@ dataExp2$sub <- as.factor(dataExp2$sub)
 dataExp2$afterReversalD <- as.factor(dataExp2$afterReversalD)
 dataExp2$rotationSpeed <- as.factor(dataExp2$rotationSpeed)
 
-perceptExp2 <- lmer(perceptualError ~ rotationSpeed + afterReversalD + rotationSpeed*afterReversalD + (1|sub) + (1|afterReversalD:sub) + (1|rotationSpeed:sub), 
+perceptExp2 <- lmer(perceptualError ~ rotationSpeed + afterReversalD + rotationSpeed*afterReversalD + (1|sub) + (1|afterReversalD:sub) + (1|rotationSpeed:sub),
                     data = dataExp2, REML = FALSE)
 summary(perceptExp2)
 anova(perceptExp2)
@@ -105,7 +104,7 @@ summary(glht(perceptExp2, linfct = mcp(rotationSpeed = "Tukey")), test = adjuste
 dataExp2Fit <- dataExp2
 dataExp2Fit$perceptualErrorFit <- predict(perceptExp2)
 
-dataAgg2 <- aggregate(.~rotationSpeed*afterReversalD*sub, data = dataExp2Fit, FUN = "mean") 
+dataAgg2 <- aggregate(.~rotationSpeed*afterReversalD*sub, data = dataExp2Fit, FUN = "mean")
 dataAgg2$sd <- aggregate(perceptualError~rotationSpeed*afterReversalD*sub, data = dataExp2Fit, FUN = "sd")$perceptualError
 dataAgg2$sdFit <- aggregate(perceptualErrorFit~rotationSpeed*afterReversalD*sub, data = dataExp2Fit, FUN = "sd")$perceptualErrorFit
 
@@ -135,9 +134,9 @@ dev.off()
 
 ## both
 dataAll <- rbind(dataExp1, dataExp2, deparse.level = 1)
-perceptAll <- lmer(perceptualError ~ rotationSpeed + afterReversalD + exp 
-                    + rotationSpeed*exp + afterReversalD*exp + rotationSpeed*afterReversalD 
-                    + rotationSpeed*exp*afterReversalD + (1|sub), 
+perceptAll <- lmer(perceptualError ~ rotationSpeed + afterReversalD + exp
+                    + rotationSpeed*exp + afterReversalD*exp + rotationSpeed*afterReversalD
+                    + rotationSpeed*exp*afterReversalD + (1|sub),
                     data = dataAll)
 summary(perceptAll)
 anova(perceptAll)
@@ -151,7 +150,7 @@ summary(glht(perceptAll, linfct = mcp(rotationSpeed = "Tukey")), test = adjusted
 dataAllFit <- dataAll
 dataAllFit$perceptualErrorFit <- predict(perceptAll)
 
-dataAggAll <- aggregate(.~rotationSpeed*afterReversalD*sub*exp, data = dataAllFit, FUN = "mean") 
+dataAggAll <- aggregate(.~rotationSpeed*afterReversalD*sub*exp, data = dataAllFit, FUN = "mean")
 dataAggAll$sd <- aggregate(perceptualError~rotationSpeed*afterReversalD*sub*exp, data = dataAllFit, FUN = "sd")$perceptualError
 dataAggAll$sdFit <- aggregate(perceptualErrorFit~rotationSpeed*afterReversalD*sub*exp, data = dataAllFit, FUN = "sd")$perceptualErrorFit
 
@@ -186,7 +185,7 @@ print(p)
 
 
 ######## Torsion ########
-# Exp1 
+# Exp1
 trialData1 <- trialData1Original[which(trialData1Original$afterReversalD!=0), ]
 sub <- trialData1["sub"]
 exp <- trialData1["exp"]
@@ -201,10 +200,10 @@ dataExp1$timeWindow <- as.factor(dataExp1$timeWindow)
 dataExp1$afterReversalD <- as.factor(dataExp1$afterReversalD)
 dataExp1$rotationSpeed <- as.factor(dataExp1$rotationSpeed)
 
-torsionVExp1 <- lmer(torsionVelT ~ timeWindow + afterReversalD + rotationSpeed 
+torsionVExp1 <- lmer(torsionVelT ~ timeWindow + afterReversalD + rotationSpeed
                      + rotationSpeed*afterReversalD + timeWindow*rotationSpeed + timeWindow*afterReversalD
-                     + rotationSpeed*afterReversalD*timeWindow 
-                     + (1|sub) + (1|afterReversalD:sub) + (1|rotationSpeed:sub) + (1|timeWindow:sub), 
+                     + rotationSpeed*afterReversalD*timeWindow
+                     + (1|sub) + (1|afterReversalD:sub) + (1|rotationSpeed:sub) + (1|timeWindow:sub),
                     data = dataExp1, REML = FALSE)
 summary(torsionVExp1)
 anova(torsionVExp1)
@@ -213,7 +212,7 @@ anova(torsionVExp1)
 dataExp1Fit <- dataExp1
 dataExp1Fit$torsionVelTFit <- predict(torsionVExp1)
 
-dataAgg1 <- aggregate(.~rotationSpeed*afterReversalD*sub*timeWindow, data = dataExp1Fit, FUN = "mean") 
+dataAgg1 <- aggregate(.~rotationSpeed*afterReversalD*sub*timeWindow, data = dataExp1Fit, FUN = "mean")
 dataAgg1$sd <- aggregate(torsionVelT~rotationSpeed*afterReversalD*sub*timeWindow, data = dataExp1Fit, FUN = "sd")$torsionVelT
 dataAgg1$sdFit <- aggregate(torsionVelTFit~rotationSpeed*afterReversalD*sub*timeWindow, data = dataExp1Fit, FUN = "sd")$torsionVelTFit
 
@@ -265,7 +264,7 @@ p <- ggplot(dataAgg1, aes(x = rotationSpeed, y = torsionVelT, colour = afterReve
 print(p)
 dev.off()
 
-# Exp2 
+# Exp2
 trialData2 <- trialData2Original[which(trialData2Original$afterReversalD!=0 & trialData2Original$timeWindow!=0
                                        & ((trialData2Original$eye==1 & trialData2Original$targetSide==-1)|(trialData2Original$eye==2 & trialData2Original$targetSide==1))), ]
 sub <- trialData2["sub"]
@@ -281,10 +280,10 @@ dataExp2$timeWindow <- as.factor(dataExp2$timeWindow)
 dataExp2$afterReversalD <- as.factor(dataExp2$afterReversalD)
 dataExp2$rotationSpeed <- as.factor(dataExp2$rotationSpeed)
 
-torsionVExp2 <- lmer(torsionVelT ~ timeWindow + afterReversalD + rotationSpeed 
+torsionVExp2 <- lmer(torsionVelT ~ timeWindow + afterReversalD + rotationSpeed
                      + rotationSpeed*afterReversalD + timeWindow*rotationSpeed + timeWindow*afterReversalD
-                     + rotationSpeed*afterReversalD*timeWindow 
-                     + (1|sub),#(1|afterReversalD:sub) + (1|rotationSpeed:sub) + (1|timeWindow:sub),  
+                     + rotationSpeed*afterReversalD*timeWindow
+                     + (1|sub),#(1|afterReversalD:sub) + (1|rotationSpeed:sub) + (1|timeWindow:sub),
                      data = dataExp2, REML = FALSE)
 summary(torsionVExp2)
 anova(torsionVExp2)
@@ -293,7 +292,7 @@ anova(torsionVExp2)
 dataExp2Fit <- dataExp2
 dataExp2Fit$torsionVelTFit <- predict(torsionVExp2)
 
-dataAgg2 <- aggregate(.~rotationSpeed*afterReversalD*sub*timeWindow, data = dataExp2Fit, FUN = "mean") 
+dataAgg2 <- aggregate(.~rotationSpeed*afterReversalD*sub*timeWindow, data = dataExp2Fit, FUN = "mean")
 dataAgg2$sd <- aggregate(torsionVelT~rotationSpeed*afterReversalD*sub*timeWindow, data = dataExp2Fit, FUN = "sd")$torsionVelT
 dataAgg2$sdFit <- aggregate(torsionVelTFit~rotationSpeed*afterReversalD*sub*timeWindow, data = dataExp2Fit, FUN = "sd")$torsionVelTFit
 
