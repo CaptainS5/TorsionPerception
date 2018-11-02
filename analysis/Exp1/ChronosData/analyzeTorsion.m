@@ -23,6 +23,9 @@ trial.frames.DT_quickphases(~trial.quickphaseFrames) = NaN;
 trial.frames.DT_slowphases = trial.frames.DT_filt;
 trial.frames.DT_slowphases(~slowPhases) = NaN;
 
+trial.frames.DTUnfiltered_slowphases = trial.frames.DT;
+trial.frames.DTUnfiltered_slowphases(~slowPhases) = NaN;
+
 %% find slowphase frames rotating in correct direction
 torsion.slowPhases.correctFrames = double(trial.frames.DT_slowphases > 0 == ~trial.log.rotationalDirection);
 torsion.slowPhases.correctFrames(~slowPhases) = NaN;

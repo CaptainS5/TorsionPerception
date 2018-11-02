@@ -8,6 +8,14 @@ trial.startFrame = data.startFrames(trial.number)+1;
 trial.endFrame = data.endFrames(trial.number)+1;
 
 %% get data for this trial
+trial.frames.X = data.X(trial.startFrame:trial.endFrame);
+trial.frames.Y = data.Y(trial.startFrame:trial.endFrame);
+trial.frames.T = data.T(trial.startFrame:trial.endFrame);
+
+trial.frames.DX = data.DX(trial.startFrame:trial.endFrame);
+trial.frames.DY = data.DY(trial.startFrame:trial.endFrame);
+trial.frames.DT = data.DT(trial.startFrame:trial.endFrame);
+
 trial.frames.X_filt = data.X_filt(trial.startFrame:trial.endFrame);
 trial.frames.Y_filt = data.Y_filt(trial.startFrame:trial.endFrame);
 trial.frames.T_filt = data.T_filt(trial.startFrame:trial.endFrame);

@@ -5,6 +5,7 @@ library(ppcor)
 #### clear environment
 rm(list = ls())
 
+
 #### load data
 setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/TorsionPerception/analysis")
 baseTorsion1Original <- read.csv("conDataBaseAllExp1.csv")
@@ -19,8 +20,9 @@ trialDataBoth2Original <- read.csv("trialDataAllBothEyeExp2.csv")
 tw <- c(-1, 1, 0)
 endName <- c("beforeReversal", "atReversal", "afterReversal")
 
-#### perceptual illusion repeated measures ANOVA 2 way for perception--rotational
-#### speed x after-reversal direction Exp1
+#### perceptual illusion repeated measures ANOVA
+### 2 way for perception--rotational speed x after-reversal direction
+## Exp1
 conData1 <- conData1Original[which(conData1Original$timeWindow == 1 & conData1Original$afterReversalD !=
     0), ]
 sub <- conData1["sub"]
@@ -80,8 +82,9 @@ perceptAllAnova <- ezANOVA(dataAll, dv = .(perceptualErrorMean), wid = .(sub), w
 print(perceptAllAnova)
 
 
-#### Torsion and perception data Exp1 3 way for torsion--time window x rotational
-#### speed x after-reversal direction
+#### Torsion and perception data
+### Exp1
+## 3 way for torsional velocity--time window x rotational speed x after-reversal direction
 conData1 <- conData1Original[which(conData1Original$afterReversalD != 0), ]
 sub <- conData1["sub"]
 exp <- conData1["exp"]
@@ -157,6 +160,82 @@ corExp1AR <- pcor.test(dataExp1$perceptualErrorMean, dataExp1$torsionVelTMean, d
     method = c("pearson"))
 print(corExp1AR)
 
+## 3 way for torsional angle--time window x rotational speed x after-reversal direction
+conData1 <- conData1Original[which(conData1Original$afterReversalD != 0), ]
+sub <- conData1["sub"]
+exp <- conData1["exp"]
+timeWindow <- conData1["timeWindow"]
+afterReversalD <- conData1["afterReversalD"]
+rotationSpeed <- conData1["rotationSpeed"]
+perceptualErrorMean <- conData1["perceptualErrorMean"]
+torsionAngleMean <- conData1["torsionAngleMean"] * conData1["afterReversalD"]
+dataExp1 <- data.frame(sub, exp, timeWindow, afterReversalD, rotationSpeed, perceptualErrorMean,
+    torsionAngleMean)
+dataExp1$exp <- as.factor(dataExp1$exp)
+dataExp1$sub <- as.factor(dataExp1$sub)
+dataExp1$timeWindow <- as.factor(dataExp1$timeWindow)
+dataExp1$afterReversalD <- as.factor(dataExp1$afterReversalD)
+dataExp1$rotationSpeed <- as.factor(dataExp1$rotationSpeed)
+
+torsionAExp1Anova <- ezANOVA(dataExp1, dv = .(torsionAngleMean), wid = .(sub), within = .(rotationSpeed,
+    timeWindow, afterReversalD), type = 3)
+print(torsionAExp1Anova)
+
+pdf("torsionAngleExp1_interaction3.pdf")
+p <- ggplot(dataExp1, aes(x = rotationSpeed, y = torsionAngleMean, colour = afterReversalD,
+    group = afterReversalD)) + stat_summary(fun.data = mean_se, geom = "errorbar",
+    width = 0.2) + geom_line(stat = "summary", fun.y = "mean") + facet_grid(~timeWindow)
+print(p)
+dev.off()
+
+## Partial correlation across participants before reversal
+conData1 <- conData1Original[which(conData1Original$afterReversalD == 0 & conData1Original$timeWindow ==
+    -1), ]
+sub <- conData1["sub"]
+exp <- conData1["exp"]
+rotationSpeed <- conData1["rotationSpeed"]
+perceptualErrorMean <- conData1["perceptualErrorMean"]
+torsionAngleMean <- conData1["torsionAngleMean"]
+dataExp1 <- data.frame(sub, exp, rotationSpeed, perceptualErrorMean, torsionAngleMean)
+dataExp1$exp <- as.factor(dataExp1$exp)
+dataExp1$sub <- as.factor(dataExp1$sub)
+
+corExp1BR <- pcor.test(dataExp1$perceptualErrorMean, dataExp1$torsionAngleMean, dataExp1$rotationSpeed,
+    method = c("pearson"))
+print(corExp1BR)
+
+# at reversal
+conData1 <- conData1Original[which(conData1Original$afterReversalD == 0 & conData1Original$timeWindow ==
+    0), ]
+sub <- conData1["sub"]
+exp <- conData1["exp"]
+rotationSpeed <- conData1["rotationSpeed"]
+perceptualErrorMean <- conData1["perceptualErrorMean"]
+torsionAngleMean <- conData1["torsionAngleMean"]
+dataExp1 <- data.frame(sub, exp, rotationSpeed, perceptualErrorMean, torsionAngleMean)
+dataExp1$exp <- as.factor(dataExp1$exp)
+dataExp1$sub <- as.factor(dataExp1$sub)
+
+corExp1R <- pcor.test(dataExp1$perceptualErrorMean, dataExp1$torsionAngleMean, dataExp1$rotationSpeed,
+    method = c("pearson"))
+print(corExp1R)
+
+# after reversal
+conData1 <- conData1Original[which(conData1Original$afterReversalD == 0 & conData1Original$timeWindow ==
+    1), ]
+sub <- conData1["sub"]
+exp <- conData1["exp"]
+rotationSpeed <- conData1["rotationSpeed"]
+perceptualErrorMean <- conData1["perceptualErrorMean"]
+torsionAngleMean <- conData1["torsionAngleMean"]
+dataExp1 <- data.frame(sub, exp, rotationSpeed, perceptualErrorMean, torsionAngleMean)
+dataExp1$exp <- as.factor(dataExp1$exp)
+dataExp1$sub <- as.factor(dataExp1$sub)
+
+corExp1AR <- pcor.test(dataExp1$perceptualErrorMean, dataExp1$torsionAngleMean, dataExp1$rotationSpeed,
+    method = c("pearson"))
+print(corExp1AR)
+
 ### Exp2 baseline correlation between the two eyes
 sub <- baseTorsion2Original["sub"] + 20
 rotationSpeed <- baseTorsion2Original["rotationSpeed"]
@@ -166,7 +245,7 @@ trialBase <- data.frame(sub, rotationSpeed, LtorsionVelT, RtorsionVelT)
 trialBase$sub <- as.factor(trialBase$sub)
 # trialBase$rotationSpeed <- as.factor(trialBase$rotationSpeed)
 
-# correlation within participant
+## correlation within participant
 trialCor <- trialBase[complete.cases(trialBase), ]
 corP <- matrix(0, 10, 1)
 corR <- matrix(0, 10, 1)
@@ -174,36 +253,22 @@ for (subN in 21:30) {
     trialBaseS <- trialCor[which(trialCor$sub == subN), ]
     corB <- cor.test(trialBaseS$LtorsionVelT, trialBaseS$RtorsionVelT, use = "complete.obs",
         method = "pearson")
-    corP[subN - 20, 1] <- corB$estimate
-    corR[subN - 20, 1] <- corB$p.value
+    corR[subN - 20, 1] <- corB$estimate
+    corP[subN - 20, 1] <- corB$p.value
 }
-show(corP)
 show(corR)
+show(corP)
+corS <- corR[corP<0.05, 1]
+print(length(corS))
+print(mean(corS))
+print(sd(corS))
 
 # partial correlation across participants
 pcorB <- pcor.test(trialCor$LtorsionVelT, trialCor$RtorsionVelT, trialCor$rotationSpeed,
     method = c("pearson"))
 print(pcorB)
 
-pdf("correlationBaseTwoEyes.pdf")
-p <- ggplot(trialCor, aes(x = LtorsionVelT, y = RtorsionVelT, color = rotationSpeed)) +
-    geom_point()
-print(p)
-dev.off()
-
-# histogram of velocity in each eye
-pdf("baselineVelocityLeftEye.pdf")
-p <- ggplot(trialCor, aes(LtorsionVelT)) + geom_histogram() + facet_wrap(~rotationSpeed)
-print(p)
-dev.off()
-
-pdf("baselineVelocityRightEye.pdf")
-p <- ggplot(trialCor, aes(RtorsionVelT)) + geom_histogram() + facet_wrap(~rotationSpeed)
-print(p)
-dev.off()
-
-### experiment trials, first do the same as baseline correlation between the two
-### eyes within subject
+### experiment trials, first do the same as baseline correlation between the two eyes within subject
 sub <- trialData2Original["sub"] + 20
 rotationSpeed <- trialData2Original["rotationSpeed"]
 afterReversalD <- trialData2Original["afterReversalD"]
@@ -224,11 +289,15 @@ for (endN in 1:3) {
         trialExpS <- trialExpCor[which(trialExpCor$sub == subN), ]
         corE <- cor.test(trialExpS$LtorsionVelT, trialExpS$RtorsionVelT, use = "complete.obs",
             method = "pearson")
-        corP[subN - 20, 1] <- corE$estimate
-        corR[subN - 20, 1] <- corE$p.value
+        corR[subN - 20, 1] <- corE$estimate
+        corP[subN - 20, 1] <- corE$p.value
     }
-    show(corP)
-    show(corR)
+    # show(corR)
+    # show(corP)
+    corS <- corR[corP<0.05, 1]
+    print(length(corS))
+    print(mean(corS))
+    print(sd(corS))
 
     # across sub trial correlation...
     corEA <- cor.test(trialExpCor$LtorsionVelT, trialExpCor$RtorsionVelT, use = "complete.obs",
