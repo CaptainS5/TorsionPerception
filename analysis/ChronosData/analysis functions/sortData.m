@@ -2,6 +2,7 @@
 % direction, initial angle1, reversal angle1, all are target
 % properties--needs to check the target side to see which side the
 % stimulus is
+% adding velocity trace info, 11/26/2018
 clear all; close all; clc
 
 global trial

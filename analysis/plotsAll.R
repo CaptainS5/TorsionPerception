@@ -64,6 +64,8 @@ trialDataBoth2Original <- read.csv("trialDataAllBothEyeExp2.csv")
 # eye: 1 left eye, 2 right eye
 # afterReversalD: -1 CCW, 1 CW, 0 merged as CW
 # time window: -1 120ms after onset to flash onset; 0-flash onset to flash offset; 1 120ms after flash offset to end
+tw <- c(-1, 0，1)
+endName <- c("beforeReversal", "atReversal", "afterReversal")
 
 # parameters for plotting
 # for the poster
@@ -337,7 +339,6 @@ dev.off()
 
 ### Exp2
 ## baseline
-# correlation between the two eyes
 sub <- baseTorsion2Original["sub"] + 20
 rotationSpeed <- baseTorsion2Original["rotationSpeed"]
 LtorsionVelT <- baseTorsion2Original["LtorsionVelT"]
@@ -347,6 +348,7 @@ trialBase$sub <- as.factor(trialBase$sub)
 trialBase$rotationSpeed <- as.factor(trialBase$rotationSpeed)
 trialCor <- trialBase[complete.cases(trialBase), ]
 
+# correlation between the two eyes
 pdf(paste(folder2, "correlationBaseTwoEyes.pdf"))
 p <- ggplot(trialCor, aes(x = LtorsionVelT, y = RtorsionVelT, fill = rotationSpeed)) +
     geom_point(size = dotCorSize, shape = 23, alpha = dotCorAlpha) +
@@ -403,6 +405,57 @@ print(p)
 dev.off()
 
 ## experiment
+sub <- trialData2Original["sub"] + 20
+rotationSpeed <- trialData2Original["rotationSpeed"]
+afterReversalD <- trialData2Original["afterReversalD"]
+timeWindow <- trialData2Original["timeWindow"]
+LtorsionVelT <- trialData2Original["LtorsionVelT"]
+RtorsionVelT <- trialData2Original["RtorsionVelT"]
+trialExpOriginal <- data.frame(sub, rotationSpeed, afterReversalD, timeWindow, LtorsionVelT,
+    RtorsionVelT)
+trialExpOriginal$sub <- as.factor(trialExpOriginal$sub)
+
+# histogram of velocity in each eye
+for (endN in 1:3) {
+trialExp <- trialExpOriginal[which(trialExpOriginal$timeWindow == tw[endN] &
+        abs(trialExpOriginal$LtorsionVelT) < 6), ]
+trialExpCor <- trialExp[complete.cases(trialExp), ]
+pdf(paste(folder2, "expVelocityLeft", endName[endN], "Eye.pdf"))
+p <- ggplot(trialExpCor, aes(LtorsionVelT, colour = sub)) +
+        geom_density(size = 1) +
+        scale_y_continuous(name = "Density") +
+        scale_x_continuous(name = "Left eye torsional velocity (°/s)") +
+        theme(axis.line = element_line(colour = "black", size = 0.5),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.border = element_blank(),
+              panel.background = element_blank(),
+              text = element_text(size = textSize),
+              legend.background = element_rect(fill="transparent"),
+              legend.key = element_rect(colour = "transparent", fill = "white"),
+              aspect.ratio=1) +
+        facet_wrap(~rotationSpeed)
+print(p)
+dev.off()
+
+pdf(paste(folder2, "expVelocityRightEye", endName[endN], ".pdf"))
+p <- ggplot(trialExpCor, aes(RtorsionVelT, colour = sub)) +
+        geom_density(size = 1) +
+        scale_y_continuous(name = "Density") +
+        scale_x_continuous(name = "Right eye torsional velocity (°/s)") +
+        theme(axis.line = element_line(colour = "black", size = 0.5),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.border = element_blank(),
+              panel.background = element_blank(),
+              text = element_text(size = textSize),
+              legend.background = element_rect(fill="transparent"),
+              legend.key = element_rect(colour = "transparent", fill = "white"),
+              aspect.ratio=1) +
+        facet_wrap(~rotationSpeed)
+print(p)
+dev.off()
+}
 
 # both eyes
 # torsional velocity

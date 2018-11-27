@@ -280,11 +280,6 @@ try
             Screen('Flip', prm.screen.windowPtr);
             WaitSecs(prm.ITI);
         end
-        %             % quit, only for debugging
-        %             if strcmp(key, 'q')
-        %                 break
-        %             end
-        %         end
     end
     prm.fileName.prm = [prm.fileName.folder, '\parameters_', info.fileNameTime];
     save(prm.fileName.prm, 'prm');

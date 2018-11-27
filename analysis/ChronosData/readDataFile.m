@@ -4,6 +4,7 @@ function [data] = readDataFile(selectedDataFile, experimentFolder)
 % just delete the repetitive ones--first find out which frames, then
 % delete the first appearance of the repetitive ones
 
+% for debugging
 % experimentFolder = ['C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\data\FScontrol\chronos\'];%[folder{:} '\' subject '\chronos']; % for debug
 % selectedDataFile = ['session_02_L.dat'];
 %% Part1: read number of segments

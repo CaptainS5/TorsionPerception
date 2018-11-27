@@ -1,6 +1,8 @@
 function [data] = socscalexy(data)
 % SOCSCALEXY recomputes position from pixel to degrees of visual angle, and
 % flips traces, if applicable; filtering is also done here
+% for Iris processed data, degree already computed and no pixel info
+% for eye position?--Xiuyun Wu 11/26/2018
 
 % file checked and corrected on 05/31/11
 
