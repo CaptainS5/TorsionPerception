@@ -1,5 +1,5 @@
-function currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker)
-% clear all; close all; clc; currentBlock=1; rStyle = -1; expTyp = 1.5; eyeTracker=0;% debugging
+% function currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker)
+clear all; close all; clc; currentBlock=1; rStyle = -1; expTyp = 1; eyeTracker=0;% debugging
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
     global trigger
@@ -13,6 +13,9 @@ try
     AssertOpenGL;
     
     setParameters;
+    cd ..
+    folder = pwd;
+    cd('experiment\')
     prm.pwd = pwd;
     info = getInfo(currentBlock, rStyle, expTyp, eyeTracker);
     if info.expType>=1
@@ -30,7 +33,7 @@ try
             length(prm.rotation.freq);
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         
-        prm.fileName.folder = ['data\', info.subID{1}, '\baseline'];
+        prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baseline'];
     elseif info.expType==-0.5 % baseline perception for control
         prm.flash.displacement = [-1 1]; % -1, left side follow the assigned initial direction; 1, right side follow the assigned initial direction
         prm.flash.eccentricity = 0.5; % distance between edge of grating and fixation, half the gap between the two gratings
@@ -43,7 +46,7 @@ try
         prm.trialPerCondition = 5; % trial number per condition
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         
-        prm.fileName.folder = ['data\', info.subID{1}, '\baseline'];
+        prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baseline'];
     elseif info.expType==0 % baseline of torsion
         prm.blockN = 1; % total number of blocks
         prm.trialPerCondition = 5; % trial number per condition
@@ -51,7 +54,7 @@ try
         prm.rotation.beforeDuration = 1; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
         prm.rotation.afterDuration = 1;
         
-        prm.fileName.folder = ['data\', info.subID{1}, '\baselineTorsion'];
+        prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baselineTorsion'];
     elseif info.expType==0.5 % baseline torsion for control
         prm.flash.displacement = [-1 1]; % -1, left side follow the assigned initial direction; 1, right side follow the assigned initial direction
         prm.flash.eccentricity = 0.5; % distance between edge of grating and fixation, half the gap between the two gratings
@@ -65,9 +68,9 @@ try
         prm.rotation.beforeDuration = 1; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
         prm.rotation.afterDuration = 1;
         
-        prm.fileName.folder = ['data\', info.subID{1}, '\baselineTorsion'];
+        prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baselineTorsion'];
     elseif info.expType==1
-        prm.fileName.folder = ['data\', info.subID{1}];
+        prm.fileName.folder = [folder, '\data\', info.subID{1}];
     elseif info.expType==1.5 % control, two peripheral stimuli
         %         prm.grating.outerRadius = 23.6/2;
         %         prm.flash.radius = 2.5/2;
@@ -81,7 +84,7 @@ try
         prm.trialPerCondition = 18; % 288 trials in total, 48 trials each block
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         
-        prm.fileName.folder = ['data\', info.subID{1}];
+        prm.fileName.folder = [folder, '\data\', info.subID{1}];
     end
     mkdir(prm.fileName.folder)
     

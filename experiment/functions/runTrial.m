@@ -57,6 +57,10 @@ if fix(info.expType)~=info.expType % grating destination rectangle for control t
     prm.screen.center(1)+2*gratingRadiusX+flashEcc,...
     prm.screen.center(2)+gratingRadiusY];
 end
+rectRotation = [prm.screen.center(1)-gratingRadiusX,...
+    prm.screen.center(2)-gratingRadiusY,...
+    prm.screen.center(1)+gratingRadiusX,...
+    prm.screen.center(2)+gratingRadiusY];
 
 % rest of the set ups
 % fixation set up
@@ -371,6 +375,8 @@ while quitFlag==0
         elseif display{blockN}.flashDisplaceLeft(trialN)==1 % report the right
             rectFixResp=rectRotationR;
         end
+    elseif fix(info.expType)==info.expType % Exp1
+        rectFixResp=rectRotation;
     end
     Screen('DrawTexture', prm.screen.windowPtr, prm.resp.tex{sizeN}, [], rectFixResp, respAngle);
 %     if fix(info.expType)==info.expType
