@@ -8,7 +8,7 @@ load('temp.mat')
 
 % for each rotational speed, draw the mean filtered and unfiltered
 % velocity trace
-for subN = 1:1%size(names, 2)
+for subN = 1:size(names, 2)
     validI = find(eyeTrialData.errorStatusR(subN, :)==0);
     maxBeforeFrames = max(eyeTrialData.stim.beforeFrames);
     maxAfterFrames = max(eyeTrialData.stim.afterFrames);
@@ -29,4 +29,17 @@ for subN = 1:1%size(names, 2)
         framesUnfitl{subN}(validTrialN, startIF:endIF) = eyeTrialData.frames{subN, validI(validTrialN)}.DTUnfilt_noSac(startI:endI);
     end
 end
+maxFrameLength = max(frameLength);
 
+velTAverage = NaN(length(names), maxFrameLength);
+velTStd = NaN(length(names), maxFrameLength);
+velTUnfiltAverage = NaN(length(names), maxFrameLength);
+velTUnfiltStd = NaN(length(names), maxFrameLength);
+
+velTAverage = nanmean;
+velTStd = ;
+velTUnfiltAverage = ;
+velTUnfiltStd = ;
+
+figure
+subplot(2, 1, 1)
