@@ -49,15 +49,15 @@ for subN = 1:length(names)
             eye = 2;
             % read in data and socscalexy
             filename = ['session_' num2str(blockN,'%.2i') '_' eyeName{eye} '.dat'];
-            if subN==5 && block==5 % for KT, 5
+            if subN==5 && blockN==5 % for KT, 5
                 data = readDataFile_KTb5(filename, [dataFolder{:} '\' subject '\chronos']);
-            elseif subN==6 && block==3 % for MS, b3-lost frames...
+            elseif subN==6 && blockN==3 % for MS, b3-lost frames...
                 data = readDataFile_MSb3(filename, [dataFolder{:} '\' subject '\chronos']);
-            elseif subN==7 && block==1 % for IC, b1-lost frames
+            elseif subN==7 && blockN==1 % for IC, b1-lost frames
                 data = readDataFile_ICb1(filename, [dataFolder{:} '\' subject '\chronos']);
-            elseif subN==9 && block==5 % for NY, b5-lost frames...
+            elseif subN==9 && blockN==5 % for NY, b5-lost frames...
                 data = readDataFile_NYb5(filename, [dataFolder{:} '\' subject '\chronos']);
-            elseif subN==13 && block==4 % for RR, b4-lost frames...
+            elseif subN==13 && blockN==4 % for RR, b4-lost frames...
                 data = readDataFile_RRb4(filename, [dataFolder{:} '\' subject '\chronos']);
             else
                 data = readDataFile(filename, [dataFolder{:} '\' subject '\chronos']);
@@ -130,5 +130,5 @@ for subN = 1:length(names)
     end
 end
 cd([analysisF '\analysis functions'])
-%     save(['eyeDataAll.mat'], 'eyeTrialData');
+save(['eyeDataAll.mat'], 'eyeTrialData');
 % rows are participants, columns are trials--all trial included
