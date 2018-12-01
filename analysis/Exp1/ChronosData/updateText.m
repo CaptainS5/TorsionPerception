@@ -2,10 +2,10 @@ function [] = updateText(trial, torsion, logData, fig)
 
 screenSize = get(0,'ScreenSize');
 
-xPosition = screenSize(3)*2/3;
-yPosition = screenSize(4)*2/5;
+xPosition = screenSize(1);
+yPosition = screenSize(4)/2;
 verticalDistance = 20;
-width = 500;
+width = 200;
 height = 20;
 textblock = 0;
 
@@ -46,7 +46,7 @@ direction = uicontrol(fig,'Style','text',...
 
 textblock = textblock+1;
 rotationDirection = uicontrol(fig,'Style','text',...
-    'String', ['Rotational direction: ' num2str(trial.log.rotationalDirection)],...
+    'String', ['Rotational direction (after reversal): ' num2str(trial.log.afterReversalD)],...
     'Position',[xPosition yPosition-textblock*verticalDistance width height],...
     'HorizontalAlignment','left');
 

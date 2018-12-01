@@ -27,15 +27,15 @@ trial.frames.DTUnfiltered_slowphases = trial.frames.DT;
 trial.frames.DTUnfiltered_slowphases(~slowPhases) = NaN;
 
 %% find slowphase frames rotating in correct direction
-% torsion.slowPhases.correctFrames = double(trial.frames.DT_slowphases > 0 == ~trial.log.rotationalDirection);
-% torsion.slowPhases.correctFrames(~slowPhases) = NaN;
-% torsion.slowPhases.quality = nanmean(torsion.slowPhases.correctFrames);
+torsion.slowPhases.correctFrames = double(trial.frames.DT_slowphases > 0 == ~trial.log.afterReversalD);
+torsion.slowPhases.correctFrames(~slowPhases) = NaN;
+torsion.slowPhases.quality = nanmean(torsion.slowPhases.correctFrames);
 
 %% calculate mean speeds and max speed
 trial.quickphases.meanSpeed = nanmean(trial.frames.DT_quickphases);
 torsion.slowPhases.meanSpeed = nanmean(trial.frames.DT_slowphases);
 torsion.slowPhases.meanSpeedAbsolute = nanmean(abs(trial.frames.DT_slowphases));
-% torsion.slowPhases.meanSpeedCorrect = nanmean(abs(trial.frames.DT_slowphases(torsion.slowPhases.correctFrames == 1)));
+torsion.slowPhases.meanSpeedCorrect = nanmean(abs(trial.frames.DT_slowphases(torsion.slowPhases.correctFrames == 1)));
 torsion.slowPhases.peakVelocity = nanmax(abs(trial.frames.DT_slowphases(torsion.slowPhases.correctFrames == 1)));
 
 %% calculate torsion gain

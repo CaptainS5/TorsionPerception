@@ -1,7 +1,7 @@
 function [trial] = setupTrial(data, header, logData, currentTrial)
 
 trial.number = currentTrial;
-% trial.valid = 1; % whether this is a valid trial
+trial.valid = 1; % whether this is a valid trial
 
 %% get start and end frame
 trial.startFrame = data.startFrames(trial.number)+1;

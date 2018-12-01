@@ -51,66 +51,66 @@ disp(['exp eye excluded trial number: ', num2str(mean(1-validExpEye/trialExpAll)
 disp(['exp all valid trial number: ', num2str(mean(1-validExp/trialExpAll)), ' +- ', num2str(std(1-validExp/trialExpAll))])
 
 %% Correlation
-% % Across participants
-% for tw = 1:3
-%     tempI = find(dataAll.timeWindow==tw & dataAll.afterReversalD==0);
-%     dataT = dataAll(tempI, :);
-%     [rho pval] = partialcorr([dataT.perceptualErrorMean, dataT.torsionVelTMean], dataT.rotationSpeed);
-%     disp(['Time Window' num2str(tw) ' across participants, Velocity: r=' num2str(rho(1, 2), '%.2f') ', p=' num2str(pval(1, 2), '%.3f')])
-%     [rho pval] = partialcorr([dataT.perceptualErrorMean, dataT.torsionAngleMean], dataT.rotationSpeed);
-%     disp(['Time Window' num2str(tw) ' across participants, Angle: r=' num2str(rho(1, 2), '%.2f') ', p=' num2str(pval(1, 2), '%.3f')])
-% end
-
-% Individual trial-by-trial
-data1.trialData.timeWindow = ones(size(data1.trialData, 1), 1);
-data2.trialData.timeWindow = 2*ones(size(data2.trialData, 1), 1);
-data3.trialData.timeWindow = 3*ones(size(data3.trialData, 1), 1);
-dataAllTrial = [data1.trialData; data2.trialData; data3.trialData];
-
-for tw = 1:3
-%     figure
-    for t = 1:size(names, 2)
-        tempI = find(dataAllTrial.timeWindow==tw & dataAllTrial.sub==t);
-        dataT = dataAllTrial(tempI, :);
-%         [tbtCorrVRho(t, tw) tbtCorrVpval(t, tw)] = corr(dataT.perceptualError, dataT.torsionVelTMerged);
-%         [tbtCorrARho(t, tw) tbtCorrApval(t, tw)] = corr(dataT.perceptualError, dataT.torsionAngleMerged);
-%         subplot(3, 5, t)
-%         scatter(dataT.perceptualError, dataT.torsionVelTMerged)
-        
-        % partial correlation... no reason to do this...
-        [rho pval] = partialcorr([dataT.perceptualError, dataT.torsionVelTMerged], dataT.rotationSpeed);
-        tbtCorrVRho(t, tw) = rho(1, 2);
-        tbtCorrVpval(t, tw) = pval(1, 2);
-%         [rho pval] = partialcorr([dataT.perceptualError, dataT.torsionAngleMerged], dataT.rotationSpeed);
-%         tbtCorrARho(t, tw) = rho(1, 2);
-%         tbtCorrApval(t, tw) = pval(1, 2);
-    end
-end
-
-tempI = find(tbtCorrVpval(:, 1)<0.05);
-Vr1N = length(tempI)
-meanVr1 = mean(tbtCorrVRho(tempI, 1))
-stdVr1 = std(tbtCorrVRho(tempI, 1))
-
-tempI = find(tbtCorrVpval(:, 2)<0.05);
-Vr2N = length(tempI)
-meanVr2 = mean(tbtCorrVRho(tempI, 2))
-stdVr2 = std(tbtCorrVRho(tempI, 2))
-
-tempI = find(tbtCorrVpval(:, 3)<0.05);
-Vr3N = length(tempI)
-meanVr3 = mean(tbtCorrVRho(tempI, 3))
-stdVr3 = std(tbtCorrVRho(tempI, 3))
-
-% tempI = find(tbtCorrApval(:, 3)<0.05);
-% Ar3N = length(tempI)
-% meanAr3 = mean(tbtCorrARho(tempI, 3))
-% stdAr3 = std(tbtCorrARho(tempI, 3))
+% % % Across participants
+% % for tw = 1:3
+% %     tempI = find(dataAll.timeWindow==tw & dataAll.afterReversalD==0);
+% %     dataT = dataAll(tempI, :);
+% %     [rho pval] = partialcorr([dataT.perceptualErrorMean, dataT.torsionVelTMean], dataT.rotationSpeed);
+% %     disp(['Time Window' num2str(tw) ' across participants, Velocity: r=' num2str(rho(1, 2), '%.2f') ', p=' num2str(pval(1, 2), '%.3f')])
+% %     [rho pval] = partialcorr([dataT.perceptualErrorMean, dataT.torsionAngleMean], dataT.rotationSpeed);
+% %     disp(['Time Window' num2str(tw) ' across participants, Angle: r=' num2str(rho(1, 2), '%.2f') ', p=' num2str(pval(1, 2), '%.3f')])
+% % end
 % 
-% tempI = find(tbtCorrApval(:, 1)<0.05);
-% Ar1N = length(tempI)
-% meanAr1 = mean(tbtCorrARho(tempI, 1))
-% stdAr1 = std(tbtCorrARho(tempI, 1))
+% % Individual trial-by-trial
+% data1.trialData.timeWindow = ones(size(data1.trialData, 1), 1);
+% data2.trialData.timeWindow = 2*ones(size(data2.trialData, 1), 1);
+% data3.trialData.timeWindow = 3*ones(size(data3.trialData, 1), 1);
+% dataAllTrial = [data1.trialData; data2.trialData; data3.trialData];
+% 
+% for tw = 1:3
+% %     figure
+%     for t = 1:size(names, 2)
+%         tempI = find(dataAllTrial.timeWindow==tw & dataAllTrial.sub==t);
+%         dataT = dataAllTrial(tempI, :);
+% %         [tbtCorrVRho(t, tw) tbtCorrVpval(t, tw)] = corr(dataT.perceptualError, dataT.torsionVelTMerged);
+% %         [tbtCorrARho(t, tw) tbtCorrApval(t, tw)] = corr(dataT.perceptualError, dataT.torsionAngleMerged);
+% %         subplot(3, 5, t)
+% %         scatter(dataT.perceptualError, dataT.torsionVelTMerged)
+%         
+%         % partial correlation... no reason to do this...
+%         [rho pval] = partialcorr([dataT.perceptualError, dataT.torsionVelTMerged], dataT.rotationSpeed);
+%         tbtCorrVRho(t, tw) = rho(1, 2);
+%         tbtCorrVpval(t, tw) = pval(1, 2);
+% %         [rho pval] = partialcorr([dataT.perceptualError, dataT.torsionAngleMerged], dataT.rotationSpeed);
+% %         tbtCorrARho(t, tw) = rho(1, 2);
+% %         tbtCorrApval(t, tw) = pval(1, 2);
+%     end
+% end
+% 
+% tempI = find(tbtCorrVpval(:, 1)<0.05);
+% Vr1N = length(tempI)
+% meanVr1 = mean(tbtCorrVRho(tempI, 1))
+% stdVr1 = std(tbtCorrVRho(tempI, 1))
+% 
+% tempI = find(tbtCorrVpval(:, 2)<0.05);
+% Vr2N = length(tempI)
+% meanVr2 = mean(tbtCorrVRho(tempI, 2))
+% stdVr2 = std(tbtCorrVRho(tempI, 2))
+% 
+% tempI = find(tbtCorrVpval(:, 3)<0.05);
+% Vr3N = length(tempI)
+% meanVr3 = mean(tbtCorrVRho(tempI, 3))
+% stdVr3 = std(tbtCorrVRho(tempI, 3))
+% 
+% % tempI = find(tbtCorrApval(:, 3)<0.05);
+% % Ar3N = length(tempI)
+% % meanAr3 = mean(tbtCorrARho(tempI, 3))
+% % stdAr3 = std(tbtCorrARho(tempI, 3))
+% % 
+% % tempI = find(tbtCorrApval(:, 1)<0.05);
+% % Ar1N = length(tempI)
+% % meanAr1 = mean(tbtCorrARho(tempI, 1))
+% % stdAr1 = std(tbtCorrARho(tempI, 1))
 
 %% ANOVA with time window, speed and direction for torsion
 % data1.conData.timeWindow = ones(size(data1.conData, 1), 1);
