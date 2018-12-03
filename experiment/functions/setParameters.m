@@ -57,6 +57,14 @@ prm.flash.displacement = [0];
 prm.flash.colour = [255 0 0]; % RGB in 0-255 range
 prm.flash.respColour = [0 0 0]; % RGB in 0-255 range
 % prm.flash.colour = 255; % 88 measured about 34.5 cd/m^2
+% Luminance info tested on the new pc, not exactly the original one):
+% grating darkest 23.27
+% grating lightest 41.99
+% grating resp 42.44
+% background 7.05
+% white 62.33
+% colour 88 21.23--used to be 34.5
+% red flash 21.26
 
 % rotation control
 prm.rotation.freq = [25 50 100 200]; % in degrees out of a cycle (360 in total)/s
