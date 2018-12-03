@@ -1,5 +1,5 @@
 % function currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker)
-clear all; close all; clc; currentBlock=1; rStyle = -1; expTyp = 1; eyeTracker=0;% debugging
+clear all; close all; clc; currentBlock=1; rStyle = -1; expTyp = 1.5; eyeTracker=0;% debugging
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
     global trigger
@@ -154,6 +154,18 @@ try
     
     if strcmp(info.subID{1}, 'luminance')
         % testing monitor luminance
+        Screen('FillRect', prm.screen.windowPtr, 88); % fill background
+        Screen('Flip', prm.screen.windowPtr);
+        KbWait();
+        clear KbCheck
+        WaitSecs(0.2);
+        
+        Screen('FillRect', prm.screen.windowPtr, prm.flash.colour); % fill background
+        Screen('Flip', prm.screen.windowPtr);
+        KbWait();
+        clear KbCheck
+        WaitSecs(0.2);
+        
         Screen('FillRect', prm.screen.windowPtr, prm.grating.darkest); % fill background
         Screen('Flip', prm.screen.windowPtr);
         KbWait();
@@ -163,12 +175,24 @@ try
         Screen('FillRect', prm.screen.windowPtr, prm.grating.lightest); % fill background
         Screen('Flip', prm.screen.windowPtr);
         KbWait();
-        %         clear KbCheck
-        %         WaitSecs(0.2);
+        clear KbCheck
+        WaitSecs(0.2);
         
-        %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour); % fill background
-        %         Screen('Flip', prm.screen.windowPtr);
-        %         KbWait();
+        Screen('FillRect', prm.screen.windowPtr, prm.grating.respColour); % fill background
+        Screen('Flip', prm.screen.windowPtr);
+        KbWait();
+        clear KbCheck
+        WaitSecs(0.2);
+        
+        Screen('FillRect', prm.screen.windowPtr, prm.screen.backgroundColour); % fill background
+        Screen('Flip', prm.screen.windowPtr);
+        KbWait();
+        clear KbCheck
+        WaitSecs(0.2);
+        
+        Screen('FillRect', prm.screen.windowPtr, prm.screen.whiteColour); % fill background
+        Screen('Flip', prm.screen.windowPtr);
+        KbWait();
     else
         % start the experiment
         %         for blockN = info.fromBlock:info.toBlock
