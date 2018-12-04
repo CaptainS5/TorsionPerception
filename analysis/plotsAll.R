@@ -1,5 +1,7 @@
 library(ggplot2)
 library(RColorBrewer)
+library(matrixStats)
+library(reshape)
 
 #### clear environment
 rm(list = ls())
@@ -57,10 +59,10 @@ folder2 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp2/")
 ##############################################################################
 # using trialData to plot!
 baseTorsion1Original <- read.csv("trialDataBaseAllExp1.csv")
-# baseTorsion2Original <- read.csv("trialDataBaseAllExp2.csv")
+baseTorsion2Original <- read.csv("trialDataBaseAllExp2.csv")
 trialData1Original <- read.csv("trialDataAllExp1.csv")
-# trialData2Original <- read.csv("trialDataAllExp2.csv")
-# trialDataBoth2Original <- read.csv("trialDataAllBothEyeExp2.csv")
+trialData2Original <- read.csv("trialDataAllExp2.csv")
+trialDataBoth2Original <- read.csv("trialDataAllBothEyeExp2.csv")
 # eye: 1 left eye, 2 right eye
 # afterReversalD: -1 CCW, 1 CW, 0 merged as CW
 # time window: -1 120ms after onset to flash onset; 0-flash onset to flash offset; 1 120ms after flash offset to end
@@ -79,6 +81,7 @@ dotSize <- 2
 dotCorSize <- 4
 dotCorAlpha <- 0.8
 textSize <- 15
+vtPlotWidth <- 16 # pdf figure width for velocity traces
 
 #### perceptual data
 ### Exp1
@@ -96,7 +99,7 @@ dataExp1$afterReversalD <- as.factor(dataExp1$afterReversalD)
 dataAgg1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub, data = dataExp1, FUN = "mean")
 dataAgg1$psd <- aggregate(perceptualError ~ rotationSpeed * afterReversalD * exp * sub, data = dataExp1, FUN = "sd")$perceptualError
 
-pdf(paste(folder1, "perceptionExp1.pdf"))
+pdf(paste(folder1,"perceptionExp1.pdf", sep = ""))
 p <- ggplot(dataAgg1, aes(x = rotationSpeed, y = perceptualError, colour = afterReversalD, group = afterReversalD)) +
         stat_summary(aes(y = perceptualError, colour = afterReversalD, group = afterReversalD), fun.y = mean, geom = "line", size = lindWidth) +
         stat_summary(fun.data = mean_se, geom = "errorbar", width = 10, size = 1) +
@@ -116,7 +119,7 @@ p <- ggplot(dataAgg1, aes(x = rotationSpeed, y = perceptualError, colour = after
               legend.key = element_rect(colour = "transparent", fill = "white"))
 print(p)
 dev.off()
-ggsave(filename = paste(folder1, "perceptionExp1.eps"), plot = print(p))
+ggsave(filename = paste(folder1,"perceptionExp1.eps"), plot = print(p))
 
 #### Exp2
 trialData2 <- trialData2Original[which(trialData2Original$timeWindow == 1), ]
@@ -133,7 +136,7 @@ dataExp2$afterReversalD <- as.factor(dataExp2$afterReversalD)
 dataAgg2 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub, data = dataExp2, FUN = "mean")
 dataAgg2$psd <- aggregate(perceptualError ~ rotationSpeed * afterReversalD * exp * sub, data = dataExp2, FUN = "sd")$perceptualError
 
-pdf(paste(folder2, "perceptionExp2.pdf"))
+pdf(paste(folder2, "perceptionExp2.pdf", sep = ""))
 p <- ggplot(dataAgg2, aes(x = rotationSpeed, y = perceptualError, colour = afterReversalD, group = afterReversalD)) +
         stat_summary(aes(y = perceptualError, colour = afterReversalD, group = afterReversalD), fun.y = mean, geom = "line", size = lindWidth) +
         stat_summary(fun.data = mean_se, geom = "errorbar", width = 10, size = 1) +
@@ -157,6 +160,58 @@ dev.off()
 #### Torsion data, baseline, experiment, and correlation
 ### Exp1
 ## baseline
+# mean velocity traces
+# first get mean for each speed and the confidence intervals
+speedName <-c("25", "50", "100", "200", "400")
+n <- 15
+timePoints <- seq(from = 0, to = 2115, by = 5)
+velTrace <- list()
+for (speed in 1:5) {
+    fileName = paste("velocityTraceExp1_base_",speedName[speed],".csv", sep = "")
+    velData <- read.csv(fileName, header = FALSE, sep=",")
+    velData <- as.matrix(velData)
+    velData <- velData[, 1:424]
+
+    tempM <- colMeans(velData, na.rm=TRUE)
+    velMean <- as.matrix(tempM)
+
+    velStd <- colSds(velData, na.rm=TRUE)
+
+    error <- qt(0.975, df=n-1)*velStd/sqrt(n)
+    velLower <- tempM-error
+    velUpper <- tempM+error
+
+    velTrace[[speed]] <- data.frame(timePoints, velMean, velLower, velUpper)
+}
+colourCode <- brewer.pal(n = 5, name = "Accent")
+
+# plot velocity traces with 95% CI
+# pdf(paste(folder1, "velocityTraces.pdf", sep = ""))
+p <- ggplot(velTrace[[1]], aes(x = timePoints, y = velMean)) +
+        geom_line(aes(colour = "s25"), size = 1) + geom_ribbon(aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s25"), alpha = 0.2) +
+        geom_line(data = velTrace[[2]], aes(x = timePoints, y = velMean, colour = "s50"), size = 1) + geom_ribbon(data = velTrace[[2]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s50"), alpha = 0.2) +
+        geom_line(data = velTrace[[3]], aes(x = timePoints, y = velMean, colour = "s100"), size = 1) + geom_ribbon(data = velTrace[[3]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s100"), alpha = 0.2) +
+        geom_line(data = velTrace[[4]], aes(x = timePoints, y = velMean, colour = "s200"), size = 1) + geom_ribbon(data = velTrace[[4]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s200"), alpha = 0.2) +
+        geom_line(data = velTrace[[5]], aes(x = timePoints, y = velMean, colour = "s400"), size = 1) + geom_ribbon(data = velTrace[[5]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s400"), alpha = 0.2) +
+        scale_y_continuous(name = "Torsional velocity (°/s)", breaks=seq(-3, 4, 1)) +
+        scale_x_continuous(name = "Time (ms)", breaks=seq(0, 2200, 100)) +
+        # coord_cartesian(ylim=c(-2, 3)) +
+        scale_colour_manual("Rotational speed (°/s)",
+                            breaks = c("s25", "s50", "s100", "s200", "s400"),
+                            values = c("s25" = colourCode[1], "s50" = colourCode[2], "s100" = colourCode[3], "s200" = colourCode[4], "s400" = colourCode[5])) +
+        theme(axis.line = element_line(colour = "black", size = 0.5),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.border = element_blank(),
+              panel.background = element_blank(),
+              text = element_text(size = textSize),
+              legend.background = element_rect(fill="transparent"),
+              legend.key = element_rect(colour = "transparent", fill = "white"))
+print(p)
+# dev.off()
+ggsave(paste(folder1, "velocityTraces_baseExp1.pdf", sep = ""), width = vtPlotWidth)
+
+# torsional velocity
 trialData1 <- baseTorsion1Original
 sub <- trialData1["sub"]
 exp <- trialData1["exp"]
@@ -171,7 +226,7 @@ dataExp1$afterReversalD <- as.factor(dataExp1$afterReversalD)
 dataAgg1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub, data = dataExp1, FUN = "mean")
 dataAgg1$tsd <- aggregate(torsionVelT ~ rotationSpeed * afterReversalD * exp * sub, data = dataExp1, FUN = "sd")$torsionVelT
 
-pdf(paste(folder1, "torsionVExp1Base.pdf"))
+pdf(paste(folder1, "torsionVExp1Base.pdf", sep = ""))
 p <- ggplot(dataAgg1, aes(x = rotationSpeed, y = torsionVelT, colour = afterReversalD, group = interaction(rotationSpeed, afterReversalD))) +
         stat_summary(fun.data = mean_se, geom = "errorbar", width = 10, size = 1) +
         stat_summary(aes(y = torsionVelT, colour = afterReversalD, group = afterReversalD), fun.y = mean, geom = "line", size = lindWidth) +
@@ -193,6 +248,58 @@ print(p)
 dev.off()
 
 ## experiement
+# mean velocity traces
+# first get mean for each speed and the confidence intervals
+speedName <-c("25", "50", "100", "200", "400")
+n <- 15
+timePoints <- seq(from = -835, to = 740, by = 5) # originally from -845 to 750 ms, reversal onset is 0 ms
+# delete the extreme time points when data are really noisy...
+velTrace <- list()
+for (speed in 1:5) {
+    fileName = paste("velocityTraceExp1_",speedName[speed],".csv", sep = "")
+    velData <- read.csv(fileName, header = FALSE, sep=",")
+    velData <- as.matrix(velData)
+    velData <- velData[, 3:318]
+
+    tempM <- colMeans(velData, na.rm=TRUE)
+    velMean <- as.matrix(tempM)
+
+    velStd <- colSds(velData, na.rm=TRUE)
+
+    error <- qt(0.975, df=n-1)*velStd/sqrt(n)
+    velLower <- tempM-error
+    velUpper <- tempM+error
+
+    velTrace[[speed]] <- data.frame(timePoints, velMean, velLower, velUpper)
+}
+colourCode <- brewer.pal(n = 5, name = "Accent")
+
+# plot velocity traces with 95% CI
+# pdf(paste(folder1, "velocityTraces.pdf", sep = ""))
+p <- ggplot(velTrace[[1]], aes(x = timePoints, y = velMean)) +
+        geom_line(aes(colour = "s25"), size = 1) + geom_ribbon(aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s25"), alpha = 0.2) +
+        geom_line(data = velTrace[[2]], aes(x = timePoints, y = velMean, colour = "s50"), size = 1) + geom_ribbon(data = velTrace[[2]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s50"), alpha = 0.2) +
+        geom_line(data = velTrace[[3]], aes(x = timePoints, y = velMean, colour = "s100"), size = 1) + geom_ribbon(data = velTrace[[3]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s100"), alpha = 0.2) +
+        geom_line(data = velTrace[[4]], aes(x = timePoints, y = velMean, colour = "s200"), size = 1) + geom_ribbon(data = velTrace[[4]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s200"), alpha = 0.2) +
+        geom_line(data = velTrace[[5]], aes(x = timePoints, y = velMean, colour = "s400"), size = 1) + geom_ribbon(data = velTrace[[5]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s400"), alpha = 0.2) +
+        scale_y_continuous(name = "Torsional velocity (°/s)", breaks=seq(-2, 2, 1)) +
+        scale_x_continuous(name = "Time (ms)", breaks=seq(-700, 700, 100)) +
+        coord_cartesian(ylim=c(-2, 2)) +
+        scale_colour_manual("Rotational speed (°/s)",
+                            breaks = c("s25", "s50", "s100", "s200", "s400"),
+                            values = c("s25" = colourCode[1], "s50" = colourCode[2], "s100" = colourCode[3], "s200" = colourCode[4], "s400" = colourCode[5])) +
+        theme(axis.line = element_line(colour = "black", size = 0.5),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.border = element_blank(),
+              panel.background = element_blank(),
+              text = element_text(size = textSize),
+              legend.background = element_rect(fill="transparent"),
+              legend.key = element_rect(colour = "transparent", fill = "white"))
+print(p)
+# dev.off()
+ggsave(paste(folder1, "velocityTraces.pdf", sep = ""), width = vtPlotWidth)
+
 # torsion velocity
 trialData1 <- trialData1Original #[which(trialData1Original$timeWindow != 0), ]
 sub <- trialData1["sub"]
@@ -213,7 +320,7 @@ dataAgg1$psd <- aggregate(perceptualError ~ rotationSpeed * afterReversalD * exp
 dataAgg1$tsd <- aggregate(torsionVelT ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp1, FUN = "sd")$torsionVelT
 levels(dataAgg1$timeWindow) <- c("Before reversal", "At reversal", "After reversal")
 
-pdf(paste(folder1, "torsionVExp1.pdf"))
+pdf(paste(folder1, "torsionVExp1.pdf", sep = ""))
 p <- ggplot(dataAgg1, aes(x = rotationSpeed, y = torsionVelT, colour = afterReversalD, group = interaction(rotationSpeed, afterReversalD))) +
         stat_summary(fun.data = mean_se, geom = "errorbar", width = 10, size = 1) +
         stat_summary(aes(y = torsionVelT, colour = afterReversalD, group = afterReversalD), fun.y = mean, geom = "line", size = lindWidth) +
@@ -247,7 +354,7 @@ twN <- c("beforeReversal", "atReversal", "afterReversal")
 twValues <- c(-1, 0, 1)
 for (tw in 1:3) {
     dataAgg1sub <- dataAgg1[which(dataAgg1$timeWindow==twValues[tw]), ]
-    pdf(paste(folder1, "correlationVelExp1_", twN[tw], ".pdf"))
+    pdf(paste(folder1, "correlationVelExp1_", twN[tw], ".pdf", sep = ""))
     p <- ggplot(dataAgg1sub, aes(x = perceptualError, y = torsionVelT, fill = rotationSpeed)) +
             geom_point(size = dotCorSize, shape = 23, alpha = dotCorAlpha) +
             scale_fill_brewer(palette="Accent", name = "Rotational\nspeed (°/s)") +
@@ -267,17 +374,25 @@ for (tw in 1:3) {
 }
 
 # torsion angle, in the direction of afterReversalD, merged to always CW after reversal (just similar to VelT)
-trialData1 <- trialData1Original[which(trialData1Original$timeWindow != 0), ]
+trialData1 <- trialData1Original
+trialData1["torsionAngleCCW"] <- -trialData1["torsionAngleCCW"]
 sub <- trialData1["sub"]
 exp <- trialData1["exp"]
 afterReversalD <- trialData1["afterReversalD"]
 rotationSpeed <- trialData1["rotationSpeed"]
 timeWindow <- trialData1["timeWindow"]
 perceptualError <- trialData1["perceptualError"]
-torsionAngleSame <- trialData1["torsionAngle"] * trialData1["afterReversalD"]
+torsionAngleSame <- trialData1["torsionAngleCW"] * trialData1["afterReversalD"]
+idx <- trialData1$afterReversalD * trialData1$timeWindow==-1
+torsionAngleSame[idx, ] <- trialData1$torsionAngleCCW[idx] * trialData1$afterReversalD[idx]
+idx <- which(trialData1$timeWindow==0 & trialData1$afterReversalD==1)
+torsionAngleSame[idx, ] <- trialData1$torsionAngleCCW[idx] * trialData1$afterReversalD[idx]
 torsionAngleDiff <- trialData1["torsionAngleCW"] * trialData1["afterReversalD"]
 idx <- trialData1$afterReversalD * trialData1$timeWindow==1
 torsionAngleDiff[idx, ] <- trialData1$torsionAngleCCW[idx] * trialData1$afterReversalD[idx]
+idx <- which(trialData1$timeWindow==0 & trialData1$afterReversalD==-1)
+torsionAngleDiff[idx, ] <- trialData1$torsionAngleCCW[idx] * trialData1$afterReversalD[idx]
+
 dataExp1 <- data.frame(sub, exp, afterReversalD, rotationSpeed, timeWindow, perceptualError, torsionAngleSame, torsionAngleDiff)
 dataExp1$exp <- as.factor(dataExp1$exp)
 dataExp1$sub <- as.factor(dataExp1$sub)
@@ -289,7 +404,7 @@ colnames(dataExp1)[8] <- "torsionAngleDiff"
 dataAgg1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp1, FUN = "mean")
 dataAgg1$psd <- aggregate(perceptualError ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp1, FUN = "sd")$perceptualError
 
-pdf(paste(folder1, "torsionAngleExp1.pdf"))
+pdf(paste(folder1, "torsionAngleExp1.pdf", sep = ""))
 p <- ggplot(dataAgg1, aes(x = rotationSpeed, y = torsionAngleSame, colour = afterReversalD, group = afterReversalD)) +
         stat_summary(fun.data = mean_se, geom = "errorbar", width = 10, size = 1) +
         stat_summary(aes(y = torsionAngleSame, colour = afterReversalD, group = afterReversalD), fun.y = mean, geom = "line", size = lindWidth) +
@@ -339,6 +454,55 @@ dev.off()
 
 ### Exp2
 ## baseline
+# mean velocity traces
+speedName <-c("25", "50", "100", "200")
+n <- 10
+timePoints <- seq(from = -860, to = 740, by = 5) # originally from -870 to 750 ms, reversal onset is 0 ms
+# delete the extreme time points when data are really noisy...
+colourCode <- brewer.pal(n = 5, name = "Accent")
+# left eye
+# first get mean for each speed and the confidence intervals
+velTrace <- list()
+for (speed in 1:4) {
+    fileName = paste("velocityTraceExp2_base_",speedName[speed],".csv", sep = "")
+    velData <- read.csv(fileName, header = FALSE, sep=",")
+    velData <- as.matrix(velData)
+    velData <- velData[, 3:323]
+    tempM <- colMeans(velData, na.rm=TRUE)
+    velMean <- as.matrix(tempM)
+
+    velStd <- colSds(velData, na.rm=TRUE)
+
+    error <- qt(0.975, df=n-1)*velStd/sqrt(n)
+    velLower <- tempM-error
+    velUpper <- tempM+error
+
+    velTrace[[speed]] <- data.frame(timePoints, velMean, velLower, velUpper)
+}
+# plot velocity traces with 95% CI
+p <- ggplot(velTrace[[1]], aes(x = timePoints, y = velMean)) +
+        geom_line(aes(colour = "s25"), size = 1) + geom_ribbon(aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s25"), alpha = 0.2) +
+        geom_line(data = velTrace[[2]], aes(x = timePoints, y = velMean, colour = "s50"), size = 1) + geom_ribbon(data = velTrace[[2]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s50"), alpha = 0.2) +
+        geom_line(data = velTrace[[3]], aes(x = timePoints, y = velMean, colour = "s100"), size = 1) + geom_ribbon(data = velTrace[[3]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s100"), alpha = 0.2) +
+        geom_line(data = velTrace[[4]], aes(x = timePoints, y = velMean, colour = "s200"), size = 1) + geom_ribbon(data = velTrace[[4]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s200"), alpha = 0.2) +
+        scale_y_continuous(name = "Torsional velocity (°/s)", breaks=seq(-2, 2, 1)) +
+        scale_x_continuous(name = "Time (ms)", breaks=seq(-700, 700, 100)) +
+        coord_cartesian(ylim=c(-2, 2)) +
+        scale_colour_manual("Rotational speed (°/s)",
+                            breaks = c("s25", "s50", "s100", "s200"),
+                            values = c("s25" = colourCode[1], "s50" = colourCode[2], "s100" = colourCode[3], "s200" = colourCode[4])) +
+        theme(axis.line = element_line(colour = "black", size = 0.5),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.border = element_blank(),
+              panel.background = element_blank(),
+              text = element_text(size = textSize),
+              legend.background = element_rect(fill="transparent"),
+              legend.key = element_rect(colour = "transparent", fill = "white"))
+print(p)
+ggsave(paste(folder2, "velocityTraces_baseExp2.pdf", sep = ""), width = vtPlotWidth)
+
+# torsional velocity
 sub <- baseTorsion2Original["sub"] + 20
 rotationSpeed <- baseTorsion2Original["rotationSpeed"]
 LtorsionVelT <- baseTorsion2Original["LtorsionVelT"]
@@ -349,7 +513,7 @@ trialBase$rotationSpeed <- as.factor(trialBase$rotationSpeed)
 trialCor <- trialBase[complete.cases(trialBase), ]
 
 # correlation between the two eyes
-pdf(paste(folder2, "correlationBaseTwoEyes.pdf"))
+pdf(paste(folder2, "correlationBaseTwoEyes.pdf", sep = ""))
 p <- ggplot(trialCor, aes(x = LtorsionVelT, y = RtorsionVelT, fill = rotationSpeed)) +
     geom_point(size = dotCorSize, shape = 23, alpha = dotCorAlpha) +
     scale_y_continuous(name = "Right eye torsional velocity (°/s)") +
@@ -368,7 +532,7 @@ print(p)
 dev.off()
 
 # histogram of velocity in each eye
-pdf(paste(folder2, "baselineVelocityLeftEye.pdf"))
+pdf(paste(folder2, "baselineVelocityLeftEye.pdf", sep = ""))
 p <- ggplot(trialCor, aes(LtorsionVelT, colour = sub)) +
         geom_density(size = 1) +
         scale_y_continuous(name = "Density") +
@@ -386,7 +550,7 @@ p <- ggplot(trialCor, aes(LtorsionVelT, colour = sub)) +
 print(p)
 dev.off()
 
-pdf(paste(folder2, "baselineVelocityRightEye.pdf"))
+pdf(paste(folder2, "baselineVelocityRightEye.pdf", sep = ""))
 p <- ggplot(trialCor, aes(RtorsionVelT, colour = sub)) +
         geom_density(size = 1) +
         scale_y_continuous(name = "Density") +
@@ -420,7 +584,7 @@ for (endN in 1:3) {
 trialExp <- trialExpOriginal[which(trialExpOriginal$timeWindow == tw[endN] &
         abs(trialExpOriginal$LtorsionVelT) < 6), ]
 trialExpCor <- trialExp[complete.cases(trialExp), ]
-pdf(paste(folder2, "expVelocityLeft", endName[endN], "Eye.pdf"))
+pdf(paste(folder2, "expVelocityLeft", endName[endN], "Eye.pdf", sep = ""))
 p <- ggplot(trialExpCor, aes(LtorsionVelT, colour = sub)) +
         geom_density(size = 1) +
         scale_y_continuous(name = "Density") +
@@ -438,7 +602,7 @@ p <- ggplot(trialExpCor, aes(LtorsionVelT, colour = sub)) +
 print(p)
 dev.off()
 
-pdf(paste(folder2, "expVelocityRightEye", endName[endN], ".pdf"))
+pdf(paste(folder2, "expVelocityRightEye", endName[endN], ".pdf", sep = ""))
 p <- ggplot(trialExpCor, aes(RtorsionVelT, colour = sub)) +
         geom_density(size = 1) +
         scale_y_continuous(name = "Density") +
@@ -457,7 +621,147 @@ print(p)
 dev.off()
 }
 
+# mean velocity traces
+speedName <-c("25", "50", "100", "200")
+n <- 10
+timePoints <- seq(from = -860, to = 740, by = 5) # originally from -870 to 750 ms, reversal onset is 0 ms
+# delete the extreme time points when data are really noisy...
+colourCode <- brewer.pal(n = 5, name = "Accent")
+# left eye
+# first get mean for each speed and the confidence intervals
+velTrace <- list()
+for (speed in 1:4) {
+    fileName = paste("velocityTraceExp2_L_",speedName[speed],".csv", sep = "")
+    velData <- read.csv(fileName, header = FALSE, sep=",")
+    velData <- as.matrix(velData)
+    velData <- velData[, 3:323]
+
+    tempM <- colMeans(velData, na.rm=TRUE)
+    velMean <- as.matrix(tempM)
+
+    velStd <- colSds(velData, na.rm=TRUE)
+
+    error <- qt(0.975, df=n-1)*velStd/sqrt(n)
+    velLower <- tempM-error
+    velUpper <- tempM+error
+
+    velTrace[[speed]] <- data.frame(timePoints, velMean, velLower, velUpper)
+}
+# plot velocity traces with 95% CI
+p <- ggplot(velTrace[[1]], aes(x = timePoints, y = velMean)) +
+        geom_line(aes(colour = "s25"), size = 1) + geom_ribbon(aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s25"), alpha = 0.2) +
+        geom_line(data = velTrace[[2]], aes(x = timePoints, y = velMean, colour = "s50"), size = 1) + geom_ribbon(data = velTrace[[2]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s50"), alpha = 0.2) +
+        geom_line(data = velTrace[[3]], aes(x = timePoints, y = velMean, colour = "s100"), size = 1) + geom_ribbon(data = velTrace[[3]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s100"), alpha = 0.2) +
+        geom_line(data = velTrace[[4]], aes(x = timePoints, y = velMean, colour = "s200"), size = 1) + geom_ribbon(data = velTrace[[4]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s200"), alpha = 0.2) +
+        scale_y_continuous(name = "Torsional velocity (°/s)", breaks=seq(-2, 2, 1)) +
+        scale_x_continuous(name = "Time (ms)", breaks=seq(-700, 700, 100)) +
+        coord_cartesian(ylim=c(-2, 2)) +
+        scale_colour_manual("Rotational speed (°/s)",
+                            breaks = c("s25", "s50", "s100", "s200"),
+                            values = c("s25" = colourCode[1], "s50" = colourCode[2], "s100" = colourCode[3], "s200" = colourCode[4])) +
+        theme(axis.line = element_line(colour = "black", size = 0.5),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.border = element_blank(),
+              panel.background = element_blank(),
+              text = element_text(size = textSize),
+              legend.background = element_rect(fill="transparent"),
+              legend.key = element_rect(colour = "transparent", fill = "white"))
+print(p)
+ggsave(paste(folder2, "velocityTraces_L.pdf", sep = ""), width = vtPlotWidth)
+
+# right eye
+# first get mean for each speed and the confidence intervals
+velTrace <- list()
+for (speed in 1:4) {
+    fileName = paste("velocityTraceExp2_R_",speedName[speed],".csv", sep = "")
+    velData <- read.csv(fileName, header = FALSE, sep=",")
+    velData <- as.matrix(velData)
+    velData <- velData[, 3:323]
+
+    tempM <- colMeans(velData, na.rm=TRUE)
+    velMean <- as.matrix(tempM)
+
+    velStd <- colSds(velData, na.rm=TRUE)
+
+    error <- qt(0.975, df=n-1)*velStd/sqrt(n)
+    velLower <- tempM-error
+    velUpper <- tempM+error
+
+    velTrace[[speed]] <- data.frame(timePoints, velMean, velLower, velUpper)
+}
+# plot velocity traces with 95% CI
+p <- ggplot(velTrace[[1]], aes(x = timePoints, y = velMean)) +
+        geom_line(aes(colour = "s25"), size = 1) + geom_ribbon(aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s25"), alpha = 0.2) +
+        geom_line(data = velTrace[[2]], aes(x = timePoints, y = velMean, colour = "s50"), size = 1) + geom_ribbon(data = velTrace[[2]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s50"), alpha = 0.2) +
+        geom_line(data = velTrace[[3]], aes(x = timePoints, y = velMean, colour = "s100"), size = 1) + geom_ribbon(data = velTrace[[3]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s100"), alpha = 0.2) +
+        geom_line(data = velTrace[[4]], aes(x = timePoints, y = velMean, colour = "s200"), size = 1) + geom_ribbon(data = velTrace[[4]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s200"), alpha = 0.2) +
+        scale_y_continuous(name = "Torsional velocity (°/s)", breaks=seq(-2, 2, 1)) +
+        scale_x_continuous(name = "Time (ms)", breaks=seq(-700, 700, 100)) +
+        coord_cartesian(ylim=c(-2, 2)) +
+        scale_colour_manual("Rotational speed (°/s)",
+                            breaks = c("s25", "s50", "s100", "s200"),
+                            values = c("s25" = colourCode[1], "s50" = colourCode[2], "s100" = colourCode[3], "s200" = colourCode[4])) +
+        theme(axis.line = element_line(colour = "black", size = 0.5),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.border = element_blank(),
+              panel.background = element_blank(),
+              text = element_text(size = textSize),
+              legend.background = element_rect(fill="transparent"),
+              legend.key = element_rect(colour = "transparent", fill = "white"))
+print(p)
+ggsave(paste(folder2, "velocityTraces_R.pdf", sep = ""), width = vtPlotWidth)
+
 # both eyes
+# mean velocity traces
+speedName <-c("25", "50", "100", "200")
+n <- 10
+timePoints <- seq(from = -860, to = 740, by = 5) # originally from -870 to 750 ms, reversal onset is 0 ms
+# delete the extreme time points when data are really noisy...
+colourCode <- brewer.pal(n = 5, name = "Accent")
+# left eye
+# first get mean for each speed and the confidence intervals
+velTrace <- list()
+for (speed in 1:4) {
+    fileName = paste("velocityTraceExp2_bothEye_",speedName[speed],".csv", sep = "")
+    velData <- read.csv(fileName, header = FALSE, sep=",")
+    velData <- as.matrix(velData)
+    velData <- velData[, 3:323]
+    tempM <- colMeans(velData, na.rm=TRUE)
+    velMean <- as.matrix(tempM)
+
+    velStd <- colSds(velData, na.rm=TRUE)
+
+    error <- qt(0.975, df=n-1)*velStd/sqrt(n)
+    velLower <- tempM-error
+    velUpper <- tempM+error
+
+    velTrace[[speed]] <- data.frame(timePoints, velMean, velLower, velUpper)
+}
+# plot velocity traces with 95% CI
+p <- ggplot(velTrace[[1]], aes(x = timePoints, y = velMean)) +
+        geom_line(aes(colour = "s25"), size = 1) + geom_ribbon(aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s25"), alpha = 0.2) +
+        geom_line(data = velTrace[[2]], aes(x = timePoints, y = velMean, colour = "s50"), size = 1) + geom_ribbon(data = velTrace[[2]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s50"), alpha = 0.2) +
+        geom_line(data = velTrace[[3]], aes(x = timePoints, y = velMean, colour = "s100"), size = 1) + geom_ribbon(data = velTrace[[3]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s100"), alpha = 0.2) +
+        geom_line(data = velTrace[[4]], aes(x = timePoints, y = velMean, colour = "s200"), size = 1) + geom_ribbon(data = velTrace[[4]], aes(x = timePoints, ymin=velLower, ymax=velUpper, fill = "s200"), alpha = 0.2) +
+        scale_y_continuous(name = "Torsional velocity (°/s)", breaks=seq(-2, 2, 1)) +
+        scale_x_continuous(name = "Time (ms)", breaks=seq(-700, 700, 100)) +
+        coord_cartesian(ylim=c(-2, 2)) +
+        scale_colour_manual("Rotational speed (°/s)",
+                            breaks = c("s25", "s50", "s100", "s200"),
+                            values = c("s25" = colourCode[1], "s50" = colourCode[2], "s100" = colourCode[3], "s200" = colourCode[4])) +
+        theme(axis.line = element_line(colour = "black", size = 0.5),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.border = element_blank(),
+              panel.background = element_blank(),
+              text = element_text(size = textSize),
+              legend.background = element_rect(fill="transparent"),
+              legend.key = element_rect(colour = "transparent", fill = "white"))
+print(p)
+ggsave(paste(folder2, "velocityTraces_bothEye.pdf", sep = ""), width = vtPlotWidth)
+
 # torsional velocity
 trialData2 <- trialDataBoth2Original #[which(trialDataBoth2Original$timeWindow != 0), ]
 sub <- trialData2["sub"]
@@ -478,7 +782,7 @@ dataAgg2$psd <- aggregate(perceptualError ~ rotationSpeed * afterReversalD * exp
 dataAgg2$tsd <- aggregate(torsionVelT ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp2, FUN = "sd")$torsionVelT
 levels(dataAgg2$timeWindow) <- c("Before-reversal", "At-reversal", "After-reversal")
 
-pdf(paste(folder2, "torsionVExp2.pdf"))
+pdf(paste(folder2, "torsionVExp2.pdf", sep = ""))
 p <- ggplot(dataAgg2, aes(x = rotationSpeed, y = torsionVelT, colour = afterReversalD, group = afterReversalD)) +
         stat_summary(fun.data = mean_se, geom = "errorbar", width = 10, size = 1) +
         stat_summary(aes(y = torsionVelT, colour = afterReversalD, group = afterReversalD), fun.y = mean, geom = "line", size = lindWidth) +
@@ -538,9 +842,14 @@ perceptualError <- trialData2["perceptualError"]
 torsionAngleSame <- trialData2["torsionAngleCW"] * trialData2["afterReversalD"]
 idx <- trialData2$afterReversalD * trialData2$timeWindow==-1
 torsionAngleSame[idx, ] <- trialData2$torsionAngleCCW[idx] * trialData2$afterReversalD[idx]
+idx <- which(trialData2$timeWindow==0 & trialData2$afterReversalD==1)
+torsionAngleSame[idx, ] <- trialData2$torsionAngleCCW[idx] * trialData2$afterReversalD[idx]
 torsionAngleDiff <- trialData2["torsionAngleCW"] * trialData2["afterReversalD"]
 idx <- trialData2$afterReversalD * trialData2$timeWindow==1
 torsionAngleDiff[idx, ] <- trialData2$torsionAngleCCW[idx] * trialData2$afterReversalD[idx]
+idx <- which(trialData2$timeWindow==0 & trialData2$afterReversalD==-1)
+torsionAngleDiff[idx, ] <- trialData2$torsionAngleCCW[idx] * trialData2$afterReversalD[idx]
+
 dataExp2 <- data.frame(sub, exp, afterReversalD, rotationSpeed, timeWindow, perceptualError, torsionAngleSame, torsionAngleDiff)
 dataExp2$exp <- as.factor(dataExp2$exp)
 dataExp2$sub <- as.factor(dataExp2$sub)
@@ -552,7 +861,7 @@ colnames(dataExp2)[8] <- "torsionAngleDiff"
 dataAgg2 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp2, FUN = "mean")
 dataAgg2$psd <- aggregate(perceptualError ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp2, FUN = "sd")$perceptualError
 
-pdf(paste(folder2, "torsionAngleExp2.pdf"))
+pdf(paste(folder2, "torsionAngleExp2.pdf", sep = ""))
 p <- ggplot(dataAgg2, aes(x = rotationSpeed, y = torsionAngleSame, colour = afterReversalD, group = afterReversalD)) +
         stat_summary(fun.data = mean_se, geom = "errorbar", width = 10, size = 1) +
         stat_summary(aes(y = torsionAngleSame, colour = afterReversalD, group = afterReversalD), fun.y = mean, geom = "line", size = lindWidth) +
@@ -561,7 +870,7 @@ p <- ggplot(dataAgg2, aes(x = rotationSpeed, y = torsionAngleSame, colour = afte
         # geom_boxplot(aes(x = rotationSpeed, y = torsionAngleSame, colour = afterReversalD), position = position_dodge(width = 0.8), size = 0.8, outlier.size = 1.5, outlier.shape = 21) +
         # geom_point(aes(x = rotationSpeed, y = torsionAngleSame, colour = afterReversalD), size = dotSize, position = position_jitterdodge(), shape = 21) +
         scale_y_continuous(breaks=seq(-1, 1, 0.5)) +
-        scale_x_continuous(breaks=c(25, 50, 100, 200, 400), limits = c(0, 400)) +
+        scale_x_continuous(breaks=c(25, 50, 100, 200), limits = c(0, 200)) +
         coord_cartesian(ylim=c(-1, 1)) +
         geom_hline(yintercept=0, linetype="dotted", color = "black") +
         theme(axis.line = element_line(colour = "black", size = 0.5),
