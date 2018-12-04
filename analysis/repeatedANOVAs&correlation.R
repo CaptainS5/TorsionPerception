@@ -9,11 +9,11 @@ rm(list = ls())
 #### load data
 setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/TorsionPerception/analysis")
 baseTorsion1Original <- read.csv("conDataBaseAllExp1.csv")
-baseTorsion2Original <- read.csv("trialDataBaseAllExp2.csv")
+# baseTorsion2Original <- read.csv("trialDataBaseAllExp2.csv")
 conData1Original <- read.csv("conDataAllExp1.csv")
 trialData1Original <- read.csv("trialDataAllExp1.csv")
-trialData2Original <- read.csv("trialDataAllExp2.csv")
-trialDataBoth2Original <- read.csv("trialDataAllBothEyeExp2.csv")
+# trialData2Original <- read.csv("trialDataAllExp2.csv")
+# trialDataBoth2Original <- read.csv("trialDataAllBothEyeExp2.csv")
 # eye: 1 left eye, 2 right eye afterReversalD: -1 CCW, 1 CW, 0 merged as CW time
 # window: -1 120ms after onset to flash onset; 0-flash onset to flash offset; 1
 # 120ms after flash offset to end

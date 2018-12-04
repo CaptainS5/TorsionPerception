@@ -5,9 +5,9 @@ library(RColorBrewer)
 rm(list = ls())
 
 #### load data
-setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/TorsionPerception/analysis")
-folder1 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/manuscript/figure/Exp1/")
-folder2 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/manuscript/figure/Exp2/")
+setwd("E:/XiuyunWu/Torsion-FDE/analysis")
+folder1 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp1/")
+folder2 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp2/")
 # conData1Original <- read.csv('conDataAllExp1.csv')
 # conData2Original <- read.csv('conDataAllExp2BothEyes.csv')
 # # eye: 1 left eye, 2 right eye
@@ -57,14 +57,14 @@ folder2 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/manuscript/figure
 ##############################################################################
 # using trialData to plot!
 baseTorsion1Original <- read.csv("trialDataBaseAllExp1.csv")
-baseTorsion2Original <- read.csv("trialDataBaseAllExp2.csv")
+# baseTorsion2Original <- read.csv("trialDataBaseAllExp2.csv")
 trialData1Original <- read.csv("trialDataAllExp1.csv")
-trialData2Original <- read.csv("trialDataAllExp2.csv")
-trialDataBoth2Original <- read.csv("trialDataAllBothEyeExp2.csv")
+# trialData2Original <- read.csv("trialDataAllExp2.csv")
+# trialDataBoth2Original <- read.csv("trialDataAllBothEyeExp2.csv")
 # eye: 1 left eye, 2 right eye
 # afterReversalD: -1 CCW, 1 CW, 0 merged as CW
 # time window: -1 120ms after onset to flash onset; 0-flash onset to flash offset; 1 120ms after flash offset to end
-tw <- c(-1, 0，1)
+tw <- c(-1, 0, 1)
 endName <- c("beforeReversal", "atReversal", "afterReversal")
 
 # parameters for plotting

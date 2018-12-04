@@ -1,8 +1,9 @@
-% plot velocity traces
+% get velocity traces
+% also generate csv data for later plotting in R
 clear all; close all; clc
 
 names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
-conditions = [25 50 100 200 400];
+conditions = [25 50 100 200 400]; % rotational speed
 sampleRate = 200; 
 
 load('eyeDataAll.mat')

@@ -12,5 +12,6 @@
 *.txt
 *.dat
 *.jpg
+*.csv
 data/*
 results/*

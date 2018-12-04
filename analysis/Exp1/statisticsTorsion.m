@@ -1,5 +1,6 @@
 % all statistic analysis and results for torsion Exp1
-% 07/08/2018 Xiuyun Wu
+% 12/03/2018 Xiuyun Wu
+
 clear all; close all; clc
 
 global trial
@@ -11,31 +12,31 @@ eye = 2;
 trialBaseAll = 50; % total trial numbers
 trialExpAll = 300;
 
-% load data
-cd('ChronosData\analysis functions')
-% baseline
-dataBase = load('dataBaseLongbaseline.mat');
-% experiment
-data1 = load(['dataLong120msToReversal.mat']);
-data2 = load(['dataLongatReversal.mat']);
-data3 = load(['dataLong120msToEnd.mat']);
+% % load data
+% cd('ChronosData\analysis functions')
+% % baseline
+% dataBase = load('dataBaseLongbaseline.mat');
+% % experiment
+% data1 = load(['dataLong120msToReversal.mat']);
+% data2 = load(['dataLongatReversal.mat']);
+% data3 = load(['dataLong120msToEnd.mat']);
 
 %% valid trial numbers
 cd ..
 cd ('Errorfiles')
 
 for t = 1:size(names, 2)
-    % baseline all valid
-    if t>8
-        idxBase = find(dataBase.trialData.sub==t-8);
-        validBase(t-8, 1) = length(idxBase);
-        % baseline eye valid
-        load(['Exp0_Subject' num2str(t,'%.2i') '_Block01_' eyeName{eye} '_errorFile.mat']);
-        validBaseEye(t-8, 1) = length(find(errorStatus==0));
-    end
-    % exp both perception and eye data valid
-    idxExp = find(data1.trialData.sub==t);
-    validExp(t, 1) = length(idxExp);
+%     % baseline all valid
+%     if t>8
+%         idxBase = find(dataBase.trialData.sub==t-8);
+%         validBase(t-8, 1) = length(idxBase);
+%         % baseline eye valid
+%         load(['Exp0_Subject' num2str(t,'%.2i') '_Block01_' eyeName{eye} '_errorFile.mat']);
+%         validBaseEye(t-8, 1) = length(find(errorStatus==0));
+%     end
+%     % exp both perception and eye data valid
+%     idxExp = find(data1.trialData.sub==t);
+%     validExp(t, 1) = length(idxExp);
     % exp eye valid
     numE = 0;
     for bN = 1:5
@@ -45,10 +46,10 @@ for t = 1:size(names, 2)
     validExpEye(t, 1) = numE;
 end
 
-disp(['baseline eye excluded trial number: ', num2str(mean(1-validBaseEye/trialBaseAll)), ' +- ', num2str(std(1-validBaseEye/trialBaseAll))])
-disp(['baseline excluded trial number: ', num2str(mean(1-validBase/trialBaseAll)), ' +- ', num2str(std(1-validBase/trialBaseAll))])
+% disp(['baseline eye excluded trial number: ', num2str(mean(1-validBaseEye/trialBaseAll)), ' +- ', num2str(std(1-validBaseEye/trialBaseAll))])
+% disp(['baseline excluded trial number: ', num2str(mean(1-validBase/trialBaseAll)), ' +- ', num2str(std(1-validBase/trialBaseAll))])
 disp(['exp eye excluded trial number: ', num2str(mean(1-validExpEye/trialExpAll)), ' +- ', num2str(std(1-validExpEye/trialExpAll))])
-disp(['exp all valid trial number: ', num2str(mean(1-validExp/trialExpAll)), ' +- ', num2str(std(1-validExp/trialExpAll))])
+% disp(['exp all valid trial number: ', num2str(mean(1-validExp/trialExpAll)), ' +- ', num2str(std(1-validExp/trialExpAll))])
 
 %% Correlation
 % % % Across participants
