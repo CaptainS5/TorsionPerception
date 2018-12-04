@@ -2,13 +2,13 @@
 % direction, initial angle1, reversal angle1, all are target
 % properties--needs to check the target side to see which side the
 % stimulus is
-% adding velocity trace info, 11/26/2018
 clear all; close all; clc
 
 global trial
 
 names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol' 'FScontrol' 'XWcontrol' 'SCcontrol' 'JFcontrol'};
 conditions = [25 50 100 200];
+load('meanLatencyExp1')
 cd ..
 analysisF = pwd;
 folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\data'};
@@ -17,9 +17,7 @@ trialPerCon = 72; % for each rotation speed, all directions together though...
 torsionThreshold = 8*ones(size(names));
 torsionFrames = 3*ones(size(names));
 eyeName = {'L' 'R'};
-% endName = '120msToReversal';
-% endName = '120msToEnd';
-endNames = {'120msToReversal' 'atReversal' '120msToEnd'};
+endNames = {'BeforeReversal' 'AtReversal' 'AfterReversal'};
 
 cd ..
 load(['dataBase_all', num2str(size(names, 2)), '.mat'])
@@ -85,7 +83,7 @@ for endN = 1:3
                             dataTemp.perceptualError(countLt, 1) = dataTemp.perceptualError(countLt, 1) + dataBase.b(subj, 1);
                         end
                     end
-                    if dataTemp.perceptualError(countLt, 1)>-10
+%                     if dataTemp.perceptualError(countLt, 1)>-10
                         currentTrial = t;
                         if errorsL.errorStatus(t)==0 % valid trial
                             eye = 1;
@@ -102,21 +100,22 @@ for endN = 1:3
                             trial.torsionFrames = torsionFrames(subj);
                             
                             %% choose the time window here
-                            if strcmp(endName, 'atReversal') % at reversal
-                                trial.stim_onset = trial.stim_reversal; % reversal
-                                trial.stim_offset = trial.stim_reversal+ms2frames(40+120); % reversal
-                            elseif strcmp(endName, '120msToReversal')% 120ms to reversal
-                                trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+120); % 120ms latency
-                                trial.stim_offset = trial.stim_reversal; % reversal
-                            elseif strcmp(endName, '120msToEnd') % 120ms to end
-                                trial.stim_onset = trial.stim_reversal + ms2frames((0.12+0.04)*1000);
-                                trial.stim_offset = trial.stim_onset + ms2frames((logData.durationAfter(currentTrial)-0.12)*1000); % end of display
+                            tempLatency = meanLatency(conIdx);
+                            if strcmp(endName, 'AtReversal') % at reversal
+                                trial.stim_onset = trial.stim_reversalOnset; % reversal
+                                trial.stim_offset = trial.stim_reversalOnset + ms2frames(tempLatency*1000); % reversal
+                            elseif strcmp(endName, 'BeforeReversal')
+                                trial.stim_onset = ms2frames((logData.fixationDuration(currentTrial)+tempLatency)*1000); % 120ms latency
+                                trial.stim_offset = trial.stim_reversalOnset; % reversal
+                            elseif strcmp(endName, 'AfterReversal') 
+                                trial.stim_onset = trial.stim_reversalOnset + ms2frames(tempLatency*1000);
+                                trial.stim_offset = trial.stim_reversalOffset + ms2frames(logData.durationAfter(currentTrial)*1000); % end of display
                             end
                             
                             find saccades;
-                            [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
-                            [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
-                            [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DT_filt, trial.frames.DDT_filt, torsionThreshold(subj), 0);
+                            [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
+                            [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
+                            [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DT_filt, trial.frames.DDT_filt, torsionThreshold(subj), 0);
                             
                             % analyze saccades
                             [trial] = analyzeSaccades(trial, saccades);
@@ -133,7 +132,7 @@ for endN = 1:3
                             startFrame = trial.stim_onset;
                             endFrame = trial.stim_offset;
                             
-                            if abs(torsion.slowPhases.meanSpeed)<30
+%                             if abs(torsion.slowPhases.meanSpeed)<30
                                 
                                 %% retinal torsion angle
                                 dataTemp.LtorsionPosition(countLt, 1) = nanmean(torsion.slowPhases.onsetPosition);
@@ -160,7 +159,7 @@ for endN = 1:3
                                 dataTemp.LsacAmpMeanT(countLt, 1) = trial.saccades.T.meanAmplitude;
                                 dataTemp.LsacAmpMeanTCW(countLt, 1) = trial.saccades.T_CW.meanAmplitude;
                                 dataTemp.LsacAmpMeanTCCW(countLt, 1) = trial.saccades.T_CCW.meanAmplitude;
-                            end
+%                             end
                         end
                         if errorsR.errorStatus(t)==0 % valid trial
                             eye = 2;
@@ -177,21 +176,22 @@ for endN = 1:3
                             trial.torsionFrames = torsionFrames(subj);
                             
                             %% choose the time window here
-                            if strcmp(endName, 'atReversal') % at reversal
-                                trial.stim_onset = trial.stim_reversal; % reversal
-                                trial.stim_offset = trial.stim_reversal+ms2frames(40+120); % reversal
-                            elseif strcmp(endName, '120msToReversal')% 120ms to reversal
-                                trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+120); % 120ms latency
-                                trial.stim_offset = trial.stim_reversal; % reversal
-                            elseif strcmp(endName, '120msToEnd') % 120ms to end
-                                trial.stim_onset = trial.stim_reversal + ms2frames((0.12+0.04)*1000);
-                                trial.stim_offset = trial.stim_onset + ms2frames((logData.durationAfter(currentTrial)-0.12)*1000); % end of display
+                            tempLatency = meanLatency(conIdx);
+                            if strcmp(endName, 'AtReversal') % at reversal
+                                trial.stim_onset = trial.stim_reversalOnset; % reversal
+                                trial.stim_offset = trial.stim_reversalOnset + ms2frames(tempLatency*1000); % reversal
+                            elseif strcmp(endName, 'BeforeReversal')
+                                trial.stim_onset = ms2frames((logData.fixationDuration(currentTrial)+tempLatency)*1000); % 120ms latency
+                                trial.stim_offset = trial.stim_reversalOnset; % reversal
+                            elseif strcmp(endName, 'AfterReversal') 
+                                trial.stim_onset = trial.stim_reversalOnset + ms2frames(tempLatency*1000);
+                                trial.stim_offset = trial.stim_reversalOffset + ms2frames(logData.durationAfter(currentTrial)*1000); % end of display
                             end
                             
                             find saccades;
-                            [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
-                            [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
-                            [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DT_filt, trial.frames.DDT_filt, torsionThreshold(subj), 0);
+                            [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
+                            [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
+                            [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DT_filt, trial.frames.DDT_filt, torsionThreshold(subj), 0);
                             
                             % analyze saccades
                             [trial] = analyzeSaccades(trial, saccades);
@@ -208,7 +208,7 @@ for endN = 1:3
                             startFrame = trial.stim_onset;
                             endFrame = trial.stim_offset;
                             
-                            if abs(torsion.slowPhases.meanSpeed)<20
+%                             if abs(torsion.slowPhases.meanSpeed)<20
                                 
                                 %% retinal torsion angle
                                 dataTemp.RtorsionPosition(countLt, 1) = nanmean(torsion.slowPhases.onsetPosition);
@@ -235,21 +235,21 @@ for endN = 1:3
                                 dataTemp.RsacAmpMeanT(countLt, 1) = trial.saccades.T.meanAmplitude;
                                 dataTemp.RsacAmpMeanTCW(countLt, 1) = trial.saccades.T_CW.meanAmplitude;
                                 dataTemp.RsacAmpMeanTCCW(countLt, 1) = trial.saccades.T_CCW.meanAmplitude;
-                            end
+%                             end
                         end
                         countLt = countLt+1;
-                    end
+%                     end
                 end
             end
         end
-        [dataTempP, trialDeletedP, idxP] = cleanData(dataTemp, 'perceptualError');
-        [dataTempL, trialDeletedTL, idxL] = cleanData(dataTemp, 'LtorsionVelT');
-        [dataTempR, trialDeletedTR, idxR] = cleanData(dataTemp, 'RtorsionVelT');
-        idxD = unique([idxP; idxL; idxR]);
-        dataTemp(idxD, :) = [];
-        trialDeleted(subj) = length(idxD);
+%         [dataTempP, trialDeletedP, idxP] = cleanData(dataTemp, 'perceptualError');
+%         [dataTempL, trialDeletedTL, idxL] = cleanData(dataTemp, 'LtorsionVelT');
+%         [dataTempR, trialDeletedTR, idxR] = cleanData(dataTemp, 'RtorsionVelT');
+%         idxD = unique([idxP; idxL; idxR]);
+%         dataTemp(idxD, :) = [];
+%         trialDeleted(subj) = length(idxD);
         trialData = [trialData; dataTemp];
     end
     cd([analysisF '\analysis functions'])
-    save(['dataLong', endName, '.mat'], 'trialData', 'trialDeleted');
+    save(['dataLong', endName, '.mat'], 'trialData'); %, 'trialDeleted');
 end

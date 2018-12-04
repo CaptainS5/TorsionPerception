@@ -61,14 +61,15 @@ for i = 1:length(speedOnsets)
     end
     
     onsets(i) = max(signSwitches(signSwitches <= speedOnsets(i)));
-    offsets(i) = min(signSwitches(signSwitches >= speedOffsets(i))-1); %the -1 is a subjective adjustment
+    offsets(i) = min(signSwitches(signSwitches >= speedOffsets(i))); 
+%     offsets(i) = min(signSwitches(signSwitches >= speedOffsets(i))-1); %the -1 is a subjective adjustment
     isMax(i) = speed(speedOnsets(i)) > 0;
     
 end
 
 %% trim to delete NaNs
-onsets = onsets(~isnan(onsets))+startFrame;
-offsets = offsets(~isnan(offsets))+startFrame;
+onsets = onsets(~isnan(onsets))+startFrame-1;
+offsets = offsets(~isnan(offsets))+startFrame-1;
 isMax = isMax(~isnan(isMax));
 isMax = logical(isMax);
 

@@ -12,9 +12,9 @@ trialExpAll = 288;
 % baseline
 dataBase = load('dataBaseLong.mat');
 % experiment
-data1 = load(['dataLong120msToReversal.mat']);
-data2 = load(['dataLongatReversal.mat']);
-data3 = load(['dataLong120msToEnd.mat']);
+data1 = load(['dataLongBeforeReversal.mat']);
+data2 = load(['dataLongAtReversal.mat']);
+data3 = load(['dataLongAfterReversal.mat']);
 
 data1.trialData.timeWindow = -1*ones(size(data1.trialData, 1), 1); % before reversal
 data2.trialData.timeWindow = 0*ones(size(data2.trialData, 1), 1); % at reversal
@@ -79,6 +79,6 @@ end
 
 % % merge and save csv
 cd('C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\analysis')
-% writetable(trialData, 'trialDataAllExp2.csv')
+writetable(trialData, 'trialDataAllExp2.csv')
 writetable(trialDataBoth, 'trialDataAllBothEyeExp2.csv')
-% writetable(trialDataBase, 'trialDataBaseAllExp2.csv')
+writetable(trialDataBase, 'trialDataBaseAllExp2.csv')

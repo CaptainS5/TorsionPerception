@@ -1,4 +1,6 @@
 % function transform2csv
+% this is for data analysis without velocity trace... not used in the
+% final manuscript
 % to use in R
 
 names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
@@ -9,11 +11,11 @@ trialExpAll = 360;
 
 % load data
 % baseline
-dataBase = load('dataBaseLongbaseline.mat');
+dataBase = load('dataBaseLong.mat');
 % experiment
-data1 = load(['dataLong120msToReversal.mat']);
-data2 = load(['dataLongatReversal.mat']);
-data3 = load(['dataLong120msToEnd.mat']);
+data1 = load(['dataLongBeforeReversal.mat']);
+data2 = load(['dataLongAtReversal.mat']);
+data3 = load(['dataLongAfterReversal.mat']);
 
 conN = size(data1.conData, 1);
 

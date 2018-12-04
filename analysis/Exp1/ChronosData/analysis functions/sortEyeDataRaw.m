@@ -4,7 +4,7 @@
 % need to correctly mark the time points! also whether the trial is
 % valid
 % excluding saccades, and replace them with extrapolation for velocity
-% traces?...
+% traces?...currently just NaN
 clear all; close all; clc
 
 global trial
@@ -70,9 +70,11 @@ for subN = 1:length(names)
             trial = setupTrial(data, header, logData, t);
             
             find saccades;
-            [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
-            [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
-            [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DT_filt, trial.frames.DDT_filt, tSacThreshold(subN), 0);
+            % to better exclude saccades at the beginning and end of
+            % the trial, increase a wider time window
+            [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
+            [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
+            [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DT_filt, trial.frames.DDT_filt, tSacThreshold(subN), 0);
             
             % analyze saccades
             [trial] = analyzeSaccades(trial, saccades);
@@ -97,32 +99,6 @@ for subN = 1:length(names)
             eyeTrialData.frameLog.quickphaseFrames{subN, trialN} = trial.quickphaseFrames;
             eyeTrialData.saccades{subN, trialN} = trial.saccades;
             eyeTrialData.frames{subN, trialN} = trial.frames;
-            
-%             %% retinal torsion angle
-%             dataTemp.LtorsionPosition(trialN, 1) = nanmean(torsion.slowPhases.onsetPosition);
-%             
-%             %% torsion velocity
-%             dataTemp.LtorsionVelT(trialN, 1) = torsion.slowPhases.meanSpeed;
-%             
-%             %% torsion magnitude
-%             dataTemp.LtorsionAngleTotal(trialN, 1) = torsion.slowPhases.totalAngle;
-%             dataTemp.LtorsionAngleCW(trialN, 1) = torsion.slowPhases.totalAngleCW;
-%             dataTemp.LtorsionAngleCCW(trialN, 1) = -torsion.slowPhases.totalAngleCCW;
-%             
-%             %% saccade numbers
-%             dataTemp.LsacNumT(trialN, 1) = trial.saccades.T.number;
-%             dataTemp.LsacNumTCW(trialN, 1) = trial.saccades.T_CW.number;
-%             dataTemp.LsacNumTCCW(trialN, 1) = trial.saccades.T_CCW.number;
-%             
-%             %% saccade sum amplitudes
-%             dataTemp.LsacAmpSumT(trialN, 1) = trial.saccades.T.sum;
-%             dataTemp.LsacAmpSumTCW(trialN, 1) = trial.saccades.T_CW.sum;
-%             dataTemp.LsacAmpSumTCCW(trialN, 1) = trial.saccades.T_CCW.sum;
-%             
-%             %% saccade mean amplitudes
-%             dataTemp.LsacAmpMeanT(trialN, 1) = trial.saccades.T.meanAmplitude;
-%             dataTemp.LsacAmpMeanTCW(trialN, 1) = trial.saccades.T_CW.meanAmplitude;
-%             dataTemp.LsacAmpMeanTCCW(trialN, 1) = trial.saccades.T_CCW.meanAmplitude;
                         
             trialN = trialN+1;
 %             count = count + 1;
@@ -132,3 +108,5 @@ end
 cd([analysisF '\analysis functions'])
 save(['eyeDataAll.mat'], 'eyeTrialData');
 % rows are participants, columns are trials--all trial included
+
+%% baseline

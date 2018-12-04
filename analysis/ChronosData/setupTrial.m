@@ -8,6 +8,14 @@ trial.startFrame = data.startFrames(trial.number)+1;
 trial.endFrame = data.endFrames(trial.number)+1;
 
 %% get data for this trial
+trial.frames.X = data.X(trial.startFrame:trial.endFrame);
+trial.frames.Y = data.Y(trial.startFrame:trial.endFrame);
+trial.frames.T = data.T(trial.startFrame:trial.endFrame);
+
+trial.frames.DX = data.DX(trial.startFrame:trial.endFrame);
+trial.frames.DY = data.DY(trial.startFrame:trial.endFrame);
+trial.frames.DT = data.DT(trial.startFrame:trial.endFrame);
+
 trial.frames.X_filt = data.X_filt(trial.startFrame:trial.endFrame);
 trial.frames.Y_filt = data.Y_filt(trial.startFrame:trial.endFrame);
 trial.frames.T_filt = data.T_filt(trial.startFrame:trial.endFrame);
@@ -33,9 +41,10 @@ trial.lostTframes = data.lostTframes(trial.startFrame:trial.endFrame);
 % 
 trial.stim_start = ms2frames(logData.fixationDuration(currentTrial)*1000);
 trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000);
-trial.stim_reversal = ms2frames((logData.fixationDuration(currentTrial)+logData.durationBefore(currentTrial))*1000);
+trial.stim_reversalOnset = ms2frames((logData.fixationDuration(currentTrial)+logData.durationBefore(currentTrial))*1000);
+trial.stim_reversalOffset = trial.stim_reversalOnset + ms2frames((0.047)*1000); % flash duration
 % trial.stim_onset = ms2frames((logData.fixationDuration(currentTrial)+logData.durationBefore(currentTrial)+0.12)*1000);                          
-trial.stim_offset = trial.stim_onset + ms2frames((logData.durationBefore(currentTrial)+logData.durationAfter(currentTrial))*1000);
+trial.stim_offset = trial.stim_reversalOffset + ms2frames(logData.durationAfter(currentTrial)*1000);
 
 trial.length = length(trial.startFrame:trial.endFrame);
 
@@ -45,7 +54,7 @@ trial.log.subject = header.subjectID;
 trial.log.block = logData.block;
 trial.log.eye = data.eye;
 % trial.log.number = logData.trial(currentTrial);
-trial.log.rotationalDirection = logData.initialDirection(currentTrial);
+trial.log.afterReversalD = -logData.initialDirection(currentTrial);
 trial.log.rotationalSpeed = logData.rotationSpeed(currentTrial);
 % trial.log.translationalDirection = logData.translationalDirection(currentTrial);
 % trial.log.rotationalDirection = logData.rotationalDirection(currentTrial);
