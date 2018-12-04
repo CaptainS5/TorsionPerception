@@ -16,6 +16,7 @@ torsionFrames = 3*ones(size(names));
 direction = [-1 1]; % rotation direction
 trialPerCon = 12; % for each rotation speed, all directions together though...
 eyeName = {'L' 'R'};
+load('meanLatencyExp1')
 
 cd ..
 analysisF = pwd;
@@ -66,7 +67,8 @@ for subj = 1:length(names)
                     trial.torsionFrames = torsionFrames(subj);
                     
                     %% choose the time window here
-                    trial.stim_onset = trial.stim_reversalOnset - ms2frames((logData.durationBefore(currentTrial)-0.13)*1000); % latency after onset
+                    tempLatency = meanLatency(conIdx);
+                    trial.stim_onset = trial.stim_reversalOnset - ms2frames((logData.durationBefore(currentTrial)-tempLatency)*1000); % latency after onset
                     trial.stim_offset = trial.stim_reversalOffset + ms2frames(logData.durationAfter(currentTrial)*1000); % end of display
                     
                     find saccades;
@@ -140,7 +142,8 @@ for subj = 1:length(names)
                     trial.torsionFrames = torsionFrames(subj);
                     
                     %% change the time window here
-                    trial.stim_onset = trial.stim_reversalOnset - ms2frames((logData.durationBefore(currentTrial)-0.13)*1000); % latency after onset
+                    tempLatency = meanLatency(conIdx);
+                    trial.stim_onset = trial.stim_reversalOnset - ms2frames((logData.durationBefore(currentTrial)-tempLatency)*1000); % latency after onset
                     trial.stim_offset = trial.stim_reversalOffset + ms2frames(logData.durationAfter(currentTrial)*1000); % end of display
                     
                     find saccades;
@@ -209,4 +212,4 @@ for subj = 1:length(names)
     trialData = [trialData; dataTemp];
 end
 cd([analysisF '\analysis functions'])
-save(['dataBaseLong130.mat'], 'trialData'); %, 'trialDeleted');
+save(['dataBaseLong.mat'], 'trialData'); %, 'trialDeleted');

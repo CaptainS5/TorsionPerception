@@ -1,9 +1,12 @@
 % plot velocity traces, generate csv file for plotting in R, Exp1
+% also calculate torsional latency based on mean values in each speed
+% condition (directions merged)
 clear all; close all; clc
 
 names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 conditions = [25 50 100 200 400];
 sampleRate = 200; 
+folder = pwd;
 
 load('eyeDataAll.mat')
 
@@ -51,38 +54,38 @@ for speedI = 1:size(conditions, 2)
         velTUnfiltStd{speedI}(subN, tempStartI:end) = nanstd(framesUnfilt{subN, speedI});
     end
     
-    % plotting parameters
-    minFrameLength = min(frameLength);
-    beforeFrames = minFrameLength-reversalFrames-afterFrames;
-    framePerSec = 1/sampleRate;
-    timePReversal = [0:(reversalFrames-1)]*framePerSec*1000;
-    timePBeforeReversal = timePReversal(1)-(beforeFrames+1-[1:beforeFrames])*framePerSec*1000;
-    timePAfterReversal = timePReversal(end)+[1:afterFrames]*framePerSec*1000;
-    timePoints = [timePBeforeReversal timePReversal timePAfterReversal]; % align at the reversal and after...
-    % reversal onset is 0
-    velTmean{speedI} = nanmean(velTAverage{speedI}(:, (maxFrameLength-minFrameLength+1):end));
-    % need to plot ste? confidence interval...?
-    
-    figure
-    % filtered mean velocity trace
-    subplot(2, 1, 1)
-    plot(timePoints, velTmean{speedI})
-    % hold on
-    % patch(timePoints, )
-    title(['rotational speed ', num2str(conditions(speedI))])
-    xlabel('Time (ms)')
-    ylabel('Torsional velocity (deg/s)')
-    % ylim([-0.5 0.5])
-    
-    % unfiltered mean velocity trace
-    subplot(2, 1, 2)
-    plot(timePoints, nanmean(velTUnfiltAverage{speedI}(:, (maxFrameLength-minFrameLength+1):end)))
-    title(['rotational speed ', num2str(conditions(speedI))])
-    xlabel('Time (ms)')
-    ylabel('Torsional velocity_unfiltered (deg/s)')
-    ylim([-2 2])
-    
-    % saveas(gca, ['velocityTraces_', num2str(conditions(speedI)), '.pdf'])
+%     % plotting parameters
+%     minFrameLength = min(frameLength);
+%     beforeFrames = minFrameLength-reversalFrames-afterFrames;
+%     framePerSec = 1/sampleRate;
+%     timePReversal = [0:(reversalFrames-1)]*framePerSec*1000;
+%     timePBeforeReversal = timePReversal(1)-(beforeFrames+1-[1:beforeFrames])*framePerSec*1000;
+%     timePAfterReversal = timePReversal(end)+[1:afterFrames]*framePerSec*1000;
+%     timePoints = [timePBeforeReversal timePReversal timePAfterReversal]; % align at the reversal and after...
+%     % reversal onset is 0
+%     velTmean{speedI} = nanmean(velTAverage{speedI}(:, (maxFrameLength-minFrameLength+1):end));
+%     % need to plot ste? confidence interval...?
+%     
+%     figure
+%     % filtered mean velocity trace
+%     subplot(2, 1, 1)
+%     plot(timePoints, velTmean{speedI})
+%     % hold on
+%     % patch(timePoints, )
+%     title(['rotational speed ', num2str(conditions(speedI))])
+%     xlabel('Time (ms)')
+%     ylabel('Torsional velocity (deg/s)')
+%     % ylim([-0.5 0.5])
+%     
+%     % unfiltered mean velocity trace
+%     subplot(2, 1, 2)
+%     plot(timePoints, nanmean(velTUnfiltAverage{speedI}(:, (maxFrameLength-minFrameLength+1):end)))
+%     title(['rotational speed ', num2str(conditions(speedI))])
+%     xlabel('Time (ms)')
+%     ylabel('Torsional velocity_unfiltered (deg/s)')
+%     ylim([-2 2])
+%     
+%     % saveas(gca, ['velocityTraces_', num2str(conditions(speedI)), '.pdf'])
 end
 
 % generate csv files, each file for one speed condition
@@ -101,14 +104,22 @@ end
 
 startI = max(startIdx);
 velTAverageSub = [];
+latency = [];
 cd('C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\analysis')
+% for each participant in each rotational speed, draw the mean
+% calculate latency in seconds and save
 for speedI = 1:size(conditions, 2)
     for subN = 1:size(names, 2)
         velTAverageSub(subN, :) = velTAverage{speedI}(subN, startI:end);
+        % calculate latency in seconds, the point when velocity
+        % exceeds 0.1 deg/s
+        reversalOnsetFrame = length(velTAverageSub(subN, :))-afterFrames-reversalFrames+1;
+        minOnsetFrame = reversalOnsetFrame+80/1000*sampleRate; % 80 ms after reversal
+        onsetFrame = find(velTAverageSub(subN, :)>0.1);
+        onsetFrame = onsetFrame(onsetFrame>minOnsetFrame);
+        onsetFrame = onsetFrame(1);
+        latency(subN, speedI) = (onsetFrame-reversalOnsetFrame)/sampleRate;
     end
-    csvwrite(['velocityTraceExp1_', num2str(conditions(speedI)), '.csv'], velTAverageSub)
+%     csvwrite(['velocityTraceExp1_', num2str(conditions(speedI)), '.csv'], velTAverageSub)
 end
-
-%% velocity traces for CW and CCW directions, and calculate latency
-% for each participant in each rotational speed, draw the mean
-% not enough trials even for this calculation... just give up = =
+save('torsionLatencyExp1', 'latency')

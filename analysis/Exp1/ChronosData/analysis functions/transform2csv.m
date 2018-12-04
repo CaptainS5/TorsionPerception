@@ -11,11 +11,11 @@ trialExpAll = 360;
 
 % load data
 % baseline
-dataBase = load('dataBaseLong130.mat');
+dataBase = load('dataBaseLong.mat');
 % experiment
-data1 = load(['dataLong130msToReversal.mat']);
-data2 = load(['dataLongatReversal130.mat']);
-data3 = load(['dataLong130msToEnd.mat']);
+data1 = load(['dataLongBeforeReversal.mat']);
+data2 = load(['dataLongAtReversal.mat']);
+data3 = load(['dataLongAfterReversal.mat']);
 
 conN = size(data1.conData, 1);
 
