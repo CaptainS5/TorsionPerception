@@ -21,12 +21,12 @@ torsionFrames = 3*ones(size(names));
 eyeName = {'R'};
 % change both paramters below, as well as time window in the loop 
 % around line 100
-checkAngle = 1; % 1-for direction after reversal, -1 for direction before reversal
+checkAngle = -1; % 1-for direction after reversal, -1 for direction before reversal
 % for the endName, also change around line70 for the time window used
-% endName = '120msToReversal';
+% endName = '130msToReversal';
 % endName = 'aroundReversal';
-endName = '120msToEnd';
-% endName = 'atReversal';
+% endName = '130msToEnd';
+endName = 'atReversal130';
 
 trialData = table(); % organize into long format
 conData = table();
@@ -90,27 +90,27 @@ for subj = 1:length(names)
                     trial.torsionFrames = torsionFrames(subj);
                     
                     %% change the time window here
-                    if strcmp(endName, 'atReversal') % at reversal
-                        trial.stim_onset = trial.stim_reversal; % reversal
-                        trial.stim_offset = trial.stim_reversal+ms2frames(40+120); % reversal
+                    if strcmp(endName, 'atReversal130') % at reversal
+                        trial.stim_onset = trial.stim_reversalOnset; % reversal
+                        trial.stim_offset = trial.stim_reversalOffset+ms2frames(130); % reversal
                         % %                     trial.stim_onset = trial.stim_reversal+ms2frames(10); % reversal--if taken delay into account...
                         % %                     trial.stim_offset = trial.stim_reversal+ms2frames(50); % reversal
-                    elseif strcmp(endName, '120msToReversal')% 120ms to reversal
-                        trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+120); % 120ms latency
-                        trial.stim_offset = trial.stim_reversal; % reversal
+                    elseif strcmp(endName, '130msToReversal')% 140ms to reversal
+                        trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+130); % 120ms latency
+                        trial.stim_offset = trial.stim_reversalOnset; % reversal
                         % % around reversal
                         %                     trial.stim_onset = trial.stim_reversal;
                         %                     trial.stim_offset = trial.stim_reversal + ms2frames((0.12)*1000); % 120ms after reversal
-                    elseif strcmp(endName, '120msToEnd') % 120ms to end
-                        trial.stim_onset = trial.stim_reversal + ms2frames((0.12+0.04)*1000);
-                        trial.stim_offset = trial.stim_onset + ms2frames((logData.durationAfter(currentTrial)-0.12)*1000); % end of display
+                    elseif strcmp(endName, '130msToEnd') % 120ms to end
+                        trial.stim_onset = trial.stim_reversalOffset + ms2frames((0.13)*1000);
+                        trial.stim_offset = trial.stim_onset + ms2frames((logData.durationAfter(currentTrial)-0.13)*1000); % end of display
                     end
                     
                     find saccades;
-                    [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
+                    [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
                     % [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DX_filt, trial.frames.DDX_filt, 20, trial.stimulusMeanVelocity);
-                    [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
-                    [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DT_filt, trial.frames.DDT_filt, torsionThreshold(subj), 0);
+                    [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
+                    [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DT_filt, trial.frames.DDT_filt, torsionThreshold(subj), 0);
                     
                     % analyze saccades
                     [trial] = analyzeSaccades(trial, saccades);
@@ -169,7 +169,7 @@ for subj = 1:length(names)
                     end
                     %                     dataTemp.perceptualError(countLt, 1) = -(resp.reportAngle(t)-resp.reversalAngle(t))*resp.initialDirection(t)-dataBase.baseErrorMean(subj, 1);
                     
-                    if dataTemp.perceptualError(countLt, 1)>-10 && abs(torsion.slowPhases.meanSpeed)<30
+%                     if dataTemp.perceptualError(countLt, 1)>-10 && abs(torsion.slowPhases.meanSpeed)<30
                         
                         %% retinal torsion angle
                         dataTemp.torsionPosition(countLt, 1) = nanmean(torsion.slowPhases.onsetPosition);
@@ -227,15 +227,15 @@ for subj = 1:length(names)
                         dataTemp.sacAmpMeanT(countLt, 1) = trial.saccades.T.meanAmplitude;
                         
                         countLt = countLt+1;
-                    end
+%                     end
                 end
             end
         end
-        [dataTempP, trialDeletedP, idxP] = cleanData(dataTemp, 'perceptualError');
-        [dataTempT, trialDeletedT, idxT] = cleanData(dataTemp, 'torsionVelT');
-        idxD = unique([idxP; idxT]);
-        dataTemp(idxD, :) = [];
-        trialDeleted(subj) = length(idxD);
+%         [dataTempP, trialDeletedP, idxP] = cleanData(dataTemp, 'perceptualError');
+%         [dataTempT, trialDeletedT, idxT] = cleanData(dataTemp, 'torsionVelT');
+%         idxD = unique([idxP; idxT]);
+%         dataTemp(idxD, :) = [];
+%         trialDeleted(subj) = length(idxD);
         trialData = [trialData; dataTemp];
     end
     
@@ -389,4 +389,4 @@ for ii = 1:size(conData, 1)
     end
 end
 
-save(['dataLong', endName, '.mat'], 'trialData', 'conData', 'trialDeleted');
+save(['dataLong', endName, '.mat'], 'trialData', 'conData'); %, 'trialDeleted');

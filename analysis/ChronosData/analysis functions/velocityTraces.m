@@ -1,11 +1,12 @@
-% plot velocity traces, generate csv file for plotting in R, Exp1
+% plot velocity traces, generate csv file for plotting in R, Exp2
 clear all; close all; clc
 
-names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
-conditions = [25 50 100 200 400];
+names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol' 'FScontrol' 'XWcontrol' 'SCcontrol' 'JFcontrol'};
+conditions = [25 50 100 200];
 sampleRate = 200; 
 
-load('eyeDataAll.mat')
+leftEye = load('eyeDataAll_L.mat');
+rightEye = load('eyeDataAll_R.mat');
 
 %% directions merged, generate csv files for R plotting
 % consistent reversal duration and duration after for all participants

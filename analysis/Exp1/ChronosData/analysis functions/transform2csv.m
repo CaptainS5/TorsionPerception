@@ -1,4 +1,6 @@
 % function transform2csv
+% this is for data analysis without velocity trace... not used in the
+% final manuscript
 % to use in R
 
 names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
@@ -9,11 +11,11 @@ trialExpAll = 360;
 
 % load data
 % baseline
-dataBase = load('dataBaseLongbaseline.mat');
+dataBase = load('dataBaseLong130.mat');
 % experiment
-data1 = load(['dataLong120msToReversal.mat']);
-data2 = load(['dataLongatReversal.mat']);
-data3 = load(['dataLong120msToEnd.mat']);
+data1 = load(['dataLong130msToReversal.mat']);
+data2 = load(['dataLongatReversal130.mat']);
+data3 = load(['dataLong130msToEnd.mat']);
 
 conN = size(data1.conData, 1);
 
@@ -45,5 +47,5 @@ trialDataBase.exp(:, 1) = repmat(2, size(trialDataBase.sub));
 cd('C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\analysis')
 writetable(trialData, 'trialDataAllExp1.csv')
 writetable(conData, 'conDataAllExp1.csv')
-writetable(conDataBase, 'conDataBaseAllExp1.csv')
-writetable(trialDataBase, 'trialDataBaseAllExp1.csv')
+% writetable(conDataBase, 'conDataBaseAllExp1.csv')
+% writetable(trialDataBase, 'trialDataBaseAllExp1.csv')

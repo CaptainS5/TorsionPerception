@@ -8,7 +8,7 @@ names = {'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 conditions = [25 50 100 200 400];
 startT = 1;
 loadData = 0;
-individualPlots = 1;
+individualPlots = 0;
 merged = 1;
 torsionThreshold = 8*ones(size(names));
 torsionFrames = 3*ones(size(names));
@@ -18,7 +18,7 @@ trialPerCon = 10; % for each flash onset, all directions together though...
 eyeName = {'R'};
 % change both paramters below, as well as time window in the loop around line 73
 checkAngle = -1; % 1-for direction after reversal, -1 for direction before reversal
-endName = 'baseline';
+endName = '130';
 
 if merged==0
     mergeName = 'notMerged';
@@ -71,14 +71,14 @@ if loadData==0
                         trial.torsionFrames = torsionFrames(subj);
                         
                         %% change the time window here
-                        trial.stim_onset = trial.stim_reversal - ms2frames((logData.durationBefore(currentTrial)-0.12)*1000); % latency after onset
-                        trial.stim_offset = trial.stim_reversal + ms2frames(logData.durationAfter(currentTrial)*1000); % end of display
+                        trial.stim_onset = trial.stim_reversalOnset - ms2frames((logData.durationBefore(currentTrial)-0.13)*1000); % latency after onset
+                        trial.stim_offset = trial.stim_reversalOffset + ms2frames(logData.durationAfter(currentTrial)*1000); % end of display
                         
                         find saccades;
-                        [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
+                        [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
                         % [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DX_filt, trial.frames.DDX_filt, 20, trial.stimulusMeanVelocity);
-                        [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
-                        [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DT_filt, trial.frames.DDT_filt, torsionThreshold(subj), 0);
+                        [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
+                        [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DT_filt, trial.frames.DDT_filt, torsionThreshold(subj), 0);
                         
                         % analyze saccades
                         [trial] = analyzeSaccades(trial, saccades);

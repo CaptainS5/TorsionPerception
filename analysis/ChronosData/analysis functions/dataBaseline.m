@@ -66,14 +66,14 @@ for subj = 1:length(names)
                     trial.torsionFrames = torsionFrames(subj);
                     
                     %% choose the time window here
-                    trial.stim_onset = trial.stim_reversal - ms2frames((logData.durationBefore(currentTrial)-0.12)*1000); % latency after onset
-                    trial.stim_offset = trial.stim_reversal + ms2frames(logData.durationAfter(currentTrial)*1000); % end of display
+                    trial.stim_onset = trial.stim_reversalOnset - ms2frames((logData.durationBefore(currentTrial)-0.13)*1000); % latency after onset
+                    trial.stim_offset = trial.stim_reversalOffset + ms2frames(logData.durationAfter(currentTrial)*1000); % end of display
                     
                     find saccades;
-                    [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
+                    [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
                     % [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DX_filt, trial.frames.DDX_filt, 20, trial.stimulusMeanVelocity);
-                    [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
-                    [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DT_filt, trial.frames.DDT_filt, torsionThreshold(subj), 0);
+                    [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
+                    [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DT_filt, trial.frames.DDT_filt, torsionThreshold(subj), 0);
                     
                     % analyze saccades
                     [trial] = analyzeSaccades(trial, saccades);
@@ -140,14 +140,14 @@ for subj = 1:length(names)
                     trial.torsionFrames = torsionFrames(subj);
                     
                     %% change the time window here
-                    trial.stim_onset = trial.stim_reversal - ms2frames((logData.durationBefore(currentTrial)-0.12)*1000); % latency after onset
-                    trial.stim_offset = trial.stim_reversal + ms2frames(logData.durationAfter(currentTrial)*1000); % end of display
+                    trial.stim_onset = trial.stim_reversalOnset - ms2frames((logData.durationBefore(currentTrial)-0.13)*1000); % latency after onset
+                    trial.stim_offset = trial.stim_reversalOffset + ms2frames(logData.durationAfter(currentTrial)*1000); % end of display
                     
                     find saccades;
-                    [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
+                    [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
                     % [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DX_filt, trial.frames.DDX_filt, 20, trial.stimulusMeanVelocity);
-                    [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
-                    [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset, trial.stim_offset, trial.frames.DT_filt, trial.frames.DDT_filt, torsionThreshold(subj), 0);
+                    [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
+                    [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DT_filt, trial.frames.DDT_filt, torsionThreshold(subj), 0);
                     
                     % analyze saccades
                     [trial] = analyzeSaccades(trial, saccades);
@@ -175,7 +175,7 @@ for subj = 1:length(names)
                     startFrame = trial.stim_onset;
                     endFrame = trial.stim_offset;
                     
-                    if abs(torsion.slowPhases.meanSpeed)<30
+%                     if abs(torsion.slowPhases.meanSpeed)<30
                         %% torsion velocity
                         dataTemp.RtorsionVelT(countLt, 1) = torsion.slowPhases.meanSpeed;
                         
@@ -195,18 +195,18 @@ for subj = 1:length(names)
                         
                         %% saccade mean amplitudes
                         dataTemp.RsacAmpMeanT(countLt, 1) = trial.saccades.T.meanAmplitude;
-                    end
+%                     end
                 end
                 countLt = countLt+1;
             end
         end
     end
-    [dataTempL, trialDeletedTL, idxL] = cleanData(dataTemp, 'LtorsionVelT');
-    [dataTempR, trialDeletedTR, idxR] = cleanData(dataTemp, 'RtorsionVelT');
-    idxD = unique([idxL; idxR]);
-    dataTemp(idxD, :) = [];
-    trialDeleted(subj) = length(idxD);
+%     [dataTempL, trialDeletedTL, idxL] = cleanData(dataTemp, 'LtorsionVelT');
+%     [dataTempR, trialDeletedTR, idxR] = cleanData(dataTemp, 'RtorsionVelT');
+%     idxD = unique([idxL; idxR]);
+%     dataTemp(idxD, :) = [];
+%     trialDeleted(subj) = length(idxD);
     trialData = [trialData; dataTemp];
 end
 cd([analysisF '\analysis functions'])
-save(['dataBaseLong.mat'], 'trialData', 'trialDeleted');
+save(['dataBaseLong130.mat'], 'trialData'); %, 'trialDeleted');
