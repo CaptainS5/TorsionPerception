@@ -4,8 +4,8 @@
 clear all; close all; clc
 
 names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
-conditions = [25 50 100 200 400];
-sampleRate = 200; 
+conditions = [25 50 100 200 400]; % rotational speed
+sampleRate = 200;
 folder = pwd;
 
 load('eyeDataAll.mat')
@@ -18,12 +18,12 @@ for subN = 1:size(names, 2)
     maxBeforeFrames = max(eyeTrialData.stim.beforeFrames(subN, :));
     frameLength(subN) = maxBeforeFrames+reversalFrames+afterFrames;
     for speedI = 1:size(conditions, 2)
-        validI = find(eyeTrialData.errorStatusR(subN, :)==0 & eyeTrialData.rotationSpeed(subN, :)==conditions(speedI)); 
+        validI = find(eyeTrialData.errorStatusR(subN, :)==0 & eyeTrialData.rotationSpeed(subN, :)==conditions(speedI));
         frames{subN, speedI} = NaN(length(validI), frameLength(subN)); % align the reversal; filled with NaN
         % rows are trials, columns are frames
         framesUnfilt{subN, speedI} = NaN(length(validI), frameLength(subN)); % align the reversal; filled with NaN
         % rows are trials, columns are frames
-        
+
         % fill in the velocity trace of each frame
         % interpolate NaN points for a better velocity trace
         for validTrialN = 1:length(validI)
@@ -45,7 +45,7 @@ for speedI = 1:size(conditions, 2)
     velTStd{speedI} = NaN(length(names), maxFrameLength);
     velTUnfiltAverage{speedI} = NaN(length(names), maxFrameLength);
     velTUnfiltStd{speedI} = NaN(length(names), maxFrameLength);
-    
+
     for subN = 1:size(names, 2)
         tempStartI = maxFrameLength-frameLength(subN)+1;
         velTAverage{speedI}(subN, tempStartI:end) = nanmean(frames{subN, speedI});
@@ -53,7 +53,7 @@ for speedI = 1:size(conditions, 2)
         velTUnfiltAverage{speedI}(subN, tempStartI:end) = nanmean(framesUnfilt{subN, speedI});
         velTUnfiltStd{speedI}(subN, tempStartI:end) = nanstd(framesUnfilt{subN, speedI});
     end
-    
+
 %     % plotting parameters
 %     minFrameLength = min(frameLength);
 %     beforeFrames = minFrameLength-reversalFrames-afterFrames;
@@ -65,7 +65,7 @@ for speedI = 1:size(conditions, 2)
 %     % reversal onset is 0
 %     velTmean{speedI} = nanmean(velTAverage{speedI}(:, (maxFrameLength-minFrameLength+1):end));
 %     % need to plot ste? confidence interval...?
-%     
+%
 %     figure
 %     % filtered mean velocity trace
 %     subplot(2, 1, 1)
@@ -76,7 +76,7 @@ for speedI = 1:size(conditions, 2)
 %     xlabel('Time (ms)')
 %     ylabel('Torsional velocity (deg/s)')
 %     % ylim([-0.5 0.5])
-%     
+%
 %     % unfiltered mean velocity trace
 %     subplot(2, 1, 2)
 %     plot(timePoints, nanmean(velTUnfiltAverage{speedI}(:, (maxFrameLength-minFrameLength+1):end)))
@@ -84,7 +84,7 @@ for speedI = 1:size(conditions, 2)
 %     xlabel('Time (ms)')
 %     ylabel('Torsional velocity_unfiltered (deg/s)')
 %     ylim([-2 2])
-%     
+%
 %     % saveas(gca, ['velocityTraces_', num2str(conditions(speedI)), '.pdf'])
 end
 

@@ -1,5 +1,6 @@
 % all statistic analysis and results for torsion Exp1
-% 07/08/2018 Xiuyun Wu
+% 12/03/2018 Xiuyun Wu
+
 clear all; close all; clc
 
 global trial
@@ -60,13 +61,13 @@ disp(['exp eye excluded trial number: ', num2str(mean(1-validExpEye/trialExpAll)
 % %     [rho pval] = partialcorr([dataT.perceptualErrorMean, dataT.torsionAngleMean], dataT.rotationSpeed);
 % %     disp(['Time Window' num2str(tw) ' across participants, Angle: r=' num2str(rho(1, 2), '%.2f') ', p=' num2str(pval(1, 2), '%.3f')])
 % % end
-% 
+%
 % % Individual trial-by-trial
 % data1.trialData.timeWindow = ones(size(data1.trialData, 1), 1);
 % data2.trialData.timeWindow = 2*ones(size(data2.trialData, 1), 1);
 % data3.trialData.timeWindow = 3*ones(size(data3.trialData, 1), 1);
 % dataAllTrial = [data1.trialData; data2.trialData; data3.trialData];
-% 
+%
 % for tw = 1:3
 % %     figure
 %     for t = 1:size(names, 2)
@@ -76,7 +77,7 @@ disp(['exp eye excluded trial number: ', num2str(mean(1-validExpEye/trialExpAll)
 % %         [tbtCorrARho(t, tw) tbtCorrApval(t, tw)] = corr(dataT.perceptualError, dataT.torsionAngleMerged);
 % %         subplot(3, 5, t)
 % %         scatter(dataT.perceptualError, dataT.torsionVelTMerged)
-%         
+%
 %         % partial correlation... no reason to do this...
 %         [rho pval] = partialcorr([dataT.perceptualError, dataT.torsionVelTMerged], dataT.rotationSpeed);
 %         tbtCorrVRho(t, tw) = rho(1, 2);
@@ -86,27 +87,27 @@ disp(['exp eye excluded trial number: ', num2str(mean(1-validExpEye/trialExpAll)
 % %         tbtCorrApval(t, tw) = pval(1, 2);
 %     end
 % end
-% 
+%
 % tempI = find(tbtCorrVpval(:, 1)<0.05);
 % Vr1N = length(tempI)
 % meanVr1 = mean(tbtCorrVRho(tempI, 1))
 % stdVr1 = std(tbtCorrVRho(tempI, 1))
-% 
+%
 % tempI = find(tbtCorrVpval(:, 2)<0.05);
 % Vr2N = length(tempI)
 % meanVr2 = mean(tbtCorrVRho(tempI, 2))
 % stdVr2 = std(tbtCorrVRho(tempI, 2))
-% 
+%
 % tempI = find(tbtCorrVpval(:, 3)<0.05);
 % Vr3N = length(tempI)
 % meanVr3 = mean(tbtCorrVRho(tempI, 3))
 % stdVr3 = std(tbtCorrVRho(tempI, 3))
-% 
+%
 % % tempI = find(tbtCorrApval(:, 3)<0.05);
 % % Ar3N = length(tempI)
 % % meanAr3 = mean(tbtCorrARho(tempI, 3))
 % % stdAr3 = std(tbtCorrARho(tempI, 3))
-% % 
+% %
 % % tempI = find(tbtCorrApval(:, 1)<0.05);
 % % Ar1N = length(tempI)
 % % meanAr1 = mean(tbtCorrARho(tempI, 1))
@@ -117,11 +118,11 @@ disp(['exp eye excluded trial number: ', num2str(mean(1-validExpEye/trialExpAll)
 % data2.conData.timeWindow = 2*ones(size(data2.conData, 1), 1);
 % data3.conData.timeWindow = 3*ones(size(data3.conData, 1), 1);
 % dataAll = [data1.conData; data2.conData; data3.conData];
-% 
+%
 % tempI = find(dataAll.afterReversalD~=0);
 % dataAll.torsionVelTMean(tempI) = dataAll.torsionVelTMean(tempI).*dataAll.afterReversalD(tempI);
 % dataAll.torsionAngleMean(tempI) = dataAll.torsionAngleMean(tempI).*dataAll.afterReversalD(tempI);
-% 
+%
 % % % one way anova of time window
 % % for t = 1:size(names, 2)
 % %     for ii = 1:3
@@ -143,7 +144,7 @@ disp(['exp eye excluded trial number: ', num2str(mean(1-validExpEye/trialExpAll)
 % % rmA = fitrm(dataA, 't1-t3~1', 'WithinDesign', WM);
 % % ranovatblV = ranova(rmV)
 % % ranovatblA = ranova(rmA)
-% % 
+% %
 % % % corrective saccades
 % % dataSacNum = mat2cell(dataSacNum, size(dataSacNum, 1), ones(1, size(dataSacNum, 2)));
 % % dataSacNum = table(dataSacNum{:}, 'VariableNames', {'t1', 't2', 't3'});
@@ -157,26 +158,26 @@ disp(['exp eye excluded trial number: ', num2str(mean(1-validExpEye/trialExpAll)
 % % ranovatblSacNum = ranova(rmSacNum)
 % % ranovatblSacAmpSum = ranova(rmSacAmpSum)
 % % ranovatblSacAmpMean = ranova(rmSacAmpMean)
-% % 
+% %
 % % % two-way anovas of speed and direction
 % % % before-reversal
 % % tempI = find(dataAll.timeWindow==1 & dataAll.afterReversalD~=0);
 % % dataT = dataAll(tempI, :);
 % % statsV1 = rm_anova2(dataT.torsionVelTMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
 % % statsA1 = rm_anova2(dataT.torsionAngleMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
-% % 
+% %
 % % % at-revresal
 % % tempI = find(dataAll.timeWindow==2 & dataAll.afterReversalD~=0);
 % % dataT = dataAll(tempI, :);
 % % statsV2 = rm_anova2(dataT.torsionVelTMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
 % % statsA2 = rm_anova2(dataT.torsionAngleMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
-% % 
+% %
 % % % after-reversal
 % % tempI = find(dataAll.timeWindow==3 & dataAll.afterReversalD~=0);
 % % dataT = dataAll(tempI, :);
 % % statsV3 = rm_anova2(dataT.torsionVelTMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
 % % statsA3 = rm_anova2(dataT.torsionAngleMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
-% 
+%
 % % three way anova...
 % speedI = unique(dataAll.rotationSpeed);
 % for ii = 1:length(speedI)
@@ -191,18 +192,17 @@ disp(['exp eye excluded trial number: ', num2str(mean(1-validExpEye/trialExpAll)
 %     end
 % end
 % tempI = find(dataAll.afterReversalD~=0);
-% 
+%
 % % torsional velocity
 % dataV = [dataAll.torsionVelTMean(tempI), dataAll.rotationSpeed(tempI), dataAll.afterReversalD(tempI), dataAll.timeWindow(tempI), dataAll.sub(tempI)];
 % RMAOV33(dataV, 0.05)
-% 
+%
 % % torsional angle
 % dataV = [dataAll.torsionAngleMean(tempI), dataAll.rotationSpeed(tempI), dataAll.afterReversalD(tempI), dataAll.timeWindow(tempI), dataAll.sub(tempI)];
 % RMAOV33(dataV, 0.05)
-% 
+%
 % %% ANOVA for perception
 % tempI = find(dataAll.timeWindow==3 & dataAll.afterReversalD~=0);
 % dataT = dataAll(tempI, :);
 % statsP = rm_anova2(dataT.perceptualErrorMean, dataT.sub, dataT.rotationSpeed, dataT.afterReversalD, {'rotationSpeed', 'afterDirection'})
-% 
-
+%
