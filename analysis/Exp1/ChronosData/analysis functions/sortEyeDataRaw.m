@@ -23,6 +23,7 @@ tSacThreshold = 8*ones(size(names)); % threshold for torsional saccades
 % after?... check the code
 eyeName = {'L' 'R'};
 
+%% Experiment trials
 % count = 1;
 for subN = 1:length(names)
     cd(analysisF)
@@ -110,3 +111,74 @@ save(['eyeDataAll.mat'], 'eyeTrialData');
 % rows are participants, columns are trials--all trial included
 
 %% baseline
+for subN = 9:length(names)
+    cd(analysisF)
+    % Subject details
+    subject = names{subN};
+    trialN = 1; % label the trial number so it would be easier to correspond perceptual, left eye, and right eye data
+    
+    for blockN = 1:1
+%         errorsL = load(['Errorfiles\Exp' num2str(blockN) '_Subject' num2str(subN,'%.2i') '_Block' num2str(blockN,'%.2i') '_L_errorFile.mat']);
+        errorsR = load(['Errorfiles\Exp0_Subject' num2str(subN,'%.2i') '_Block' num2str(blockN,'%.2i') '_R_errorFile.mat']);
+        % load response data for trial information
+        dataFile = dir([dataFolder{:} '\' subject '\baselineTorsion\response' num2str(blockN) '_*.mat']);
+        load([dataFolder{:} '\' subject '\baselineTorsion\' dataFile.name]) % resp is the response data for the current block
+        
+        for t = 1:size(resp, 1) % trial number
+            eyeTrialDataBase.sub(subN-8, trialN) = subN;
+            eyeTrialDataBase.trial(subN-8, trialN) = trialN;
+            eyeTrialDataBase.rotationSpeed(subN-8, trialN) = resp.rotationSpeed(t);
+            eyeTrialDataBase.afterReversalD(subN-8, trialN) = -resp.initialDirection(t); % 1=clockwise, -1=counterclockwise
+            eyeTrialDataBase.errorStatusR(subN-8, trialN) = errorsR.errorStatus(t);
+
+            %% right eye
+            eye = 2;
+            % read in data and socscalexy
+            filename = ['session_' num2str(blockN,'%.2i') '_' eyeName{eye} '.dat'];
+            data = readDataFile(filename, [dataFolder{:} '\' subject '\baselineTorsion']);
+            data = socscalexy(data);
+            [header, logData] = readLogFile(blockN, ['response' num2str(blockN,'%.2i') '_' subject] , [dataFolder{:} '\' subject '\baselineTorsion']);
+            sampleRate = 200;
+            
+            % setup trial, remove saccades
+            trial = setupTrial(data, header, logData, t);
+            
+            find saccades;
+            % to better exclude saccades at the beginning and end of
+            % the trial, increase a wider time window
+            [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
+            [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
+            [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DT_filt, trial.frames.DDT_filt, tSacThreshold(subN), 0);
+            
+            % analyze saccades
+            [trial] = analyzeSaccades(trial, saccades);
+            clear saccades;
+            
+            % remove saccades
+            trial = removeSaccades(trial);
+            % end of setting up trial
+            
+            eyeTrialDataBase.stim.onset(subN-8, trialN) = trial.stim_onset;
+            eyeTrialDataBase.stim.reversalOnset(subN-8, trialN) = trial.stim_reversalOnset;
+            eyeTrialDataBase.stim.reversalOffset(subN-8, trialN) = trial.stim_reversalOffset;
+            eyeTrialDataBase.stim.offset(subN-8, trialN) = trial.stim_offset;
+            eyeTrialDataBase.stim.beforeFrames(subN-8, trialN) = trial.stim_reversalOnset-trial.stim_onset; % for later alignment of velocity traces
+            eyeTrialDataBase.stim.afterFrames(subN-8, trialN) = trial.stim_offset-trial.stim_reversalOffset+1; % for later alignment of velocity traces
+            eyeTrialDataBase.frameLog.startFrame(subN-8, trialN) = trial.startFrame;
+            eyeTrialDataBase.frameLog.endFrame(subN-8, trialN) = trial.endFrame;
+            eyeTrialDataBase.frameLog.length(subN-8, trialN) = trial.length;
+            eyeTrialDataBase.frameLog.lostXframes{subN-8, trialN} = trial.lostXframes;
+            eyeTrialDataBase.frameLog.lostYframes{subN-8, trialN} = trial.lostYframes;
+            eyeTrialDataBase.frameLog.lostTframes{subN-8, trialN} = trial.lostTframes;
+            eyeTrialDataBase.frameLog.quickphaseFrames{subN-8, trialN} = trial.quickphaseFrames;
+            eyeTrialDataBase.saccades{subN-8, trialN} = trial.saccades;
+            eyeTrialDataBase.frames{subN-8, trialN} = trial.frames;
+                        
+            trialN = trialN+1;
+%             count = count + 1;
+        end
+    end
+end
+cd([analysisF '\analysis functions'])
+save(['eyeDataAllBase.mat'], 'eyeTrialDataBase');
+% rows are participants, columns are trials--all trial included
