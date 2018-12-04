@@ -9,8 +9,8 @@ load('eyeDataAll.mat')
 
 %% directions merged, generate csv files for R plotting
 % consistent reversal duration and duration after for all participants
-reversalFrames = eyeTrialData.stim.reversalOffset(1, 1)-eyeTrialData.stim.reversalOnset(1, 1);
-afterFrames = eyeTrialData.stim.afterFrames(1, 1);
+reversalFrames = eyeTrialData.stim.reversalOffset(10, 1)-eyeTrialData.stim.reversalOnset(10, 1);
+afterFrames = eyeTrialData.stim.afterFrames(10, 1);
 for subN = 1:size(names, 2)
     maxBeforeFrames = max(eyeTrialData.stim.beforeFrames(subN, :));
     frameLength(subN) = maxBeforeFrames+reversalFrames+afterFrames;
@@ -90,7 +90,6 @@ end
 % use the min frame length--the lengeth where all participants have
 % valid data points
 for speedI = 1:size(conditions, 2)
-    velTAverageSub = [];
     idxN = [];
     % find the min frame length in each condition
     for subN = 1:size(names, 2)
@@ -101,6 +100,7 @@ for speedI = 1:size(conditions, 2)
 end
 
 startI = max(startIdx);
+velTAverageSub = [];
 cd('C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\analysis')
 for speedI = 1:size(conditions, 2)
     for subN = 1:size(names, 2)

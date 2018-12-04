@@ -21,12 +21,12 @@ torsionFrames = 3*ones(size(names));
 eyeName = {'R'};
 % change both paramters below, as well as time window in the loop 
 % around line 100
-checkAngle = -1; % 1-for direction after reversal, -1 for direction before reversal
+checkAngle = 1; % 1-for direction after reversal, -1 for direction before reversal
 % for the endName, also change around line70 for the time window used
 % endName = '130msToReversal';
 % endName = 'aroundReversal';
-% endName = '130msToEnd';
-endName = 'atReversal130';
+endName = '130msToEnd';
+% endName = 'atReversal130';
 
 trialData = table(); % organize into long format
 conData = table();
@@ -92,7 +92,7 @@ for subj = 1:length(names)
                     %% change the time window here
                     if strcmp(endName, 'atReversal130') % at reversal
                         trial.stim_onset = trial.stim_reversalOnset; % reversal
-                        trial.stim_offset = trial.stim_reversalOffset+ms2frames(130); % reversal
+                        trial.stim_offset = trial.stim_reversalOnset+ms2frames(130); % reversal
                         % %                     trial.stim_onset = trial.stim_reversal+ms2frames(10); % reversal--if taken delay into account...
                         % %                     trial.stim_offset = trial.stim_reversal+ms2frames(50); % reversal
                     elseif strcmp(endName, '130msToReversal')% 140ms to reversal
@@ -102,7 +102,7 @@ for subj = 1:length(names)
                         %                     trial.stim_onset = trial.stim_reversal;
                         %                     trial.stim_offset = trial.stim_reversal + ms2frames((0.12)*1000); % 120ms after reversal
                     elseif strcmp(endName, '130msToEnd') % 120ms to end
-                        trial.stim_onset = trial.stim_reversalOffset + ms2frames((0.13)*1000);
+                        trial.stim_onset = trial.stim_reversalOnset + ms2frames((0.13)*1000);
                         trial.stim_offset = trial.stim_onset + ms2frames((logData.durationAfter(currentTrial)-0.13)*1000); % end of display
                     end
                     

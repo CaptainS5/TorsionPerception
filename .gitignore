@@ -12,5 +12,9 @@
 *.txt
 *.dat
 *.jpg
+*.csv
 data/*
 results/*
+*.csv
+*.csv
+analysis/conDataAllExp1.csv

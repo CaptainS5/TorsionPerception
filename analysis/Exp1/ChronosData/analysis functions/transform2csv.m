@@ -47,5 +47,5 @@ trialDataBase.exp(:, 1) = repmat(2, size(trialDataBase.sub));
 cd('C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\analysis')
 writetable(trialData, 'trialDataAllExp1.csv')
 writetable(conData, 'conDataAllExp1.csv')
-% writetable(conDataBase, 'conDataBaseAllExp1.csv')
-% writetable(trialDataBase, 'trialDataBaseAllExp1.csv')
+writetable(conDataBase, 'conDataBaseAllExp1.csv')
+writetable(trialDataBase, 'trialDataBaseAllExp1.csv')

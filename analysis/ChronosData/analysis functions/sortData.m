@@ -103,12 +103,12 @@ for endN = 1:3
                             %% choose the time window here
                             if strcmp(endName, 'atReversal130') % at reversal
                                 trial.stim_onset = trial.stim_reversalOnset; % reversal
-                                trial.stim_offset = trial.stim_reversalOffset+ms2frames(130); % reversal
+                                trial.stim_offset = trial.stim_reversalOnset+ms2frames(130); % reversal
                             elseif strcmp(endName, '130msToReversal')% 120ms to reversal
                                 trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+130); % 120ms latency
                                 trial.stim_offset = trial.stim_reversalOnset; % reversal
                             elseif strcmp(endName, '130msToEnd') % 120ms to end
-                                trial.stim_onset = trial.stim_reversalOffset + ms2frames(0.13*1000);
+                                trial.stim_onset = trial.stim_reversalOnset + ms2frames(0.13*1000);
                                 trial.stim_offset = trial.stim_onset + ms2frames((logData.durationAfter(currentTrial)-0.13)*1000); % end of display
                             end
                             
@@ -178,12 +178,12 @@ for endN = 1:3
                             %% choose the time window here
                             if strcmp(endName, 'atReversal130') % at reversal
                                 trial.stim_onset = trial.stim_reversalOnset; % reversal
-                                trial.stim_offset = trial.stim_reversalOffset+ms2frames(130); % reversal
+                                trial.stim_offset = trial.stim_reversalOnset+ms2frames(130); % reversal
                             elseif strcmp(endName, '130msToReversal')% 120ms to reversal
                                 trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000+130); % 120ms latency
                                 trial.stim_offset = trial.stim_reversalOnset; % reversal
                             elseif strcmp(endName, '130msToEnd') % 120ms to end
-                                trial.stim_onset = trial.stim_reversalOffset + ms2frames(0.13*1000);
+                                trial.stim_onset = trial.stim_reversalOnset + ms2frames(0.13*1000);
                                 trial.stim_offset = trial.stim_onset + ms2frames((logData.durationAfter(currentTrial)-0.13)*1000); % end of display
                             end
                             
