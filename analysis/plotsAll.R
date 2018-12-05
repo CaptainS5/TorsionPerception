@@ -1,16 +1,21 @@
 library(ggplot2)
 library(RColorBrewer)
-library(matrixStats)
+# library(matrixStats)
 library(ppcor)
-library(reshape)
+# library(reshape)
 
 #### clear environment
 rm(list = ls())
 
 #### load data
-setwd("E:/XiuyunWu/Torsion-FDE/analysis")
-folder1 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp1/")
-folder2 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp2/")
+# # on ASUS
+# setwd("E:/XiuyunWu/Torsion-FDE/analysis")
+# folder1 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp1/")
+# folder2 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp2/")
+# on XPS13
+setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/TorsionPerception/analysis")
+folder1 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/TorsionPerception/results/figures/Exp1/")
+folder2 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/TorsionPerception/results/figures/Exp2/")
 # conData1Original <- read.csv('conDataAllExp1.csv')
 # conData2Original <- read.csv('conDataAllExp2BothEyes.csv')
 # # eye: 1 left eye, 2 right eye
@@ -1012,8 +1017,9 @@ p <- ggplot(dataAgg2, aes(x = rotationSpeed, y = torsionAngleSame, colour = afte
         stat_summary(aes(y = torsionAngleDiff, colour = afterReversalD, group = afterReversalD), fun.data = mean_se, geom = "errorbar", width = 10, size = 1) +
         # geom_boxplot(aes(x = rotationSpeed, y = torsionAngleSame, colour = afterReversalD), position = position_dodge(width = 0.8), size = 0.8, outlier.size = 1.5, outlier.shape = 21) +
         # geom_point(aes(x = rotationSpeed, y = torsionAngleSame, colour = afterReversalD), size = dotSize, position = position_jitterdodge(), shape = 21) +
-        scale_y_continuous(breaks=seq(-1, 1, 0.5)) +
-        scale_x_continuous(breaks=c(25, 50, 100, 200), limits = c(0, 200)) +
+        scale_y_continuous(breaks=seq(-1, 1, 0.5), name = "Torsional angle (°)") +
+        scale_x_continuous(breaks=c(25, 50, 100, 200), name = "Rotational speed (°/s)") +
+        scale_colour_discrete(name = "After-reversal\ndirection", labels = c("CCW", "CW")) +
         coord_cartesian(ylim=c(-1, 1)) +
         geom_hline(yintercept=0, linetype="dotted", color = "black") +
         theme(axis.line = element_line(colour = "black", size = 0.5),
@@ -1021,6 +1027,7 @@ p <- ggplot(dataAgg2, aes(x = rotationSpeed, y = torsionAngleSame, colour = afte
               panel.grid.minor = element_blank(),
               panel.border = element_blank(),
               panel.background = element_blank(),
+              text = element_text(size = textSize),
               legend.background = element_rect(fill="transparent"),
               legend.key = element_rect(colour = "transparent", fill = "white")) +
               facet_wrap(~timeWindow)
