@@ -1,10 +1,12 @@
 library(ggplot2)
 library(ez)
+library(lme4)
+library(nlme)
 library(ppcor)
+library(multcomp)
 
 #### clear environment
 rm(list = ls())
-
 
 #### load data
 setwd("E:/XiuyunWu/Torsion-FDE/analysis")
@@ -85,28 +87,34 @@ print(perceptAllAnova)
 #### Torsion and perception data
 ### Exp1
 ## 3 way for torsional velocity--time window x rotational speed x after-reversal direction
-conData1 <- conData1Original[which(conData1Original$afterReversalD != 0), ]
-sub <- conData1["sub"]
-exp <- conData1["exp"]
-timeWindow <- conData1["timeWindow"]
-afterReversalD <- conData1["afterReversalD"]
-rotationSpeed <- conData1["rotationSpeed"]
-perceptualErrorMean <- conData1["perceptualErrorMean"]
-torsionVelTMean <- conData1["torsionVelTMean"] * conData1["afterReversalD"]
-dataExp1 <- data.frame(sub, exp, timeWindow, afterReversalD, rotationSpeed, perceptualErrorMean,
-    torsionVelTMean)
+trialData1 <- trialData1Original #[which(trialData1Original$timeWindow != 0), ]
+sub <- trialData1["sub"]
+exp <- trialData1["exp"]
+afterReversalD <- trialData1["afterReversalD"]
+rotationSpeed <- trialData1["rotationSpeed"]
+timeWindow <- trialData1["timeWindow"]
+perceptualError <- trialData1["perceptualError"]
+torsionVelT <- trialData1["torsionVelT"] * trialData1["afterReversalD"]
+dataExp1 <- data.frame(sub, exp, afterReversalD, rotationSpeed, timeWindow, perceptualError, torsionVelT)
 dataExp1$exp <- as.factor(dataExp1$exp)
 dataExp1$sub <- as.factor(dataExp1$sub)
 dataExp1$timeWindow <- as.factor(dataExp1$timeWindow)
 dataExp1$afterReversalD <- as.factor(dataExp1$afterReversalD)
-dataExp1$rotationSpeed <- as.factor(dataExp1$rotationSpeed)
 
-torsionVExp1Anova <- ezANOVA(dataExp1, dv = .(torsionVelTMean), wid = .(sub), within = .(rotationSpeed,
+dataAgg1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp1, FUN = "mean")
+dataAgg1$psd <- aggregate(perceptualError ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp1, FUN = "sd")$perceptualError
+dataAgg1$tsd <- aggregate(torsionVelT ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp1, FUN = "sd")$torsionVelT
+levels(dataAgg1$timeWindow) <- c("Before reversal", "At reversal", "After reversal")
+
+torsionVExp1Anova <- ezANOVA(dataAgg1, dv = .(torsionVelT), wid = .(sub), within = .(rotationSpeed,
     timeWindow, afterReversalD), type = 3)
 print(torsionVExp1Anova)
 
+# postHocs <- ezStats(dataExp1, dv = .(torsionVelTMean), wid = .(sub), within = .(timeWindow, afterReversalD))
+# print(postHocs)
+
 pdf("torsionVelTExp1_interaction3.pdf")
-p <- ggplot(dataExp1, aes(x = rotationSpeed, y = torsionVelTMean, colour = afterReversalD,
+p <- ggplot(dataAgg1, aes(x = rotationSpeed, y = torsionVelT, colour = afterReversalD,
     group = afterReversalD)) + stat_summary(fun.data = mean_se, geom = "errorbar",
     width = 0.2) + geom_line(stat = "summary", fun.y = "mean") + facet_grid(~timeWindow)
 print(p)
@@ -161,28 +169,41 @@ corExp1AR <- pcor.test(dataExp1$perceptualErrorMean, dataExp1$torsionVelTMean, d
 print(corExp1AR)
 
 ## 3 way for torsional angle--time window x rotational speed x after-reversal direction
-conData1 <- conData1Original #[which(conData1Original$afterReversalD != 0), ]
-sub <- conData1["sub"]
-exp <- conData1["exp"]
-timeWindow <- conData1["timeWindow"]
-afterReversalD <- conData1["afterReversalD"]
-rotationSpeed <- conData1["rotationSpeed"]
-perceptualErrorMean <- conData1["perceptualErrorMean"]
-torsionAngleMean <- conData1["torsionAngleMean"] * conData1["afterReversalD"]
-dataExp1 <- data.frame(sub, exp, timeWindow, afterReversalD, rotationSpeed, perceptualErrorMean,
-    torsionAngleMean)
+trialData1 <- trialData1Original
+trialData1["torsionAngleCCW"] <- -trialData1["torsionAngleCCW"]
+sub <- trialData1["sub"]
+exp <- trialData1["exp"]
+afterReversalD <- trialData1["afterReversalD"]
+rotationSpeed <- trialData1["rotationSpeed"]
+timeWindow <- trialData1["timeWindow"]
+perceptualError <- trialData1["perceptualError"]
+torsionAngleSame <- trialData1["torsionAngleCW"] * trialData1["afterReversalD"]
+idx <- trialData1$afterReversalD * trialData1$timeWindow==-1
+torsionAngleSame[idx, ] <- trialData1$torsionAngleCCW[idx] * trialData1$afterReversalD[idx]
+idx <- which(trialData1$timeWindow==0 & trialData1$afterReversalD==1)
+torsionAngleSame[idx, ] <- trialData1$torsionAngleCCW[idx] * trialData1$afterReversalD[idx]
+torsionAngleDiff <- trialData1["torsionAngleCW"] * trialData1["afterReversalD"]
+idx <- trialData1$afterReversalD * trialData1$timeWindow==1
+torsionAngleDiff[idx, ] <- trialData1$torsionAngleCCW[idx] * trialData1$afterReversalD[idx]
+idx <- which(trialData1$timeWindow==0 & trialData1$afterReversalD==-1)
+torsionAngleDiff[idx, ] <- trialData1$torsionAngleCCW[idx] * trialData1$afterReversalD[idx]
+
+dataExp1 <- data.frame(sub, exp, afterReversalD, rotationSpeed, timeWindow, perceptualError, torsionAngleSame, torsionAngleDiff)
 dataExp1$exp <- as.factor(dataExp1$exp)
 dataExp1$sub <- as.factor(dataExp1$sub)
 dataExp1$timeWindow <- as.factor(dataExp1$timeWindow)
 dataExp1$afterReversalD <- as.factor(dataExp1$afterReversalD)
-dataExp1$rotationSpeed <- as.factor(dataExp1$rotationSpeed)
+colnames(dataExp1)[7] <- "torsionAngleSame"
+colnames(dataExp1)[8] <- "torsionAngleDiff"
 
-torsionAExp1Anova <- ezANOVA(dataExp1, dv = .(torsionAngleMean), wid = .(sub), within = .(rotationSpeed,
+dataAgg1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp1, FUN = "mean")
+
+torsionAExp1Anova <- ezANOVA(dataAgg1, dv = .(torsionAngleSame), wid = .(sub), within = .(rotationSpeed,
     timeWindow, afterReversalD), type = 3)
 print(torsionAExp1Anova)
 
 pdf("torsionAngleExp1_interaction3.pdf")
-p <- ggplot(dataExp1, aes(x = rotationSpeed, y = torsionAngleMean, colour = afterReversalD,
+p <- ggplot(dataAgg1, aes(x = rotationSpeed, y = torsionAngleSame, colour = afterReversalD,
     group = afterReversalD)) + stat_summary(fun.data = mean_se, geom = "errorbar",
     width = 0.2) + geom_line(stat = "summary", fun.y = "mean") + facet_grid(~timeWindow)
 print(p)
@@ -279,7 +300,7 @@ trialExpOriginal <- data.frame(sub, rotationSpeed, afterReversalD, timeWindow, L
     RtorsionVelT)
 
 # loop through time windows
-for (endN in 1:3) {
+for (endN in 3:3) {
     trialExp <- trialExpOriginal[which(trialExpOriginal$timeWindow == tw[endN] &
         abs(trialExpOriginal$LtorsionVelT) < 6), ]
     trialExpCor <- trialExp[complete.cases(trialExp), ]
@@ -300,26 +321,30 @@ for (endN in 1:3) {
     print(sd(corS))
 
     # across sub trial correlation...
-    corEA <- cor.test(trialExpCor$LtorsionVelT, trialExpCor$RtorsionVelT, use = "complete.obs",
-        method = "pearson")
-    print(corEA)
+    # corEA <- cor.test(trialExpCor$LtorsionVelT, trialExpCor$RtorsionVelT, use = "complete.obs",
+    #     method = "pearson")
+    # print(corEA)
+    # partial correlation
+    pcorEA <- pcor.test(trialExpCor$LtorsionVelT, trialExpCor$RtorsionVelT, trialExpCor$rotationSpeed,
+        method = c("pearson"))
+    print(pcorEA)
 
-    pdf(paste("correlationExpTwoEyes_", endName[endN], ".pdf"))
-    p <- ggplot(trialExpCor, aes(x = LtorsionVelT, y = RtorsionVelT, color = rotationSpeed)) +
-        geom_point()
-    print(p)
-    dev.off()
-
-    # histogram of velocity in each eye
-    pdf(paste("expVelocityLeftEye_", endName[endN], ".pdf"))
-    p <- ggplot(trialExpCor, aes(LtorsionVelT)) + geom_histogram() + facet_wrap(~rotationSpeed)
-    print(p)
-    dev.off()
-
-    pdf(paste("expVelocityRightEye_", endName[endN], ".pdf"))
-    p <- ggplot(trialExpCor, aes(RtorsionVelT)) + geom_histogram() + facet_wrap(~rotationSpeed)
-    print(p)
-    dev.off()
+    # pdf(paste("correlationExpTwoEyes_", endName[endN], ".pdf"))
+    # p <- ggplot(trialExpCor, aes(x = LtorsionVelT, y = RtorsionVelT, color = rotationSpeed)) +
+    #     geom_point()
+    # print(p)
+    # dev.off()
+    #
+    # # histogram of velocity in each eye
+    # pdf(paste("expVelocityLeftEye_", endName[endN], ".pdf"))
+    # p <- ggplot(trialExpCor, aes(LtorsionVelT)) + geom_histogram() + facet_wrap(~rotationSpeed)
+    # print(p)
+    # dev.off()
+    #
+    # pdf(paste("expVelocityRightEye_", endName[endN], ".pdf"))
+    # p <- ggplot(trialExpCor, aes(RtorsionVelT)) + geom_histogram() + facet_wrap(~rotationSpeed)
+    # print(p)
+    # dev.off()
 }
 
 
@@ -435,10 +460,14 @@ afterReversalD <- trialBoth2["afterReversalD"]
 rotationSpeed <- trialBoth2["rotationSpeed"]
 perceptualError <- trialBoth2["perceptualError"]
 torsionAngleSame <- trialBoth2["torsionAngleCW"] * trialBoth2["afterReversalD"]
-idx <- trialBoth2$afterReversalD * trialBoth2$timeWindow==-1 || (trialBoth2$timeWindow==0 && trialBoth2$afterReversalD==1)
+idx <- trialBoth2$afterReversalD * trialBoth2$timeWindow==-1
+torsionAngleSame[idx, ] <- trialBoth2$torsionAngleCCW[idx] * trialBoth2$afterReversalD[idx]
+idx <- trialBoth2$timeWindow==0 & trialBoth2$afterReversalD==1
 torsionAngleSame[idx, ] <- trialBoth2$torsionAngleCCW[idx] * trialBoth2$afterReversalD[idx]
 torsionAngleDiff <- trialBoth2["torsionAngleCW"] * trialBoth2["afterReversalD"]
-idx <- trialBoth2$afterReversalD * trialBoth2$timeWindow==1 || (trialBoth2$timeWindow==0 && trialBoth2$afterReversalD==-1)
+idx <- trialBoth2$afterReversalD * trialBoth2$timeWindow==1
+torsionAngleDiff[idx, ] <- trialBoth2$torsionAngleCCW[idx] * trialBoth2$afterReversalD[idx]
+idx <- trialBoth2$timeWindow==0 & trialBoth2$afterReversalD==-1
 torsionAngleDiff[idx, ] <- trialBoth2$torsionAngleCCW[idx] * trialBoth2$afterReversalD[idx]
 dataBoth2 <- data.frame(sub, exp, afterReversalD, rotationSpeed, timeWindow, perceptualError, torsionAngleSame, torsionAngleDiff)
 dataBoth2$exp <- as.factor(dataBoth2$exp)

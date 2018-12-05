@@ -15,9 +15,9 @@ cd('ChronosData\analysis functions')
 % baseline
 dataBase = load('dataBaseLong.mat');
 % experiment
-data1 = load(['dataLong120msToReversal.mat']);
-data2 = load(['dataLongatReversal.mat']);
-data3 = load(['dataLong120msToEnd.mat']);
+data1 = load(['dataLongBeforeReversal.mat']);
+data2 = load(['dataLongAtReversal.mat']);
+data3 = load(['dataLongAfterReversal.mat']);
 cd ..
 cd ..
 trialDataBoth = readtable('trialDataAllBothEyeExp2.csv');
