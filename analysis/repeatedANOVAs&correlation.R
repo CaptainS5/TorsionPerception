@@ -9,10 +9,12 @@ library(multcomp)
 rm(list = ls())
 
 #### load data
-setwd("E:/XiuyunWu/Torsion-FDE/analysis")
-baseTorsion1Original <- read.csv("conDataBaseAllExp1.csv")
+# # on ASUS
+# setwd("E:/XiuyunWu/Torsion-FDE/analysis")
+# on XPS13
+setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/TorsionPerception/analysis")
+baseTorsion1Original <- read.csv("trialDataBaseAllExp1.csv")
 baseTorsion2Original <- read.csv("trialDataBaseAllExp2.csv")
-conData1Original <- read.csv("conDataAllExp1.csv")
 trialData1Original <- read.csv("trialDataAllExp1.csv")
 trialData2Original <- read.csv("trialDataAllExp2.csv")
 trialDataBoth2Original <- read.csv("trialDataAllBothEyeExp2.csv")
@@ -105,7 +107,8 @@ dataAgg1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub * timeWindo
 dataAgg1$psd <- aggregate(perceptualError ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp1, FUN = "sd")$perceptualError
 dataAgg1$tsd <- aggregate(torsionVelT ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp1, FUN = "sd")$torsionVelT
 levels(dataAgg1$timeWindow) <- c("Before reversal", "At reversal", "After reversal")
-
+dataAgg1$torsionVelT <- abs(dataAgg1$torsionVelT)
+# use absolute value for ANOVA
 torsionVExp1Anova <- ezANOVA(dataAgg1, dv = .(torsionVelT), wid = .(sub), within = .(rotationSpeed,
     timeWindow, afterReversalD), type = 3)
 print(torsionVExp1Anova)
@@ -197,7 +200,8 @@ colnames(dataExp1)[7] <- "torsionAngleSame"
 colnames(dataExp1)[8] <- "torsionAngleDiff"
 
 dataAgg1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp1, FUN = "mean")
-
+dataAgg1$torsionAngleSame <- abs(dataAgg1$torsionAngleSame)
+# use absolute values
 torsionAExp1Anova <- ezANOVA(dataAgg1, dv = .(torsionAngleSame), wid = .(sub), within = .(rotationSpeed,
     timeWindow, afterReversalD), type = 3)
 print(torsionAExp1Anova)
@@ -370,10 +374,25 @@ dataBoth2$rotationSpeed <- as.factor(dataBoth2$rotationSpeed)
 conBoth2 <- aggregate(torsionVelT ~ sub * exp * timeWindow * afterReversalD * rotationSpeed,
     data = dataBoth2, FUN = "mean")
 colnames(conBoth2)[6] <- "torsionVelTMean"
+conBoth2$torsionVelTMean <- abs(conBoth2$torsionVelTMean)
 
 torsionVBoth2Anova <- ezANOVA(conBoth2, dv = .(torsionVelTMean), wid = .(sub), within = .(rotationSpeed,
     timeWindow, afterReversalD), type = 3)
 print(torsionVBoth2Anova)
+postTime <- ezStats(conBoth2, dv = .(torsionVelTMean), wid = .(sub), within = .(timeWindow))
+print(postTime)
+postD <- ezStats(conBoth2, dv = .(torsionVelTMean), wid = .(sub), within = .(afterReversalD))
+print(postD)
+
+conBoth2 <- aggregate(torsionVelT ~ sub * afterReversalD,
+    data = dataBoth2, FUN = "mean")
+colnames(conBoth2)[3] <- "torsionVelTMean"
+conBoth2$torsionVelTMean <- abs(conBoth2$torsionVelTMean)
+
+res <- pairwise.t.test.with.t.and.df(x = conBoth2$torsionVelTMean, g = conBoth2$afterReversalD, p.adj="bonf", paired=TRUE)
+show(res) # p value
+res[[5]] # t-value
+res[[6]] # dfs
 
 pdf("torsionVelTBothExp2_interaction3.pdf")
 p <- ggplot(conBoth2, aes(x = rotationSpeed, y = torsionVelTMean, colour = afterReversalD,
@@ -480,6 +499,7 @@ colnames(dataBoth2)[8] <- "torsionAngleDiff"
 conBoth2 <- aggregate(torsionAngleSame ~ sub * exp * timeWindow * afterReversalD * rotationSpeed,
     data = dataBoth2, FUN = "mean")
 colnames(conBoth2)[6] <- "torsionAngleSame"
+conBoth2$torsionAngleSame <- abs(conBoth2$torsionAngleSame)
 
 torsionVBoth2Anova <- ezANOVA(conBoth2, dv = .(torsionAngleSame), wid = .(sub), within = .(rotationSpeed,
     timeWindow, afterReversalD), type = 3)
