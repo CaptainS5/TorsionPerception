@@ -13,6 +13,7 @@ rm(list = ls())
 # setwd("E:/XiuyunWu/Torsion-FDE/analysis")
 # on XPS13
 setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/TorsionPerception/analysis")
+source("pairwise.t.test.with.t.and.df.R")
 baseTorsion1Original <- read.csv("trialDataBaseAllExp1.csv")
 baseTorsion2Original <- read.csv("trialDataBaseAllExp2.csv")
 trialData1Original <- read.csv("trialDataAllExp1.csv")
@@ -113,8 +114,19 @@ torsionVExp1Anova <- ezANOVA(dataAgg1, dv = .(torsionVelT), wid = .(sub), within
     timeWindow, afterReversalD), type = 3)
 print(torsionVExp1Anova)
 
-# postHocs <- ezStats(dataExp1, dv = .(torsionVelTMean), wid = .(sub), within = .(timeWindow, afterReversalD))
-# print(postHocs)
+# post hoc for time window & afterReversalD interaction
+postHocs <- ezStats(dataAgg1, dv = .(torsionVelT), wid = .(sub), within = .(timeWindow, afterReversalD))
+print(postHocs) # means
+
+dataPH <- aggregate(. ~ afterReversalD * exp * sub * timeWindow, data = dataExp1, FUN = "mean")
+# show(dataPH[which(dataPH$timeWindow==-1), ])
+res <- pairwise.t.test.with.t.and.df(x = dataPH[which(dataPH$timeWindow==-1), ]$torsionVelT, g = dataPH[which(dataPH$timeWindow==-1), ]$afterReversalD, p.adj="none")
+show(res) # [[3]] = p value table, un adjusted
+res[[5]] # t-value
+res[[6]] # dfs
+res[[3]]
+p.adjust(res[[3]], method = "bonferroni", n = 15) # interaction between timeWindow & afterReversalD
+
 
 pdf("torsionVelTExp1_interaction3.pdf")
 p <- ggplot(dataAgg1, aes(x = rotationSpeed, y = torsionVelT, colour = afterReversalD,
@@ -388,11 +400,6 @@ conBoth2 <- aggregate(torsionVelT ~ sub * afterReversalD,
     data = dataBoth2, FUN = "mean")
 colnames(conBoth2)[3] <- "torsionVelTMean"
 conBoth2$torsionVelTMean <- abs(conBoth2$torsionVelTMean)
-
-res <- pairwise.t.test.with.t.and.df(x = conBoth2$torsionVelTMean, g = conBoth2$afterReversalD, p.adj="bonf", paired=TRUE)
-show(res) # p value
-res[[5]] # t-value
-res[[6]] # dfs
 
 pdf("torsionVelTBothExp2_interaction3.pdf")
 p <- ggplot(conBoth2, aes(x = rotationSpeed, y = torsionVelTMean, colour = afterReversalD,

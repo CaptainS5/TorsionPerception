@@ -104,6 +104,7 @@ for t = 1:size(names, 2)
         idxExpBothEye = find(trialDataBoth.sub==t & trialDataBoth.timeWindow==1);
         validExpBothEye(t, 1) = length(idxExpBothEye);
 end
+save('invalidTrials', 'invalidBaseEye', 'invalidBaseEyeBoth', 'invalidExpEye', 'invalidExpEyeBoth')
 
 disp(['left: baseline eye excluded trial number: ', num2str(mean(invalidBaseEye(:, 1)/trialBaseAll)), ' +- ', num2str(std(invalidBaseEye(:, 1)/trialBaseAll))])
 disp(['      exp eye excluded trial number: ', num2str(mean(invalidExpEye(:, 1)/trialExpAll)), ' +- ', num2str(std(invalidExpEye(:, 1)/trialExpAll))])
