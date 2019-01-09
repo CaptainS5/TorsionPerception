@@ -121,7 +121,7 @@ for eye = 1:2
 %     end
 end
 % % just use the mean latency from Exp1
-% cd('C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\analysis\Exp1\ChronosData\analysis functions')
+% cd('C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\analysis')
 % load('torsionLatencyExp1.mat')
 % meanLatency = mean(latency);
 % cd(folder)

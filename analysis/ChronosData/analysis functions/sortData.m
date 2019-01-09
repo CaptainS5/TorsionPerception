@@ -103,12 +103,12 @@ for endN = 1:3
                             tempLatency = meanLatency(conIdx);
                             if strcmp(endName, 'AtReversal') % at reversal
                                 trial.stim_onset = trial.stim_reversalOnset; % reversal
-                                trial.stim_offset = trial.stim_reversalOnset + ms2frames(tempLatency*1000); % reversal
+                                trial.stim_offset = trial.stim_reversalOffset + ms2frames(tempLatency*1000); % reversal
                             elseif strcmp(endName, 'BeforeReversal')
                                 trial.stim_onset = ms2frames((logData.fixationDuration(currentTrial)+tempLatency)*1000); % 120ms latency
                                 trial.stim_offset = trial.stim_reversalOnset; % reversal
                             elseif strcmp(endName, 'AfterReversal') 
-                                trial.stim_onset = trial.stim_reversalOnset + ms2frames(tempLatency*1000);
+                                trial.stim_onset = trial.stim_reversalOffset + ms2frames(tempLatency*1000);
                                 trial.stim_offset = trial.stim_reversalOffset + ms2frames(logData.durationAfter(currentTrial)*1000); % end of display
                             end
                             
