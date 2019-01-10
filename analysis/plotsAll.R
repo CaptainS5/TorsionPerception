@@ -358,9 +358,9 @@ levels(dataAgg1$timeWindow) <- c(-1, 0, 1)
 
 twN <- c("beforeReversal", "atReversal", "afterReversal")
 twValues <- c(-1, 0, 1)
-for (tw in 3:3) {
+for (tw in 1:3) {
     dataAgg1sub <- dataAgg1[which(dataAgg1$timeWindow==twValues[tw]), ]
-    # pdf(paste(folder1, "correlationVelExp1_", twN[tw], ".pdf", sep = ""))
+    pdf(paste(folder1, "correlationVelExp1_", twN[tw], ".pdf", sep = ""))
     p <- ggplot(dataAgg1sub, aes(x = perceptualError, y = torsionVelT, fill = rotationSpeed)) +
             geom_point(size = dotCorSize, shape = 23, alpha = dotCorAlpha) +
             scale_fill_brewer(palette="Accent", name = "Rotational\nspeed (°/s)") +
@@ -375,8 +375,8 @@ for (tw in 3:3) {
                   legend.background = element_rect(fill="transparent"),
                   legend.key = element_rect(colour = "transparent", fill = "white"),
                   aspect.ratio=1)
-    # print(p)
-    # dev.off()
+    print(p)
+    dev.off()
     dataAgg1sub$perceptualError <- as.numeric(dataAgg1sub$perceptualError)
     dataAgg1sub$torsionVelT <- as.numeric(dataAgg1sub$torsionVelT)
     dataAgg1sub$rotationSpeed <- as.numeric(dataAgg1sub$rotationSpeed)
@@ -445,9 +445,9 @@ dataAgg1 <- aggregate(. ~ rotationSpeed * exp * sub * timeWindow, data = dataExp
 
 twN <- c("beforeReversal", "atReversal", "afterReversal")
 twValues <- c(-1, 0, 1)
-for (tw in 3:3) {
+for (tw in 1:3) {
     dataAgg1sub <- dataAgg1[which(dataAgg1$timeWindow==twValues[tw]), ]
-    # pdf(paste(folder1, "correlationAngleExp1_", twN[tw], ".pdf", sep = ""))
+    pdf(paste(folder1, "correlationAngleExp1_", twN[tw], ".pdf", sep = ""))
     p <- ggplot(dataAgg1sub, aes(x = perceptualError, y = torsionAngleSame, fill = rotationSpeed)) +
             geom_point(size = dotCorSize, shape = 23, alpha = dotCorAlpha) +
             scale_fill_brewer(palette="Accent") +
@@ -460,8 +460,8 @@ for (tw in 3:3) {
                   legend.key = element_rect(colour = "transparent", fill = "white"),
                   aspect.ratio=1) +
                   facet_wrap(~timeWindow)
-    # print(p)
-    # dev.off()
+    print(p)
+    dev.off()
     dataAgg1sub$perceptualError <- as.numeric(dataAgg1sub$perceptualError)
     dataAgg1sub$torsionVelT <- as.numeric(dataAgg1sub$torsionAngleSame)
     dataAgg1sub$rotationSpeed <- as.numeric(dataAgg1sub$rotationSpeed)
