@@ -14,6 +14,7 @@ conditions = [25 50 100 200 400];
 cd ..
 analysisF = pwd;
 dataFolder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\data\Exp1'};
+% dataFolder = {'E:\XiuyunWu\Torsion-FDE\data\Exp1'};
 trialPerCon = 60; % for each rotation speed, all directions together though...
 totalBlocks = 5; % how many blocks in total
 % eye data processing parameters

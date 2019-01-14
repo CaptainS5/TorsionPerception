@@ -9,10 +9,10 @@ library(multcomp)
 rm(list = ls())
 
 #### load data
-# # on ASUS
-# setwd("E:/XiuyunWu/Torsion-FDE/analysis")
-# on XPS13
-setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/TorsionPerception/analysis")
+# on ASUS
+setwd("E:/XiuyunWu/Torsion-FDE/analysis")
+# # on XPS13
+# setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/TorsionPerception/analysis")
 source("pairwise.t.test.with.t.and.df.R")
 baseTorsion1Original <- read.csv("trialDataBaseAllExp1.csv")
 baseTorsion2Original <- read.csv("trialDataBaseAllExp2.csv")
@@ -28,29 +28,30 @@ endName <- c("beforeReversal", "atReversal", "afterReversal")
 #### perceptual illusion repeated measures ANOVA
 ### 2 way for perception--rotational speed x after-reversal direction
 ## Exp1
-conData1 <- conData1Original[which(conData1Original$timeWindow == 1 & conData1Original$afterReversalD !=
-    0), ]
-sub <- conData1["sub"]
-exp <- conData1["exp"]
-afterReversalD <- conData1["afterReversalD"]
-rotationSpeed <- conData1["rotationSpeed"]
-perceptualErrorMean <- conData1["perceptualErrorMean"]
-dataExp1 <- data.frame(sub, exp, afterReversalD, rotationSpeed, perceptualErrorMean)
-dataExp1$exp <- as.factor(dataExp1$exp)
-dataExp1$sub <- as.factor(dataExp1$sub)
-dataExp1$afterReversalD <- as.factor(dataExp1$afterReversalD)
-dataExp1$rotationSpeed <- as.factor(dataExp1$rotationSpeed)
+trialData1 <- trialData1Original[which(trialData1Original$timeWindow == 1), ]
+sub <- trialData1["sub"]
+exp <- trialData1["exp"]
+afterReversalD <- trialData1["afterReversalD"]
+rotationSpeed <- trialData1["rotationSpeed"]
+perceptualError <- trialData1["perceptualError"]
+dataTemp <- data.frame(sub, exp, afterReversalD, rotationSpeed, perceptualError)
+dataTemp$exp <- as.factor(dataTemp$exp)
+dataTemp$sub <- as.factor(dataTemp$sub)
+dataTemp$afterReversalD <- as.factor(dataTemp$afterReversalD)
+dataTemp$rotationSpeed <- as.factor(dataTemp$rotationSpeed)
+colnames(dataTemp)[5] <- "perceptualErrorMean"
+dataExp1 <- aggregate(perceptualErrorMean ~ sub * rotationSpeed * exp * afterReversalD,
+    data = dataTemp, FUN = "mean")
 
 perceptExp1Anova <- ezANOVA(dataExp1, dv = .(perceptualErrorMean), wid = .(sub),
     within = .(rotationSpeed, afterReversalD), type = 3)
 print(perceptExp1Anova)
-
-pdf("perceptErrorExp1_interaction.pdf")
+# pdf("perceptErrorExp1_interaction.pdf")
 p <- ggplot(dataExp1, aes(x = rotationSpeed, y = perceptualErrorMean, colour = afterReversalD,
     group = afterReversalD)) + stat_summary(fun.data = mean_se, geom = "errorbar",
     width = 0.2) + geom_line(stat = "summary", fun.y = "mean")
 print(p)
-dev.off()
+# dev.off()
 
 ## Exp2
 trialData2 <- trialData2Original[which(trialData2Original$timeWindow == 1), ]
@@ -136,52 +137,29 @@ print(p)
 dev.off()
 
 ## Partial correlation across participants before reversal
-conData1 <- conData1Original[which(conData1Original$afterReversalD == 0 & conData1Original$timeWindow ==
-    -1), ]
-sub <- conData1["sub"]
-exp <- conData1["exp"]
-rotationSpeed <- conData1["rotationSpeed"]
-perceptualErrorMean <- conData1["perceptualErrorMean"]
-torsionVelTMean <- conData1["torsionVelTMean"]
-dataExp1 <- data.frame(sub, exp, rotationSpeed, perceptualErrorMean, torsionVelTMean)
-dataExp1$exp <- as.factor(dataExp1$exp)
-dataExp1$sub <- as.factor(dataExp1$sub)
+dataT <- dataExp1[which(dataExp1$timeWindow==-1),]
+dataAggCor1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub, data = dataT, FUN = "mean")
+show(dataAggCor1)
 
-corExp1BR <- pcor.test(dataExp1$perceptualErrorMean, dataExp1$torsionVelTMean, dataExp1$rotationSpeed,
+corExp1BR <- pcor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, dataAggCor1$rotationSpeed,
     method = c("pearson"))
 print(corExp1BR)
 
 # at reversal
-conData1 <- conData1Original[which(conData1Original$afterReversalD == 0 & conData1Original$timeWindow ==
-    0), ]
-sub <- conData1["sub"]
-exp <- conData1["exp"]
-rotationSpeed <- conData1["rotationSpeed"]
-perceptualErrorMean <- conData1["perceptualErrorMean"]
-torsionVelTMean <- conData1["torsionVelTMean"]
-dataExp1 <- data.frame(sub, exp, rotationSpeed, perceptualErrorMean, torsionVelTMean)
-dataExp1$exp <- as.factor(dataExp1$exp)
-dataExp1$sub <- as.factor(dataExp1$sub)
+dataT <- dataExp1[which(dataExp1$timeWindow==0),]
+dataAggCor1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub, data = dataT, FUN = "mean")
 
-corExp1R <- pcor.test(dataExp1$perceptualErrorMean, dataExp1$torsionVelTMean, dataExp1$rotationSpeed,
+corExp1BR <- pcor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, dataAggCor1$rotationSpeed,
     method = c("pearson"))
-print(corExp1R)
+print(corExp1BR)
 
 # after reversal
-conData1 <- conData1Original[which(conData1Original$afterReversalD == 0 & conData1Original$timeWindow ==
-    1), ]
-sub <- conData1["sub"]
-exp <- conData1["exp"]
-rotationSpeed <- conData1["rotationSpeed"]
-perceptualErrorMean <- conData1["perceptualErrorMean"]
-torsionVelTMean <- conData1["torsionVelTMean"]
-dataExp1 <- data.frame(sub, exp, rotationSpeed, perceptualErrorMean, torsionVelTMean)
-dataExp1$exp <- as.factor(dataExp1$exp)
-dataExp1$sub <- as.factor(dataExp1$sub)
+dataT <- dataExp1[which(dataExp1$timeWindow==1),]
+dataAggCor1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub, data = dataT, FUN = "mean")
 
-corExp1AR <- pcor.test(dataExp1$perceptualErrorMean, dataExp1$torsionVelTMean, dataExp1$rotationSpeed,
+corExp1BR <- pcor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, dataAggCor1$rotationSpeed,
     method = c("pearson"))
-print(corExp1AR)
+print(corExp1BR)
 
 ## 3 way for torsional angle--time window x rotational speed x after-reversal direction
 trialData1 <- trialData1Original
@@ -218,60 +196,37 @@ torsionAExp1Anova <- ezANOVA(dataAgg1, dv = .(torsionAngleSame), wid = .(sub), w
     timeWindow, afterReversalD), type = 3)
 print(torsionAExp1Anova)
 
-pdf("torsionAngleExp1_interaction3.pdf")
+# pdf("torsionAngleExp1_interaction3.pdf")
 p <- ggplot(dataAgg1, aes(x = rotationSpeed, y = torsionAngleSame, colour = afterReversalD,
     group = afterReversalD)) + stat_summary(fun.data = mean_se, geom = "errorbar",
     width = 0.2) + geom_line(stat = "summary", fun.y = "mean") + facet_grid(~timeWindow)
 print(p)
-dev.off()
+# dev.off()
 
 ## Partial correlation across participants before reversal
-conData1 <- conData1Original[which(conData1Original$afterReversalD == 0 & conData1Original$timeWindow ==
-    -1), ]
-sub <- conData1["sub"]
-exp <- conData1["exp"]
-rotationSpeed <- conData1["rotationSpeed"]
-perceptualErrorMean <- conData1["perceptualErrorMean"]
-torsionAngleMean <- conData1["torsionAngleMean"]
-dataExp1 <- data.frame(sub, exp, rotationSpeed, perceptualErrorMean, torsionAngleMean)
-dataExp1$exp <- as.factor(dataExp1$exp)
-dataExp1$sub <- as.factor(dataExp1$sub)
+dataT <- dataExp1[which(dataExp1$timeWindow==-1),]
+dataAggCor1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub, data = dataT, FUN = "mean")
+show(dataAggCor1)
 
-corExp1BR <- pcor.test(dataExp1$perceptualErrorMean, dataExp1$torsionAngleMean, dataExp1$rotationSpeed,
+corExp1BR <- pcor.test(dataAggCor1$perceptualError, dataAggCor1$torsionAngleSame, dataAggCor1$rotationSpeed,
     method = c("pearson"))
 print(corExp1BR)
 
 # at reversal
-conData1 <- conData1Original[which(conData1Original$afterReversalD == 0 & conData1Original$timeWindow ==
-    0), ]
-sub <- conData1["sub"]
-exp <- conData1["exp"]
-rotationSpeed <- conData1["rotationSpeed"]
-perceptualErrorMean <- conData1["perceptualErrorMean"]
-torsionAngleMean <- conData1["torsionAngleMean"]
-dataExp1 <- data.frame(sub, exp, rotationSpeed, perceptualErrorMean, torsionAngleMean)
-dataExp1$exp <- as.factor(dataExp1$exp)
-dataExp1$sub <- as.factor(dataExp1$sub)
+dataT <- dataExp1[which(dataExp1$timeWindow==0),]
+dataAggCor1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub, data = dataT, FUN = "mean")
 
-corExp1R <- pcor.test(dataExp1$perceptualErrorMean, dataExp1$torsionAngleMean, dataExp1$rotationSpeed,
+corExp1BR <- pcor.test(dataAggCor1$perceptualError, dataAggCor1$torsionAngleSame, dataAggCor1$rotationSpeed,
     method = c("pearson"))
-print(corExp1R)
+print(corExp1BR)
 
 # after reversal
-conData1 <- conData1Original[which(conData1Original$afterReversalD == 0 & conData1Original$timeWindow ==
-    1), ]
-sub <- conData1["sub"]
-exp <- conData1["exp"]
-rotationSpeed <- conData1["rotationSpeed"]
-perceptualErrorMean <- conData1["perceptualErrorMean"]
-torsionAngleMean <- conData1["torsionAngleMean"]
-dataExp1 <- data.frame(sub, exp, rotationSpeed, perceptualErrorMean, torsionAngleMean)
-dataExp1$exp <- as.factor(dataExp1$exp)
-dataExp1$sub <- as.factor(dataExp1$sub)
+dataT <- dataExp1[which(dataExp1$timeWindow==1),]
+dataAggCor1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub, data = dataT, FUN = "mean")
 
-corExp1AR <- pcor.test(dataExp1$perceptualErrorMean, dataExp1$torsionAngleMean, dataExp1$rotationSpeed,
+corExp1BR <- pcor.test(dataAggCor1$perceptualError, dataAggCor1$torsionAngleSame, dataAggCor1$rotationSpeed,
     method = c("pearson"))
-print(corExp1AR)
+print(corExp1BR)
 
 ### Exp2 baseline correlation between the two eyes
 sub <- baseTorsion2Original["sub"] + 20
@@ -508,13 +463,16 @@ conBoth2 <- aggregate(torsionAngleSame ~ sub * exp * timeWindow * afterReversalD
 colnames(conBoth2)[6] <- "torsionAngleSame"
 conBoth2$torsionAngleSame <- abs(conBoth2$torsionAngleSame)
 
-torsionVBoth2Anova <- ezANOVA(conBoth2, dv = .(torsionAngleSame), wid = .(sub), within = .(rotationSpeed,
+torsionABoth2Anova <- ezANOVA(conBoth2, dv = .(torsionAngleSame), wid = .(sub), within = .(rotationSpeed,
     timeWindow, afterReversalD), type = 3)
-print(torsionVBoth2Anova)
+print(torsionABoth2Anova)
 
-pdf("torsionAngleSameBothExp2_interaction3.pdf")
+postTime <- ezStats(conBoth2, dv = .(torsionAngleSame), wid = .(sub), within = .(timeWindow))
+print(postTime)
+
+# pdf("torsionAngleSameBothExp2_interaction3.pdf")
 p <- ggplot(conBoth2, aes(x = rotationSpeed, y = torsionAngleSame, colour = afterReversalD,
     group = afterReversalD)) + stat_summary(fun.data = mean_se, geom = "errorbar",
     width = 0.2) + geom_line(stat = "summary", fun.y = "mean") + facet_grid(~timeWindow)
 print(p)
-dev.off()
+# dev.off()
