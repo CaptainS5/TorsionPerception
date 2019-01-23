@@ -1,8 +1,8 @@
 library(ggplot2)
 library(RColorBrewer)
-# library(matrixStats)
+library(matrixStats)
 library(ppcor)
-# library(reshape)
+library(reshape)
 
 #### clear environment
 rm(list = ls())
@@ -13,9 +13,9 @@ rm(list = ls())
 # folder1 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp1/")
 # folder2 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp2/")
 # on XPS13
-setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/TorsionPerception/analysis")
-folder1 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/TorsionPerception/results/figures/Exp1/")
-folder2 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/TorsionPerception/results/figures/Exp2/")
+setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/analysis")
+folder1 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp1/")
+folder2 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp2/")
 # conData1Original <- read.csv('conDataAllExp1.csv')
 # conData2Original <- read.csv('conDataAllExp2BothEyes.csv')
 # # eye: 1 left eye, 2 right eye

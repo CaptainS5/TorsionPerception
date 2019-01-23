@@ -7,7 +7,7 @@ sampleRate = 200;
 eyeName = {'L' 'R'};
 folder = pwd;
 
-%% directions not merged, generate csv files for R plotting
+%% directions merged, always left CW and right CCW, generate csv files for R plotting
 % consistent reversal duration and duration after for all participants
 for eye = 1:2
     cd(folder)
@@ -35,7 +35,12 @@ for eye = 1:2
                 endI = eyeTrialData.stim.offset(subN, validI(validTrialN));
                 startIF = maxBeforeFrames-eyeTrialData.stim.beforeFrames(subN, validI(validTrialN))+1;
                 endIF = maxBeforeFrames+reversalFrames+eyeTrialData.stim.afterFrames(subN, validI(validTrialN));
-                frames{subN, speedI}(validTrialN, startIF:endIF) = eyeTrialData.frames{subN, validI(validTrialN)}.DT_noSac(startI:endI); % no flip directions
+                if eyeTrialData.targetSide(subN, validI(validTrialN))*eyeTrialData.afterReversalD(subN, validI(validTrialN))==-1
+                    % left CW, don't need to flip direction
+                    frames{subN, speedI}(validTrialN, startIF:endIF) = eyeTrialData.frames{subN, validI(validTrialN)}.DT_noSac(startI:endI);
+                else % left CCW, flip direction
+                    frames{subN, speedI}(validTrialN, startIF:endIF) = -eyeTrialData.frames{subN, validI(validTrialN)}.DT_noSac(startI:endI);
+                end
             end
         end
     end
@@ -96,29 +101,29 @@ for eye = 1:2
         % saveas(gca, ['velocityTracesSub_', num2str(conditions(speedI)), '.pdf'])
     end
     
-%     % generate csv files, each file for one speed condition
-%     % each row is the mean velocity trace of one participant
-%     % use the min frame length--the lengeth where all participants have
-%     % valid data points
-%     for speedI = 1:size(conditions, 2)
-%         idxN = [];
-%         % find the min frame length in each condition
-%         for subN = 1:size(names, 2)
-%             tempI = find(~isnan(velTAverage{speedI}(subN, :)));
-%             idxN(subN) = tempI(1);
-%         end
-%         startIdx(speedI) = max(idxN);
-%     end
-%     
-%     startI = max(startIdx);
-%     velTAverageSub = [];
-%     cd('C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\analysis')
-%     for speedI = 1:size(conditions, 2)
-%         for subN = 1:size(names, 2)
-%             velTAverageSub(subN, :) = velTAverage{speedI}(subN, startI:end);
-%         end
-%         csvwrite(['velocityTraceExp2_', eyeName{eye}, '_', num2str(conditions(speedI)), '.csv'], velTAverageSub)
-%     end
+    % generate csv files, each file for one speed condition
+    % each row is the mean velocity trace of one participant
+    % use the min frame length--the lengeth where all participants have
+    % valid data points
+    for speedI = 1:size(conditions, 2)
+        idxN = [];
+        % find the min frame length in each condition
+        for subN = 1:size(names, 2)
+            tempI = find(~isnan(velTAverage{speedI}(subN, :)));
+            idxN(subN) = tempI(1);
+        end
+        startIdx(speedI) = max(idxN);
+    end
+    
+    startI = max(startIdx);
+    velTAverageSub = [];
+    cd('C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1stYear\TorsionPerception\analysis')
+    for speedI = 1:size(conditions, 2)
+        for subN = 1:size(names, 2)
+            velTAverageSub(subN, :) = velTAverage{speedI}(subN, startI:end);
+        end
+        csvwrite(['velocityTraceExp2_', eyeName{eye}, '_', num2str(conditions(speedI)), '.csv'], velTAverageSub)
+    end
 end
 % % just use the mean latency from Exp1
 % cd('C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\analysis')
@@ -154,7 +159,12 @@ for eye = 1:2
                 endI = eyeTrialDataBase.stim.offset(subN, validI(validTrialN));
                 startIF = maxBeforeFrames-eyeTrialDataBase.stim.beforeFrames(subN, validI(validTrialN))+1;
                 endIF = maxBeforeFrames+reversalFrames+eyeTrialDataBase.stim.afterFrames(subN, validI(validTrialN));
-                frames{subN, speedI}(validTrialN, startIF:endIF) = eyeTrialDataBase.frames{subN, validI(validTrialN)}.DT_noSac(startI:endI); % no flip directions
+                if eyeTrialDataBase.targetSide(subN, validI(validTrialN))*eyeTrialDataBase.afterReversalD(subN, validI(validTrialN))==-1
+                    % left CW, don't need to flip direction
+                    frames{subN, speedI}(validTrialN, startIF:endIF) = eyeTrialDataBase.frames{subN, validI(validTrialN)}.DT_noSac(startI:endI); % no flip directions
+                else
+                    frames{subN, speedI}(validTrialN, startIF:endIF) = -eyeTrialDataBase.frames{subN, validI(validTrialN)}.DT_noSac(startI:endI);
+                end
             end
         end
     end
@@ -231,7 +241,7 @@ for eye = 1:2
     
     startI = max(startIdx);
     velTAverageSub = [];
-    cd('C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\analysis')
+    cd('C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1stYear\TorsionPerception\analysis')
     for speedI = 1:size(conditions, 2)
         for subN = 1:size(names, 2)
             velTAverageSub(subN, :) = velTAverage{speedI}(subN, startI:end);
