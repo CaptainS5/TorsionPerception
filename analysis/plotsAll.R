@@ -8,14 +8,14 @@ library(reshape)
 rm(list = ls())
 
 #### load data
-# # on ASUS
-# setwd("E:/XiuyunWu/Torsion-FDE/analysis")
-# folder1 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp1/")
-# folder2 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp2/")
-# on XPS13
-setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/analysis")
-folder1 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp1/")
-folder2 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp2/")
+# on ASUS
+setwd("E:/XiuyunWu/Torsion-FDE/analysis")
+folder1 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp1/")
+folder2 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp2/")
+# # on XPS13
+# setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/analysis")
+# folder1 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp1/")
+# folder2 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp2/")
 # conData1Original <- read.csv('conDataAllExp1.csv')
 # conData2Original <- read.csv('conDataAllExp2BothEyes.csv')
 # # eye: 1 left eye, 2 right eye
@@ -72,8 +72,8 @@ trialDataBoth2Original <- read.csv("trialDataAllBothEyeExp2.csv")
 # eye: 1 left eye, 2 right eye
 # afterReversalD: -1 CCW, 1 CW, 0 merged as CW
 # time window: -1 120ms after onset to flash onset; 0-flash onset to flash offset; 1 120ms after flash offset to end
-tw <- c(-1, 0, 1)
-endName <- c("beforeReversal", "atReversal", "afterReversal")
+tw <- c(-1, 1)
+endName <- c("beforeReversal", "afterReversal")
 
 # parameters for plotting
 # for the poster
@@ -324,7 +324,7 @@ dataExp1$afterReversalD <- as.factor(dataExp1$afterReversalD)
 dataAgg1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp1, FUN = "mean")
 dataAgg1$psd <- aggregate(perceptualError ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp1, FUN = "sd")$perceptualError
 dataAgg1$tsd <- aggregate(torsionVelT ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp1, FUN = "sd")$torsionVelT
-levels(dataAgg1$timeWindow) <- c("Before reversal", "At reversal", "After reversal")
+levels(dataAgg1$timeWindow) <- c("Before reversal", "After reversal")
 
 pdf(paste(folder1, "torsionVExp1.pdf", sep = ""))
 p <- ggplot(dataAgg1, aes(x = rotationSpeed, y = torsionVelT, colour = afterReversalD, group = interaction(rotationSpeed, afterReversalD))) +
@@ -682,7 +682,7 @@ trialExpOriginal <- data.frame(sub, rotationSpeed, afterReversalD, timeWindow, L
 trialExpOriginal$sub <- as.factor(trialExpOriginal$sub)
 
 # histogram of velocity in each eye
-for (endN in 1:3) {
+for (endN in 1:2) {
 trialExp <- trialExpOriginal[which(trialExpOriginal$timeWindow == tw[endN] &
         abs(trialExpOriginal$LtorsionVelT) < 6), ]
 trialExpCor <- trialExp[complete.cases(trialExp), ]
@@ -928,7 +928,7 @@ dataExp2$afterReversalD <- as.factor(dataExp2$afterReversalD)
 dataAgg2 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp2, FUN = "mean")
 dataAgg2$psd <- aggregate(perceptualError ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp2, FUN = "sd")$perceptualError
 dataAgg2$tsd <- aggregate(torsionVelT ~ rotationSpeed * afterReversalD * exp * sub * timeWindow, data = dataExp2, FUN = "sd")$torsionVelT
-levels(dataAgg2$timeWindow) <- c("Before-reversal", "At-reversal", "After-reversal")
+levels(dataAgg2$timeWindow) <- c("Before-reversal", "After-reversal")
 
 pdf(paste(folder2, "torsionVExp2.pdf", sep = ""))
 p <- ggplot(dataAgg2, aes(x = rotationSpeed, y = torsionVelT, colour = afterReversalD, group = afterReversalD)) +
