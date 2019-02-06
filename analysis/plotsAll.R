@@ -354,11 +354,11 @@ dataExp1$rotationSpeed <- as.factor(dataExp1$rotationSpeed)
 dataAgg1 <- aggregate(. ~ rotationSpeed * exp * sub * timeWindow, data = dataExp1, FUN = "mean")
 dataAgg1$psd <- aggregate(perceptualError ~ rotationSpeed * exp * sub * timeWindow, data = dataExp1, FUN = "sd")$perceptualError
 dataAgg1$tsd <- aggregate(torsionVelT ~ rotationSpeed * exp * sub * timeWindow, data = dataExp1, FUN = "sd")$torsionVelT
-levels(dataAgg1$timeWindow) <- c(-1, 0, 1)
+levels(dataAgg1$timeWindow) <- c(-1, 1)
 
-twN <- c("beforeReversal", "atReversal", "afterReversal")
-twValues <- c(-1, 0, 1)
-for (tw in 1:3) {
+twN <- c("beforeReversal", "afterReversal")
+twValues <- c(-1, 1)
+for (tw in 2:2) {
     dataAgg1sub <- dataAgg1[which(dataAgg1$timeWindow==twValues[tw]), ]
     pdf(paste(folder1, "correlationVelExp1_", twN[tw], ".pdf", sep = ""))
     p <- ggplot(dataAgg1sub, aes(x = perceptualError, y = torsionVelT, fill = rotationSpeed)) +
@@ -443,9 +443,9 @@ dev.off()
 dataExp1$rotationSpeed <- as.factor(dataExp1$rotationSpeed)
 dataAgg1 <- aggregate(. ~ rotationSpeed * exp * sub * timeWindow, data = dataExp1, FUN = "mean")
 
-twN <- c("beforeReversal", "atReversal", "afterReversal")
-twValues <- c(-1, 0, 1)
-for (tw in 1:3) {
+twN <- c("beforeReversal", "afterReversal")
+twValues <- c(-1, 1)
+for (tw in 1:2) {
     dataAgg1sub <- dataAgg1[which(dataAgg1$timeWindow==twValues[tw]), ]
     pdf(paste(folder1, "correlationAngleExp1_", twN[tw], ".pdf", sep = ""))
     p <- ggplot(dataAgg1sub, aes(x = perceptualError, y = torsionAngleSame, fill = rotationSpeed)) +
@@ -621,6 +621,7 @@ p <- ggplot(trialCor, aes(x = LtorsionVelT, y = RtorsionVelT, fill = rotationSpe
     scale_y_continuous(name = "Right eye torsional velocity (°/s)") +
     scale_x_continuous(name = "Left eye torsional velocity (°/s)") +
     scale_fill_brewer(palette="Accent", name = "Rotational\nspeed (°/s)") +
+    # coord_cartesian(ylim=c(0, 2.5)) +
     theme(axis.line = element_line(colour = "black", size = 0.5),
               panel.grid.major = element_blank(),
               panel.grid.minor = element_blank(),
@@ -639,6 +640,7 @@ p <- ggplot(trialCor, aes(LtorsionVelT, colour = sub)) +
         geom_density(size = 1) +
         scale_y_continuous(name = "Density") +
         scale_x_continuous(name = "Left eye torsional velocity (°/s)") +
+        # coord_cartesian(ylim=c(0, 2.5)) +
         theme(axis.line = element_line(colour = "black", size = 0.5),
               panel.grid.major = element_blank(),
               panel.grid.minor = element_blank(),
@@ -657,6 +659,7 @@ p <- ggplot(trialCor, aes(RtorsionVelT, colour = sub)) +
         geom_density(size = 1) +
         scale_y_continuous(name = "Density") +
         scale_x_continuous(name = "Right eye torsional velocity (°/s)") +
+        # coord_cartesian(ylim=c(0, 2.5)) +
         theme(axis.line = element_line(colour = "black", size = 0.5),
               panel.grid.major = element_blank(),
               panel.grid.minor = element_blank(),
@@ -691,6 +694,7 @@ p <- ggplot(trialExpCor, aes(LtorsionVelT, colour = sub)) +
         geom_density(size = 1) +
         scale_y_continuous(name = "Density") +
         scale_x_continuous(name = "Left eye torsional velocity (°/s)") +
+        coord_cartesian(ylim=c(0, 2.5)) +
         theme(axis.line = element_line(colour = "black", size = 0.5),
               panel.grid.major = element_blank(),
               panel.grid.minor = element_blank(),
@@ -709,6 +713,7 @@ p <- ggplot(trialExpCor, aes(RtorsionVelT, colour = sub)) +
         geom_density(size = 1) +
         scale_y_continuous(name = "Density") +
         scale_x_continuous(name = "Right eye torsional velocity (°/s)") +
+        coord_cartesian(ylim=c(0, 2.5)) +
         theme(axis.line = element_line(colour = "black", size = 0.5),
               panel.grid.major = element_blank(),
               panel.grid.minor = element_blank(),
