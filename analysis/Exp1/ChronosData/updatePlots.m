@@ -1,12 +1,12 @@
 function [] = updatePlots(trial, torsion, pursuit, data)
 
-startFrame = trial.startFrame; %trial.stim_onset; % 1;
+startFrame = trial.startFrame; %
 endFrame = min(trial.length, trial.stim_offset+40);
 
 sampleRate = evalin('base','sampleRate');
 timeInMs = linspace(0, (endFrame-startFrame+1)*1000/sampleRate, 5); 
 tickStep = (2000/5)/(length(timeInMs)-1);
-latency = 0;%0.12*sampleRate;
+latency = 0;% ms2frames(175);%0.12*sampleRate;
 % tickStep = (2000/5)/(length(timeInMs)-1); %?...
 %% position plot
 subplot(2,2,2,'replace');
@@ -80,10 +80,11 @@ line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle','
 line([startFrame endFrame], [0 0],'Color','k','LineStyle',':');
 
 %% torsion plot
+% subplot(1,1,1,'replace');
 subplot(2,2,3,'replace');
 % subplot(3,1,1,'replace');
 
-axis([startFrame endFrame -5 5]);
+axis([startFrame endFrame -1 1]);
 %change frames to ms
 set(gca,'Xtick',startFrame:tickStep:endFrame,'XTickLabel',timeInMs);
 
@@ -97,26 +98,30 @@ plot(startFrame:endFrame,data.segments(startFrame+data.startFrames(trial.number)
 plot(startFrame:endFrame,data.segments(startFrame+data.startFrames(trial.number):endFrame+data.startFrames(trial.number),3),'g:');
 plot(startFrame:endFrame,data.segments(startFrame+data.startFrames(trial.number):endFrame+data.startFrames(trial.number),4),'m:');
 
-
-plot(startFrame:endFrame,trial.frames.T_filt(startFrame:endFrame), 'LineWidth', 2);
+lift = 0;%-trial.frames.T_filt(startFrame);
+plot(startFrame:endFrame,trial.frames.T_filt(startFrame:endFrame)+lift, 'LineWidth', 2);
+% plot(startFrame+latency:trial.stim_reversalOffset,trial.frames.T_filt(startFrame+latency:trial.stim_reversalOffset)+lift, 'LineWidth', 2);
+% plot(trial.stim_reversalOffset+latency:endFrame,trial.frames.T_filt(trial.stim_reversalOffset+latency:endFrame)+lift, 'LineWidth', 2);
 
 % mark saccade trace
 for ii = 1:length(trial.saccades.T.onsets)
-    plot(trial.saccades.T.onsets(ii):trial.saccades.T.offsets(ii), trial.frames.T_filt(trial.saccades.T.onsets(ii):trial.saccades.T.offsets(ii)), 'm', 'LineWidth', 2)
+    plot(trial.saccades.T.onsets(ii):trial.saccades.T.offsets(ii), trial.frames.T_filt(trial.saccades.T.onsets(ii):trial.saccades.T.offsets(ii))+lift, 'm', 'LineWidth', 2)
 end
 
-plot(trial.saccades.T.onsets,trial.frames.T_filt(trial.saccades.T.onsets),'g*', 'MarkerSize', 10);
-plot(trial.saccades.T.offsets,trial.frames.T_filt(trial.saccades.T.offsets),'k*', 'MarkerSize', 10);
+plot(trial.saccades.T.onsets,trial.frames.T_filt(trial.saccades.T.onsets)+lift,'m*', 'MarkerSize', 10);
+plot(trial.saccades.T.offsets,trial.frames.T_filt(trial.saccades.T.offsets)+lift,'k*', 'MarkerSize', 10);
 % 
 % plot(pursuit.onset,trial.frames.T_filt(pursuit.onset),'r:+');
 
 % start of stimuli and reversal point
 % line([trial.stim_start trial.stim_start], [-100 100],'Color','b','LineStyle','--', 'LineWidth', 2);
 line([trial.stim_reversalOnset trial.stim_reversalOnset], [-100 100],'Color','b','LineStyle','--', 'LineWidth', 2);
-line([trial.stim_reversalOffset+latency trial.stim_reversalOffset+latency], [-100 100],'Color','k','LineStyle','--', 'LineWidth', 2);
+line([trial.stim_reversalOffset trial.stim_reversalOffset], [-100 100],'Color','b','LineStyle','--', 'LineWidth', 2);
+% line([trial.stim_reversalOffset+latency trial.stim_reversalOffset+latency], [-100 100],'Color','g','LineStyle','--', 'LineWidth', 2);
 
 % analysis window
-line([trial.stim_onset+latency trial.stim_onset+latency], [-100 100],'Color','k','LineStyle','--', 'LineWidth', 2);
+line([trial.stim_onset trial.stim_onset], [-100 100],'Color','k','LineStyle','--', 'LineWidth', 2);
+% line([trial.stim_onset+latency trial.stim_onset+latency], [-100 100],'Color','g','LineStyle','--', 'LineWidth', 2);
 line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle','--', 'LineWidth', 2);
 
 % if sum(trial.lostTframes) > 0
@@ -128,6 +133,7 @@ try
 end
 
 set(gca, 'FontSize', 15)
+% saveas(gca, 'JLb3t57.pdf')
 
 %% torsion velocity plot
 % subplot(3,1,2,'replace');

@@ -11,18 +11,18 @@ conditions = [25 50 100 200];
 load('meanLatencyExp1')
 cd ..
 analysisF = pwd;
-folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\data'};
+folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1stYear\TorsionPerception\data'};
 direction = [-1 1]; % initial direction; in the plot shows the direction after reversal
 trialPerCon = 72; % for each rotation speed, all directions together though...
 torsionThreshold = 8*ones(size(names));
 torsionFrames = 3*ones(size(names));
 eyeName = {'L' 'R'};
-endNames = {'BeforeReversal' 'AtReversal' 'AfterReversal'};
+endNames = {'BeforeReversal' 'AfterReversal'};
 
 cd ..
 load(['dataBase_all', num2str(size(names, 2)), '.mat'])
 
-for endN = 1:3
+for endN = 1:2
     endName = endNames{endN};
     trialData = table(); % organize into long format
     trialDeleted = zeros(1, length(names));
@@ -101,11 +101,12 @@ for endN = 1:3
                             
                             %% choose the time window here
                             tempLatency = meanLatency(conIdx);
+                            tempLatencyB = meanLatencyB(conIdx);
                             if strcmp(endName, 'AtReversal') % at reversal
                                 trial.stim_onset = trial.stim_reversalOnset; % reversal
                                 trial.stim_offset = trial.stim_reversalOffset + ms2frames(tempLatency*1000); % reversal
                             elseif strcmp(endName, 'BeforeReversal')
-                                trial.stim_onset = ms2frames((logData.fixationDuration(currentTrial)+tempLatency)*1000); % 120ms latency
+                                trial.stim_onset = ms2frames((logData.fixationDuration(currentTrial)+tempLatencyB)*1000); % 120ms latency
                                 trial.stim_offset = trial.stim_reversalOnset; % reversal
                             elseif strcmp(endName, 'AfterReversal') 
                                 trial.stim_onset = trial.stim_reversalOffset + ms2frames(tempLatency*1000);
