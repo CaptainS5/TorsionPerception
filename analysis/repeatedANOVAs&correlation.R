@@ -9,10 +9,10 @@ library(multcomp)
 rm(list = ls())
 
 #### load data
-# on ASUS
-setwd("E:/XiuyunWu/Torsion-FDE/analysis")
-# # on XPS13
-# setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1st year/TorsionPerception/analysis")
+# # on ASUS
+# setwd("E:/XiuyunWu/Torsion-FDE/analysis")
+# on XPS13
+setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/analysis")
 source("pairwise.t.test.with.t.and.df.R")
 baseTorsion1Original <- read.csv("trialDataBaseAllExp1.csv")
 baseTorsion2Original <- read.csv("trialDataBaseAllExp2.csv")
@@ -31,24 +31,23 @@ endName <- c("beforeReversal", "afterReversal")
 trialData1 <- trialData1Original[which(trialData1Original$timeWindow == 1), ]
 sub <- trialData1["sub"]
 exp <- trialData1["exp"]
-afterReversalD <- trialData1["afterReversalD"]
+# afterReversalD <- trialData1["afterReversalD"]
 rotationSpeed <- trialData1["rotationSpeed"]
 perceptualError <- trialData1["perceptualError"]
-dataTemp <- data.frame(sub, exp, afterReversalD, rotationSpeed, perceptualError)
+dataTemp <- data.frame(sub, exp, rotationSpeed, perceptualError)
 dataTemp$exp <- as.factor(dataTemp$exp)
 dataTemp$sub <- as.factor(dataTemp$sub)
-dataTemp$afterReversalD <- as.factor(dataTemp$afterReversalD)
+# dataTemp$afterReversalD <- as.factor(dataTemp$afterReversalD)
 dataTemp$rotationSpeed <- as.factor(dataTemp$rotationSpeed)
-colnames(dataTemp)[5] <- "perceptualErrorMean"
-dataExp1 <- aggregate(perceptualErrorMean ~ sub * rotationSpeed * exp * afterReversalD,
+colnames(dataTemp)[4] <- "perceptualErrorMean"
+dataExp1 <- aggregate(perceptualErrorMean ~ sub * rotationSpeed * exp,
     data = dataTemp, FUN = "mean")
 
 perceptExp1Anova <- ezANOVA(dataExp1, dv = .(perceptualErrorMean), wid = .(sub),
-    within = .(rotationSpeed, afterReversalD), type = 3)
+    within = .(rotationSpeed), type = 3)
 print(perceptExp1Anova)
 # pdf("perceptErrorExp1_interaction.pdf")
-p <- ggplot(dataExp1, aes(x = rotationSpeed, y = perceptualErrorMean, colour = afterReversalD,
-    group = afterReversalD)) + stat_summary(fun.data = mean_se, geom = "errorbar",
+p <- ggplot(dataExp1, aes(x = rotationSpeed, y = perceptualErrorMean,)) + stat_summary(fun.data = mean_se, geom = "errorbar",
     width = 0.2) + geom_line(stat = "summary", fun.y = "mean")
 print(p)
 # dev.off()
@@ -57,25 +56,24 @@ print(p)
 trialData2 <- trialData2Original[which(trialData2Original$timeWindow == 1), ]
 sub <- trialData2["sub"] + 20
 exp <- trialData2["exp"]
-afterReversalD <- trialData2["afterReversalD"]
+# afterReversalD <- trialData2["afterReversalD"]
 rotationSpeed <- trialData2["rotationSpeed"]
 perceptualError <- trialData2["perceptualError"]
-dataTemp <- data.frame(sub, exp, afterReversalD, rotationSpeed, perceptualError)
+dataTemp <- data.frame(sub, exp, rotationSpeed, perceptualError)
 dataTemp$exp <- as.factor(dataTemp$exp)
 dataTemp$sub <- as.factor(dataTemp$sub)
-dataTemp$afterReversalD <- as.factor(dataTemp$afterReversalD)
+# dataTemp$afterReversalD <- as.factor(dataTemp$afterReversalD)
 dataTemp$rotationSpeed <- as.factor(dataTemp$rotationSpeed)
-colnames(dataTemp)[5] <- "perceptualErrorMean"
-dataExp2 <- aggregate(perceptualErrorMean ~ sub * rotationSpeed * exp * afterReversalD,
+colnames(dataTemp)[4] <- "perceptualErrorMean"
+dataExp2 <- aggregate(perceptualErrorMean ~ sub * rotationSpeed * exp,
     data = dataTemp, FUN = "mean")
 
 perceptExp2Anova <- ezANOVA(dataExp2, dv = .(perceptualErrorMean), wid = .(sub),
-    within = .(rotationSpeed, afterReversalD), type = 3)
+    within = .(rotationSpeed), type = 3)
 print(perceptExp2Anova)
 
 pdf("perceptErrorExp2_interaction.pdf")
-p <- ggplot(dataExp2, aes(x = rotationSpeed, y = perceptualErrorMean, colour = afterReversalD,
-    group = afterReversalD)) + stat_summary(fun.data = mean_se, geom = "errorbar",
+p <- ggplot(dataExp2, aes(x = rotationSpeed, y = perceptualErrorMean)) + stat_summary(fun.data = mean_se, geom = "errorbar",
     width = 0.2) + geom_line(stat = "summary", fun.y = "mean")
 print(p)
 dev.off()
@@ -95,48 +93,46 @@ print(perceptAllAnova)
 trialData1 <- trialData1Original[which(trialData1Original$timeWindow == -1), ]
 sub <- trialData1["sub"]
 exp <- trialData1["exp"]
-afterReversalD <- trialData1["afterReversalD"]
+# afterReversalD <- trialData1["afterReversalD"]
 rotationSpeed <- trialData1["rotationSpeed"]
 perceptualError <- trialData1["perceptualError"]
 torsionVelT <- trialData1["torsionVelT"] * trialData1["afterReversalD"]
-dataExp1b <- data.frame(sub, exp, afterReversalD, rotationSpeed, perceptualError, torsionVelT)
+dataExp1b <- data.frame(sub, exp, rotationSpeed, perceptualError, torsionVelT)
 dataExp1b$exp <- as.factor(dataExp1b$exp)
 dataExp1b$sub <- as.factor(dataExp1b$sub)
-dataExp1b$afterReversalD <- as.factor(dataExp1b$afterReversalD)
+# dataExp1b$afterReversalD <- as.factor(dataExp1b$afterReversalD)
 dataExp1b$rotationSpeed <- as.factor(dataExp1b$rotationSpeed)
 
-dataAgg1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub, data = dataExp1b, FUN = "mean")
+dataAgg1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1b, FUN = "mean")
 # show(dataExp1b)
 # dataAgg1$psd <- aggregate(perceptualError ~ rotationSpeed * afterReversalD * exp * sub, data = dataExp1b, FUN = "sd")$perceptualError
 # dataAgg1$tsd <- aggregate(torsionVelT ~ rotationSpeed * afterReversalD * exp * sub, data = dataExp1b, FUN = "sd")$torsionVelT
 # dataAgg1$torsionVelT <- abs(dataAgg1$torsionVelT)
 
-torsionVExp1Anova <- ezANOVA(dataAgg1, dv = .(torsionVelT), wid = .(sub), within = .(rotationSpeed,
-    afterReversalD), type = 3)
+torsionVExp1Anova <- ezANOVA(dataAgg1, dv = .(torsionVelT), wid = .(sub), within = .(rotationSpeed), type = 3)
 print(torsionVExp1Anova)
 
 # after reversal
 trialData1 <- trialData1Original[which(trialData1Original$timeWindow == 1), ]
 sub <- trialData1["sub"]
 exp <- trialData1["exp"]
-afterReversalD <- trialData1["afterReversalD"]
+# afterReversalD <- trialData1["afterReversalD"]
 rotationSpeed <- trialData1["rotationSpeed"]
 perceptualError <- trialData1["perceptualError"]
 torsionVelT <- trialData1["torsionVelT"] * trialData1["afterReversalD"]
-dataExp1a <- data.frame(sub, exp, afterReversalD, rotationSpeed, perceptualError, torsionVelT)
+dataExp1a <- data.frame(sub, exp, rotationSpeed, perceptualError, torsionVelT)
 dataExp1a$exp <- as.factor(dataExp1a$exp)
 dataExp1a$sub <- as.factor(dataExp1a$sub)
-dataExp1a$afterReversalD <- as.factor(dataExp1a$afterReversalD)
+# dataExp1a$afterReversalD <- as.factor(dataExp1a$afterReversalD)
 dataExp1a$rotationSpeed <- as.factor(dataExp1a$rotationSpeed)
 
-dataAgg1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub, data = dataExp1a, FUN = "mean")
+dataAgg1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1a, FUN = "mean")
 # show(dataExp1a)
 # dataAgg1$psd <- aggregate(perceptualError ~ rotationSpeed * afterReversalD * exp * sub, data = dataExp1a, FUN = "sd")$perceptualError
 # dataAgg1$tsd <- aggregate(torsionVelT ~ rotationSpeed * afterReversalD * exp * sub, data = dataExp1a, FUN = "sd")$torsionVelT
 # dataAgg1$torsionVelT <- abs(dataAgg1$torsionVelT)
 
-torsionVExp1Anova <- ezANOVA(dataAgg1, dv = .(torsionVelT), wid = .(sub), within = .(rotationSpeed,
-    afterReversalD), type = 3)
+torsionVExp1Anova <- ezANOVA(dataAgg1, dv = .(torsionVelT), wid = .(sub), within = .(rotationSpeed), type = 3)
 print(torsionVExp1Anova)
 
 # # post hoc for time window & afterReversalD interaction
@@ -191,7 +187,7 @@ trialData1 <- trialData1Original[which(trialData1Original$timeWindow == -1), ]
 trialData1["torsionAngleCCW"] <- -trialData1["torsionAngleCCW"]
 sub <- trialData1["sub"]
 exp <- trialData1["exp"]
-afterReversalD <- trialData1["afterReversalD"]
+# afterReversalD <- trialData1["afterReversalD"]
 rotationSpeed <- trialData1["rotationSpeed"]
 perceptualError <- trialData1["perceptualError"]
 torsionAngleSame <- trialData1["torsionAngleCW"] * trialData1["afterReversalD"]
@@ -205,20 +201,19 @@ torsionAngleDiff[idx, ] <- trialData1$torsionAngleCCW[idx] * trialData1$afterRev
 idx <- which(trialData1$timeWindow==0 & trialData1$afterReversalD==-1)
 torsionAngleDiff[idx, ] <- trialData1$torsionAngleCCW[idx] * trialData1$afterReversalD[idx]
 
-dataExp1b <- data.frame(sub, exp, afterReversalD, rotationSpeed, perceptualError, torsionAngleSame, torsionAngleDiff)
+dataExp1b <- data.frame(sub, exp, rotationSpeed, perceptualError, torsionAngleSame, torsionAngleDiff)
 dataExp1b$exp <- as.factor(dataExp1b$exp)
 dataExp1b$sub <- as.factor(dataExp1b$sub)
-dataExp1b$afterReversalD <- as.factor(dataExp1b$afterReversalD)
-# dataExp1b$rotationSpeed <- as.factor(dataExp1b$rotationSpeed)
+# dataExp1b$afterReversalD <- as.factor(dataExp1b$afterReversalD)
+dataExp1b$rotationSpeed <- as.factor(dataExp1b$rotationSpeed)
 # show(dataExp1b)
-colnames(dataExp1b)[6] <- "torsionAngleSame"
-colnames(dataExp1b)[7] <- "torsionAngleDiff"
+colnames(dataExp1b)[5] <- "torsionAngleSame"
+colnames(dataExp1b)[6] <- "torsionAngleDiff"
 
-dataAgg1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub, data = dataExp1b, FUN = "mean")
+dataAgg1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1b, FUN = "mean")
 # dataAgg1$torsionAngleSame <- abs(dataAgg1$torsionAngleSame)
 # use absolute values
-torsionAExp1Anova <- ezANOVA(dataAgg1, dv = .(torsionAngleSame), wid = .(sub), within = .(rotationSpeed,
-    afterReversalD), type = 3)
+torsionAExp1Anova <- ezANOVA(dataAgg1, dv = .(torsionAngleSame), wid = .(sub), within = .(rotationSpeed), type = 3)
 print(torsionAExp1Anova)
 
 # after reversal
@@ -226,7 +221,7 @@ trialData1 <- trialData1Original[which(trialData1Original$timeWindow == 1), ]
 trialData1["torsionAngleCCW"] <- -trialData1["torsionAngleCCW"]
 sub <- trialData1["sub"]
 exp <- trialData1["exp"]
-afterReversalD <- trialData1["afterReversalD"]
+# afterReversalD <- trialData1["afterReversalD"]
 rotationSpeed <- trialData1["rotationSpeed"]
 perceptualError <- trialData1["perceptualError"]
 torsionAngleSame <- trialData1["torsionAngleCW"] * trialData1["afterReversalD"]
@@ -240,20 +235,19 @@ torsionAngleDiff[idx, ] <- trialData1$torsionAngleCCW[idx] * trialData1$afterRev
 idx <- which(trialData1$timeWindow==0 & trialData1$afterReversalD==-1)
 torsionAngleDiff[idx, ] <- trialData1$torsionAngleCCW[idx] * trialData1$afterReversalD[idx]
 
-dataExp1a <- data.frame(sub, exp, afterReversalD, rotationSpeed, perceptualError, torsionAngleSame, torsionAngleDiff)
+dataExp1a <- data.frame(sub, exp, rotationSpeed, perceptualError, torsionAngleSame, torsionAngleDiff)
 dataExp1a$exp <- as.factor(dataExp1a$exp)
 dataExp1a$sub <- as.factor(dataExp1a$sub)
-dataExp1a$afterReversalD <- as.factor(dataExp1a$afterReversalD)
-# dataExp1a$rotationSpeed <- as.factor(dataExp1a$rotationSpeed)
+# dataExp1a$afterReversalD <- as.factor(dataExp1a$afterReversalD)
+dataExp1a$rotationSpeed <- as.factor(dataExp1a$rotationSpeed)
 # show(dataExp1a)
-colnames(dataExp1a)[6] <- "torsionAngleSame"
-colnames(dataExp1a)[7] <- "torsionAngleDiff"
+colnames(dataExp1a)[5] <- "torsionAngleSame"
+colnames(dataExp1a)[6] <- "torsionAngleDiff"
 
-dataAgg1 <- aggregate(. ~ rotationSpeed * afterReversalD * exp * sub, data = dataExp1a, FUN = "mean")
+dataAgg1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1a, FUN = "mean")
 # dataAgg1$torsionAngleSame <- abs(dataAgg1$torsionAngleSame)
 # use absolute values
-torsionAExp1Anova <- ezANOVA(dataAgg1, dv = .(torsionAngleSame), wid = .(sub), within = .(rotationSpeed,
-    afterReversalD), type = 3)
+torsionAExp1Anova <- ezANOVA(dataAgg1, dv = .(torsionAngleSame), wid = .(sub), within = .(rotationSpeed), type = 3)
 print(torsionAExp1Anova)
 
 # # pdf("torsionAngleExp1_interaction3.pdf")
@@ -386,25 +380,24 @@ trialBoth2 <- trialDataBoth2Original[which(trialData1Original$timeWindow == -1),
     # 6), ]
 sub <- trialBoth2["sub"] + 20
 exp <- trialBoth2["exp"]
-afterReversalD <- trialBoth2["afterReversalD"]
+# afterReversalD <- trialBoth2["afterReversalD"]
 rotationSpeed <- trialBoth2["rotationSpeed"]
 perceptualError <- trialBoth2["perceptualError"]
 torsionVelT <- trialBoth2["torsionVelT"] * trialBoth2["afterReversalD"]
-dataBoth2b <- data.frame(sub, exp, afterReversalD, rotationSpeed, torsionVelT,
+dataBoth2b <- data.frame(sub, exp, rotationSpeed, torsionVelT,
     perceptualError)
 dataBoth2b$exp <- as.factor(dataBoth2b$exp)
 dataBoth2b$sub <- as.factor(dataBoth2b$sub)
-dataBoth2b$afterReversalD <- as.factor(dataBoth2b$afterReversalD)
+# dataBoth2b$afterReversalD <- as.factor(dataBoth2b$afterReversalD)
 dataBoth2b$rotationSpeed <- as.factor(dataBoth2b$rotationSpeed)
 
-conBoth2 <- aggregate(torsionVelT ~ sub * exp * afterReversalD * rotationSpeed,
+conBoth2 <- aggregate(torsionVelT ~ sub * exp * rotationSpeed,
     data = dataBoth2b, FUN = "mean")
     # show(conBoth2)
-colnames(conBoth2)[5] <- "torsionVelTMean"
+colnames(conBoth2)[4] <- "torsionVelTMean"
 # conBoth2$torsionVelTMean <- abs(conBoth2$torsionVelTMean)
 
-torsionVBoth2Anova <- ezANOVA(conBoth2, dv = .(torsionVelTMean), wid = .(sub), within = .(rotationSpeed,
-    afterReversalD), type = 3)
+torsionVBoth2Anova <- ezANOVA(conBoth2, dv = .(torsionVelTMean), wid = .(sub), within = .(rotationSpeed), type = 3)
 print(torsionVBoth2Anova)
 # postTime <- ezStats(conBoth2, dv = .(torsionVelTMean), wid = .(sub), within = .(timeWindow))
 # print(postTime)
@@ -439,25 +432,24 @@ trialBoth2 <- trialDataBoth2Original[which(trialData1Original$timeWindow == 1), 
     # 6), ]
 sub <- trialBoth2["sub"] + 20
 exp <- trialBoth2["exp"]
-afterReversalD <- trialBoth2["afterReversalD"]
+# afterReversalD <- trialBoth2["afterReversalD"]
 rotationSpeed <- trialBoth2["rotationSpeed"]
 perceptualError <- trialBoth2["perceptualError"]
 torsionVelT <- trialBoth2["torsionVelT"] * trialBoth2["afterReversalD"]
-dataBoth2a <- data.frame(sub, exp, afterReversalD, rotationSpeed, torsionVelT,
+dataBoth2a <- data.frame(sub, exp, rotationSpeed, torsionVelT,
     perceptualError)
 dataBoth2a$exp <- as.factor(dataBoth2a$exp)
 dataBoth2a$sub <- as.factor(dataBoth2a$sub)
-dataBoth2a$afterReversalD <- as.factor(dataBoth2a$afterReversalD)
+# dataBoth2a$afterReversalD <- as.factor(dataBoth2a$afterReversalD)
 dataBoth2a$rotationSpeed <- as.factor(dataBoth2a$rotationSpeed)
 
-conBoth2 <- aggregate(torsionVelT ~ sub * exp * afterReversalD * rotationSpeed,
+conBoth2 <- aggregate(torsionVelT ~ sub * exp * rotationSpeed,
     data = dataBoth2a, FUN = "mean")
     # show(conBoth2)
-colnames(conBoth2)[5] <- "torsionVelTMean"
+colnames(conBoth2)[4] <- "torsionVelTMean"
 # conBoth2$torsionVelTMean <- abs(conBoth2$torsionVelTMean)
 
-torsionVBoth2Anova <- ezANOVA(conBoth2, dv = .(torsionVelTMean), wid = .(sub), within = .(rotationSpeed,
-    afterReversalD), type = 3)
+torsionVBoth2Anova <- ezANOVA(conBoth2, dv = .(torsionVelTMean), wid = .(sub), within = .(rotationSpeed), type = 3)
 print(torsionVBoth2Anova)
 
 ## correlation between perception and torsion
@@ -544,7 +536,7 @@ print(corExp2)
 trialBoth2 <- trialDataBoth2Original[which(trialDataBoth2Original$timeWindow == -1), ]
 sub <- trialBoth2["sub"] + 20
 exp <- trialBoth2["exp"]
-afterReversalD <- trialBoth2["afterReversalD"]
+# afterReversalD <- trialBoth2["afterReversalD"]
 rotationSpeed <- trialBoth2["rotationSpeed"]
 perceptualError <- trialBoth2["perceptualError"]
 torsionAngleSame <- trialBoth2["torsionAngleCW"] * trialBoth2["afterReversalD"]
@@ -557,21 +549,20 @@ idx <- trialBoth2$afterReversalD * trialBoth2$timeWindow==1
 torsionAngleDiff[idx, ] <- trialBoth2$torsionAngleCCW[idx] * trialBoth2$afterReversalD[idx]
 idx <- trialBoth2$timeWindow==0 & trialBoth2$afterReversalD==-1
 torsionAngleDiff[idx, ] <- trialBoth2$torsionAngleCCW[idx] * trialBoth2$afterReversalD[idx]
-dataBoth2b <- data.frame(sub, exp, afterReversalD, rotationSpeed, perceptualError, torsionAngleSame, torsionAngleDiff)
+dataBoth2b <- data.frame(sub, exp, rotationSpeed, perceptualError, torsionAngleSame, torsionAngleDiff)
 dataBoth2b$exp <- as.factor(dataBoth2b$exp)
 dataBoth2b$sub <- as.factor(dataBoth2b$sub)
 dataBoth2b$rotationSpeed <- as.factor(dataBoth2b$rotationSpeed)
-dataBoth2b$afterReversalD <- as.factor(dataBoth2b$afterReversalD)
-colnames(dataBoth2b)[6] <- "torsionAngleSame"
-colnames(dataBoth2b)[7] <- "torsionAngleDiff"
+# dataBoth2b$afterReversalD <- as.factor(dataBoth2b$afterReversalD)
+colnames(dataBoth2b)[5] <- "torsionAngleSame"
+colnames(dataBoth2b)[6] <- "torsionAngleDiff"
 
-conBoth2 <- aggregate(torsionAngleSame ~ sub * exp * afterReversalD * rotationSpeed,
+conBoth2 <- aggregate(torsionAngleSame ~ sub * exp * rotationSpeed,
     data = dataBoth2b, FUN = "mean")
-colnames(conBoth2)[5] <- "torsionAngleSame"
+colnames(conBoth2)[4] <- "torsionAngleSame"
 # conBoth2$torsionAngleSame <- abs(conBoth2$torsionAngleSame)
 
-torsionABoth2Anova <- ezANOVA(conBoth2, dv = .(torsionAngleSame), wid = .(sub), within = .(rotationSpeed,
-    afterReversalD), type = 3)
+torsionABoth2Anova <- ezANOVA(conBoth2, dv = .(torsionAngleSame), wid = .(sub), within = .(rotationSpeed), type = 3)
 print(torsionABoth2Anova)
 #
 # postTime <- ezStats(conBoth2, dv = .(torsionAngleSame), wid = .(sub), within = .(timeWindow))
@@ -600,7 +591,7 @@ print(corExp2)
 trialBoth2 <- trialDataBoth2Original[which(trialDataBoth2Original$timeWindow == 1), ]
 sub <- trialBoth2["sub"] + 20
 exp <- trialBoth2["exp"]
-afterReversalD <- trialBoth2["afterReversalD"]
+# afterReversalD <- trialBoth2["afterReversalD"]
 rotationSpeed <- trialBoth2["rotationSpeed"]
 perceptualError <- trialBoth2["perceptualError"]
 torsionAngleSame <- trialBoth2["torsionAngleCW"] * trialBoth2["afterReversalD"]
@@ -613,20 +604,19 @@ idx <- trialBoth2$afterReversalD * trialBoth2$timeWindow==1
 torsionAngleDiff[idx, ] <- trialBoth2$torsionAngleCCW[idx] * trialBoth2$afterReversalD[idx]
 idx <- trialBoth2$timeWindow==0 & trialBoth2$afterReversalD==-1
 torsionAngleDiff[idx, ] <- trialBoth2$torsionAngleCCW[idx] * trialBoth2$afterReversalD[idx]
-dataBoth2a <- data.frame(sub, exp, afterReversalD, rotationSpeed, perceptualError, torsionAngleSame, torsionAngleDiff)
+dataBoth2a <- data.frame(sub, exp, rotationSpeed, perceptualError, torsionAngleSame, torsionAngleDiff)
 dataBoth2a$exp <- as.factor(dataBoth2a$exp)
 dataBoth2a$sub <- as.factor(dataBoth2a$sub)
 dataBoth2a$rotationSpeed <- as.factor(dataBoth2a$rotationSpeed)
-dataBoth2a$afterReversalD <- as.factor(dataBoth2a$afterReversalD)
-colnames(dataBoth2a)[6] <- "torsionAngleSame"
-colnames(dataBoth2a)[7] <- "torsionAngleDiff"
+# dataBoth2a$afterReversalD <- as.factor(dataBoth2a$afterReversalD)
+colnames(dataBoth2a)[5] <- "torsionAngleSame"
+colnames(dataBoth2a)[6] <- "torsionAngleDiff"
 
-conBoth2 <- aggregate(torsionAngleSame ~ sub * exp * afterReversalD * rotationSpeed,
+conBoth2 <- aggregate(torsionAngleSame ~ sub * exp * rotationSpeed,
     data = dataBoth2a, FUN = "mean")
-colnames(conBoth2)[5] <- "torsionAngleSame"
+colnames(conBoth2)[4] <- "torsionAngleSame"
 
-torsionABoth2Anova <- ezANOVA(conBoth2, dv = .(torsionAngleSame), wid = .(sub), within = .(rotationSpeed,
-    afterReversalD), type = 3)
+torsionABoth2Anova <- ezANOVA(conBoth2, dv = .(torsionAngleSame), wid = .(sub), within = .(rotationSpeed), type = 3)
 print(torsionABoth2Anova)
 
 p <- ggplot(conBoth2, aes(x = rotationSpeed, y = torsionAngleSame, colour = afterReversalD,
@@ -635,7 +625,7 @@ p <- ggplot(conBoth2, aes(x = rotationSpeed, y = torsionAngleSame, colour = afte
 print(p)
 
 # correlation
-conCorBoth2 <- aggregate(cbind(torsionAngleSame, perceptualError) ~ sub * exp * 
+conCorBoth2 <- aggregate(cbind(torsionAngleSame, perceptualError) ~ sub * exp *
     rotationSpeed, data = dataBoth2a, FUN = "mean")
 colnames(conCorBoth2)[4] <- "torsionAngleSameMean"
 colnames(conCorBoth2)[5] <- "perceptualErrorMean"
