@@ -1,3 +1,5 @@
+# install.packages('ggthemes')
+# library(ggthemes)
 library(ggplot2)
 library(RColorBrewer)
 library(matrixStats)
@@ -42,12 +44,13 @@ endName <- c("beforeReversal", "afterReversal")
 # dotCorSize <- 6
 # dotCorAlpha <- 0.8
 # for manuscript
-lindWidth <- 1.5
-dotSize <- 2
+lineWidth <- 1.5
+dotSize <- 3
 dotCorSize <- 4
 dotCorAlpha <- 0.8
-textSize <- 15
+textSize <- 25
 vtPlotWidth <- 16 # pdf figure width for velocity traces
+axisLineWidth <- 0.5
 
 #### perceptual data
 ### Exp1
@@ -67,20 +70,22 @@ dataAgg1$psd <- aggregate(perceptualError ~ rotationSpeed * exp * sub, data = da
 
 pdf(paste(folder1,"perceptionExp1.pdf", sep = ""))
 p <- ggplot(dataAgg1, aes(x = rotationSpeed, y = perceptualError)) +
-        stat_summary(aes(y = perceptualError), fun.y = mean, geom = "line", size = lindWidth) +
-        stat_summary(fun.data = mean_se, geom = "errorbar", width = 10, size = 1) +
-        # geom_boxplot(aes(x = rotationSpeed, y = perceptualError), size = 0.8, outlier.size = 1.5, outlier.shape = 21) +
-        # geom_point(aes(x = rotationSpeed, y = perceptualError, group = afterReversalD), size = dotSize, position = position_jitterdodge(), shape = 21) +
-        coord_cartesian(ylim=c(0, 20)) +
-        scale_y_continuous(name = "Illusory posotion shift (°)") +
-        scale_x_continuous(name = "Rotational speed (°/s)", breaks=c(25, 50, 100, 200, 400)) +
+        stat_summary(aes(y = perceptualError), fun.y = mean, geom = "point", shape = 95, size = 15) +
+        # stat_summary(fun.data = mean_se, geom = "errorbar", width = 10, size = 1) +
+        # geom_boxplot(aes(x = rotationSpeed, y = perceptualError, group = rotationSpeed), size = 0.8, outlier.size = 1.5, outlier.shape = 21) +
+        geom_point(aes(x = rotationSpeed, y = perceptualError), size = dotSize, shape = 1) +
+        geom_segment(aes_all(c('x', 'y', 'xend', 'yend')), data = data.frame(x = 25, xend = 400, y = 0, yend = 0), size = axisLineWidth, linetype = "dashed") +
+        geom_segment(aes_all(c('x', 'y', 'xend', 'yend')), data = data.frame(x = c(25, 0), xend = c(400, 0), y = c(-1, 0), yend = c(-1, 30)), size = axisLineWidth) +
+        scale_y_continuous(name = "Illusory posotion shift (°)", limits = c(-1, 32), expand = c(0, 0)) +
+        scale_x_continuous(name = "Rotational speed (°/s)", limits = c(0, 420), breaks=c(25, 50, 100, 200, 400), expand = c(0, 0)) +
         # scale_colour_discrete(name = "After reversal\ndirection", labels = c("CCW", "CW")) +
-        theme(axis.line = element_line(colour = "black", size = 0.5),
+        theme(axis.text=element_text(colour="black"),
+              axis.ticks=element_line(colour="black", size = axisLineWidth),
               panel.grid.major = element_blank(),
               panel.grid.minor = element_blank(),
               panel.border = element_blank(),
               panel.background = element_blank(),
-              text = element_text(size = textSize),
+              text = element_text(size = textSize, colour = "black"),
               legend.background = element_rect(fill="transparent"),
               legend.key = element_rect(colour = "transparent", fill = "white"))
 print(p)
