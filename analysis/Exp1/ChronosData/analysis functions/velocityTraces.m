@@ -131,7 +131,7 @@ for speedI = 1:size(conditions, 2)
     end
 %     csvwrite(['velocityTraceExp1_', num2str(conditions(speedI)), '.csv'], velTAverageSubBase)
 end
-save('torsionLatencyExp1', 'latency', 'latencyB')
+% save('torsionLatencyExp1', 'latency', 'latencyB')
 
 %% baseline
 % reversalFrames = eyeTrialDataBase.stim.reversalOffset(1, 1)-eyeTrialDataBase.stim.reversalOnset(1, 1);

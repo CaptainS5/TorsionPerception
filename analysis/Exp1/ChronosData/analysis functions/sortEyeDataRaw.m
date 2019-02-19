@@ -13,7 +13,7 @@ names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' '
 conditions = [25 50 100 200 400];
 cd ..
 analysisF = pwd;
-dataFolder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1st year\TorsionPerception\data\Exp1'};
+dataFolder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1stYear\TorsionPerception\data\Exp1'};
 % dataFolder = {'E:\XiuyunWu\Torsion-FDE\data\Exp1'};
 trialPerCon = 60; % for each rotation speed, all directions together though...
 totalBlocks = 5; % how many blocks in total
@@ -91,7 +91,7 @@ for subN = 1:length(names)
             eyeTrialData.stim.reversalOffset(subN, trialN) = trial.stim_reversalOffset;
             eyeTrialData.stim.offset(subN, trialN) = trial.stim_offset;
             eyeTrialData.stim.beforeFrames(subN, trialN) = trial.stim_reversalOnset-trial.stim_onset; % for later alignment of velocity traces
-            eyeTrialData.stim.afterFrames(subN, trialN) = trial.stim_offset-trial.stim_reversalOffset+1; % for later alignment of velocity traces
+            eyeTrialData.stim.afterFrames(subN, trialN) = trial.stim_offset-trial.stim_reversalOffset; % for later alignment of velocity traces
             eyeTrialData.frameLog.startFrame(subN, trialN) = trial.startFrame;
             eyeTrialData.frameLog.endFrame(subN, trialN) = trial.endFrame;
             eyeTrialData.frameLog.length(subN, trialN) = trial.length;
