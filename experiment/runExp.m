@@ -23,8 +23,17 @@ try
     end
     
     % creating saving path and filenames
-    if info.expType==-1 % for baseline perception
-        prm.rotation.freq = [2 4 8 12 16]; % the angle of the flash...
+    if info.expType==-1 % for baseline perception, exp 1 & 3
+%         prm.rotation.freq = [2 4 8 12 16]; % the angle of the flash...
+%         
+%         prm.blockN = 1; % total number of blocks
+%         prm.trialPerCondition = 6; % trial number per condition
+%         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
+%             length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
+%             length(prm.rotation.freq);
+%         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
+        % exp 3
+        prm.rotation.freq = [4 8 16 24 32]; % the angle of the flash...
         
         prm.blockN = 1; % total number of blocks
         prm.trialPerCondition = 6; % trial number per condition
@@ -34,7 +43,7 @@ try
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         
         prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baseline'];
-    elseif info.expType==-0.5 % baseline perception for control
+    elseif info.expType==-0.5 % baseline perception for exp 2
         prm.flash.displacement = [-1 1]; % -1, left side follow the assigned initial direction; 1, right side follow the assigned initial direction
         prm.flash.eccentricity = 0.5; % distance between edge of grating and fixation, half the gap between the two gratings
         prm.rotation.freq = [2 8 16]; % the angle of the flash...
@@ -47,15 +56,22 @@ try
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         
         prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baseline'];
-    elseif info.expType==0 % baseline of torsion
+    elseif info.expType==0 % baseline of torsion, exp 1 & 3
+%         % epx 1
+%         prm.blockN = 1; % total number of blocks
+%         prm.trialPerCondition = 5; % trial number per condition
+%         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
+%         prm.rotation.beforeDuration = 1; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
+%         prm.rotation.afterDuration = 1;
+        % epx 3
         prm.blockN = 1; % total number of blocks
-        prm.trialPerCondition = 5; % trial number per condition
+        prm.trialPerCondition = 10; % trial number per condition
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         prm.rotation.beforeDuration = 1; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
         prm.rotation.afterDuration = 1;
         
         prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baselineTorsion'];
-    elseif info.expType==0.5 % baseline torsion for control
+    elseif info.expType==0.5 % baseline torsion, exp 2
         prm.flash.displacement = [-1 1]; % -1, left side follow the assigned initial direction; 1, right side follow the assigned initial direction
         prm.flash.eccentricity = 0.5; % distance between edge of grating and fixation, half the gap between the two gratings
         
@@ -63,15 +79,15 @@ try
         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
             length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
             length(prm.rotation.freq);
-        prm.trialPerCondition = 3; % trial number per condition
+        prm.trialPerCondition = 20; % trial number per condition
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         prm.rotation.beforeDuration = 1; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
         prm.rotation.afterDuration = 1;
         
         prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baselineTorsion'];
-    elseif info.expType==1
+    elseif info.expType==1 % exp 1 & 3
         prm.fileName.folder = [folder, '\data\', info.subID{1}];
-    elseif info.expType==1.5 % control, two peripheral stimuli
+    elseif info.expType==1.5 % exp 2, two peripheral stimuli
         %         prm.grating.outerRadius = 23.6/2;
         %         prm.flash.radius = 2.5/2;
         prm.flash.displacement = [-1 1]; % -1, left side follow the assigned initial direction; 1, right side follow the assigned initial direction
