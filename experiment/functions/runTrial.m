@@ -244,9 +244,8 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
             end
         end
     end
-    
-    % Reversal angle and timing
-    if frameN==rotationFramesBefore+flashOnset
+        
+    if frameN==rotationFramesBefore+flashOnset % Reversal angle and timing
         %     % No Reversal
         %     if frameN==flashOnset
         %         StimulusOnsetTime = GetSecs;
@@ -261,6 +260,8 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
         if fix(info.expType)~=info.expType
             display{blockN}.reversalAngle2(trialN) = rotationAngle2;
         end
+    else
+        Screen('Flip', prm.screen.windowPtr);
     end
     
     %     % record response
@@ -287,7 +288,7 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
     %         end
     %         %% end of button response
     %     end
-    Screen('Flip', prm.screen.windowPtr);
+    
     %     if trialN==1
     %     imgD = Screen('GetImage', prm.screen.windowPtr);
     %     imwrite(imgD, ['frame', num2str(frameN), '.jpg'])
