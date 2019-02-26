@@ -2,10 +2,10 @@ function [] = updateText(trial, torsion, logData, fig)
 
 screenSize = get(0,'ScreenSize');
 
-xPosition = screenSize(3)*2/3;
-yPosition = screenSize(4)*2/5;
+xPosition = 0; %screenSize(3)*2/3;
+yPosition = 350; %screenSize(4)*2/5;
 verticalDistance = 20;
-width = 500;
+width = 150;
 height = 20;
 textblock = 0;
 

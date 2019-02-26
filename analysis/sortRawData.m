@@ -17,8 +17,8 @@ howMany = -13; % include the first howMany trials for each condition*each initia
 % using for pilot to see how many trials we need...
 % if not using this, set howMany to a negative number such as -1
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
-trialPerBlock = 48; % ignore unfinished blocks
-trialPerBlockBase = 60; % ignore unfinished blocks
+trialPerBlock = 48;% ignore unfinished blocks
+trialPerBlockBase = 40; % ignore unfinished blocks
 
 dataRawAll = table();
 dataRawBaseAll = table();

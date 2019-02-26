@@ -277,11 +277,11 @@ try
             %             resp.gratingRadiusIdx(tempN, 1) = display{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
             resp.gratingRadius(tempN, 1) = prm.grating.outerRadius(display{blockN}.gratingRadiusIdx(trialN)); % actual value of the grating outer radius
             resp.flashOnset(tempN, 1) = display{blockN}.flashOnset(trialN);
-            resp.targetSide(tempN, 1) = display{blockN}.flashDisplaceLeft(trialN); % -1 left, 1 right
             resp.initialDirection(tempN, 1) = display{blockN}.initialDirection(trialN);
             resp.initialAngle(tempN, 1) = display{blockN}.initialAngle(trialN);
             resp.reversalAngle(tempN, 1) = display{blockN}.reversalAngle(trialN);
             if fix(info.expType)~=info.expType
+                resp.targetSide(tempN, 1) = display{blockN}.flashDisplaceLeft(trialN); % -1 left, 1 right
                 resp.initialAngle2(tempN, 1) = display{blockN}.initialAngle2(trialN);
                 resp.reversalAngle2(tempN, 1) = display{blockN}.reversalAngle2(trialN);
             end

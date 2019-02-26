@@ -11,7 +11,7 @@ latency = 0;%0.12*sampleRate;
 %% position plot
 subplot(2,2,2,'replace');
 
-axis([startFrame endFrame -15 15]);
+axis([startFrame endFrame -25 25]);
 %change frames to ms
 set(gca,'Xtick',startFrame:tickStep:endFrame,'XTickLabel',timeInMs);
 
@@ -83,7 +83,7 @@ line([startFrame endFrame], [0 0],'Color','k','LineStyle',':');
 subplot(2,2,3,'replace');
 % subplot(3,1,1,'replace');
 
-axis([startFrame endFrame -5 5]);
+axis([startFrame endFrame -10 10]);
 %change frames to ms
 set(gca,'Xtick',startFrame:tickStep:endFrame,'XTickLabel',timeInMs);
 
