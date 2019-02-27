@@ -9,7 +9,7 @@ global trial
 
 % names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol' 'FScontrol' 'XWcontrol' 'SCcontrol' 'JFcontrol'};
 % conditions = [25 50 100 200];
-names = {'test' 'test2'};
+names = {'test' 'test2' 'tCW'};
 conditions = [50 200];
 cd ..
 analysisF = pwd;
@@ -20,7 +20,7 @@ totalBlocks = 6; % how many blocks in total
 torsionThreshold = 8*ones(size(names));
 % tSacRemoveFrames = 3*ones(size(names));
 % threshold for reverse saccade, exceeding how many consecutive frames
-eyeName = {'R'};
+eyeName = {'L' 'R'};
 
 %% Experiment trials
 % count = 1;
@@ -100,7 +100,7 @@ eyeName = {'R'};
 % end
 
 %% Baseline trials
-for eye = 1:1
+for eye = 2:2
     eyeTrialDataBase = [];
     for subN = 1:length(names)
         cd(analysisF)
@@ -109,11 +109,11 @@ for eye = 1:1
         trialN = 1; % label the trial number so it would be easier to correspond perceptual, left eye, and right eye data
         
         for blockN = 1:1
-%             if eye==1
-%                 errors = load(['Errorfiles\Exp0_Subject' num2str(subN,'%.2i') '_Block' num2str(blockN,'%.2i') '_L_errorFile.mat']);
-%             else
+            if eye==1
+                errors = load(['Errorfiles\Exp0_Subject' num2str(subN,'%.2i') '_Block' num2str(blockN,'%.2i') '_L_errorFile.mat']);
+            else
                 errors = load(['Errorfiles\Exp0_Subject' num2str(subN,'%.2i') '_Block' num2str(blockN,'%.2i') '_R_errorFile.mat']);
-%             end
+            end
             % load response data for trial information
             dataFile = dir([dataFolder{:} '\' subject '\baselineTorsion\response' num2str(blockN) '_*.mat']);
             load([dataFolder{:} '\' subject '\baselineTorsion\' dataFile.name]) % resp is the response data for the current block
@@ -124,7 +124,7 @@ for eye = 1:1
                 eyeTrialDataBase.eye(subN, trialN) = eye;
                 eyeTrialDataBase.rotationSpeed(subN, trialN) = resp.rotationSpeed(t);
                 eyeTrialDataBase.afterReversalD(subN, trialN) = -resp.initialDirection(t); % 1=clockwise, -1=counterclockwise
-                eyeTrialDataBase.targetSide(subN, trialN) = resp.targetSide(t);
+%                 eyeTrialDataBase.targetSide(subN, trialN) = resp.targetSide(t);
                 eyeTrialDataBase.errorStatus(subN, trialN) = errors.errorStatus(t);
                 
                 % read in data and socscalexy

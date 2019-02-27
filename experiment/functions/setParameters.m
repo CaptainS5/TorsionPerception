@@ -19,7 +19,7 @@ prm.screen.monitorHeight = 27;
 % fixation
 prm.fixation.ringRadius = 0.5; % in dva
 prm.fixation.dotRadius = 0.15; % in dva
-prm.fixation.colour = []; % fixation colour, currently set in runExp.m
+prm.fixation.colour = [1 0 0]; % fixation colour, currently set in runExp.m
 prm.fixation.durationBase = 0.6;
 prm.fixation.durationJitter = 0.2;
 % fixation duration before each block is base+rand*jitter
@@ -67,7 +67,7 @@ prm.flash.respColour = [0 0 0]; % RGB in 0-255 range
 % red flash 21.26
 
 % rotation control
-prm.rotation.freq = [50 200]; % in degrees out of a cycle (360 in total)/s
+prm.rotation.freq = [25 200]; % in degrees out of a cycle (360 in total)/s
 prm.rotation.beforeDuration = .7; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
 prm.rotation.afterDuration = .7; %90./prm.rotation.freq(3); 
 % prm.rotation.randDuration = 0.5; % rotation time = base+-rand

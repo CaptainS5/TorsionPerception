@@ -122,7 +122,9 @@ recordFlag=0;
 
 % mPtr = Screen('CreateMovie', prm.screen.windowPtr, ['demo', num2str(trialN)], [], [], [], [], 3);
 
-% draw fixation at the beginning of each trial
+% draw fixation at the beginning of each trial, also show the grating to optimize
+% pupil size...
+Screen('DrawTextures', prm.screen.windowPtr, prm.grating.tex{sizeN});
 % Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
 Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
 if fix(info.expType)~=info.expType % place holder for peripheral stimuli

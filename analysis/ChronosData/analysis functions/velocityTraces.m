@@ -2,13 +2,13 @@
 % tilted
 clear all; close all; clc
 
-names = {'test' 'test2'};
+names = {'test' 'test2' 'tCW'};
 conditions = [50 200];
 sampleRate = 200;
 eyeName = {'L' 'R'};
 dirCons = [-1 1]; % -1 = ccw; 1 = cw
 folder = pwd;
-colorPlot = [0.5 0.5 0.5; 0 0 0];
+colorPlot = [0.4 0.4 0.4; 0 0 0; 0.7 0.7 0.7];
 
 %% directions merged, always left CW and right CCW, generate csv files for R plotting
 % % consistent reversal duration and duration after for all participants
@@ -201,13 +201,14 @@ for eye = 2:2
             hold on
             plot(timePoints, velTAverage{speedI, 2}(subN, (maxFrameLength-minFrameLength+1):end), '-', 'color', colorPlot(subN, :)) % cw
         end
-        legend({'tiltCCW-motionCCW' 'tiltCCW-motionCW' 'noTilt-CCW' 'noTilt-CW'})
+        legend({'tiltCCW-motionCCW' 'tiltCCW-motionCW' 'noTilt-CCW' 'noTilt-CW' 'tiltCW-motionCCW' 'tiltCW-motionCW' }, ...
+            'location', 'southeast')
         title([eyeName{eye}, ' base rotational speed ', num2str(conditions(speedI))])
         xlabel('Time (ms)')
         ylabel('Torsional velocity (deg/s)')
-        % ylim([-0.5 0.5])
+        ylim([-6 3])
         
-        % saveas(gca, ['velocityTraces_', num2str(conditions(speedI)), '.pdf'])
+        saveas(gca, ['velocityTracesSub_', num2str(conditions(speedI)), '.pdf'])
     end
     
     % average across participants, each speed
@@ -217,13 +218,13 @@ for eye = 2:2
         hold on
         plot(timePoints, velTmean{speedI, 2}, '-', 'color', colorPlot(speedI, :)) % cw
     end
-    legend({'50-CCW' '50-CW' '200-CCW' '200-CW'})
+    legend({'50-CCW' '50-CW' '200-CCW' '200-CW'}, 'location', 'southeast')
     title([eyeName{eye}])
     xlabel('Time (ms)')
     ylabel('Torsional velocity (deg/s)')
-    % ylim([-0.5 0.5])
+    ylim([-6 3])
     
-%     %     saveas(gca, ['velocityTraces_', eyeName{eye}, '_', num2str(conditions(speedI)), '.pdf'])
+    saveas(gca, ['velocityTracesSpeeds_', eyeName{eye}, '.pdf'])
 end
 %
 %     % generate csv files, each file for one speed condition

@@ -163,7 +163,7 @@ try
         % gratingOuterRadius, gratingInnerRadius, flashRadius, color (RGB 0-255)
         prm.resp.tex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgResp);
     end
-    prm.fixation.colour = prm.screen.whiteColour;
+%     prm.fixation.colour = prm.screen.whiteColour;
     % calculate angle per frame for display
     prm.rotation.anglePerFrame = prm.rotation.freq./prm.screen.refreshRate; % in degree
     % set up folders, files and running paras

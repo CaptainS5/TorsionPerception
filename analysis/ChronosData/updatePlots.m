@@ -83,7 +83,7 @@ line([startFrame endFrame], [0 0],'Color','k','LineStyle',':');
 subplot(2,2,3,'replace');
 % subplot(3,1,1,'replace');
 
-axis([startFrame endFrame -10 10]);
+axis([startFrame endFrame -20 5]);
 %change frames to ms
 set(gca,'Xtick',startFrame:tickStep:endFrame,'XTickLabel',timeInMs);
 
