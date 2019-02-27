@@ -242,16 +242,18 @@ try
         HideCursor;
         % initial welcome
         textBlock = ['Block ', num2str(blockN)];
-        Screen('DrawText', prm.screen.windowPtr, textBlock, prm.screen.center(1)-60, prm.screen.center(2), prm.screen.whiteColour);
-%         if info.reportStyle==-1
-%             reportInstruction = 'Report LOWER';
-%         elseif info.reportStyle==1
-%             reportInstruction = 'Report HIGHER';
-%         else
-%             reportInstruction = 'Wrong! Get experimenter.'
-%         end
+        DrawFormattedText(prm.screen.windowPtr, textBlock,...
+            'center', 'center', prm.screen.whiteColour);
+        %         if info.reportStyle==-1
+        %             reportInstruction = 'Report LOWER';
+        %         elseif info.reportStyle==1
+        %             reportInstruction = 'Report HIGHER';
+        %         else
+        %             reportInstruction = 'Wrong! Get experimenter.'
+        %         end
         reportInstruction = 'Click to start';
-        Screen('DrawText', prm.screen.windowPtr, reportInstruction, prm.screen.center(1)-100, prm.screen.center(2)+50, prm.screen.whiteColour);
+        DrawFormattedText(prm.screen.windowPtr, reportInstruction,...
+            'center', 'center', prm.screen.whiteColour);
         Screen('Flip', prm.screen.windowPtr);
         %         KbWait();
         buttons = [];
@@ -280,9 +282,11 @@ try
             prm.screen.center(1)+rectSizeDotX,...
             prm.screen.center(2)+rectSizeDotY];
         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
-        WaitSecs(1)
+        Screen('Flip', prm.screen.windowPtr);
+        WaitSecs(2)
         reportInstruction = ['Tilt your head to the ', headDir,  ',\n and then click to continue'];
-        Screen('DrawText', prm.screen.windowPtr, reportInstruction, prm.screen.center(1)-100, prm.screen.center(2)+50, prm.screen.whiteColour);
+        DrawFormattedText(prm.screen.windowPtr, reportInstruction,...
+            'center', 'center', prm.screen.whiteColour);
         Screen('Flip', prm.screen.windowPtr);
         
         buttons = [];
