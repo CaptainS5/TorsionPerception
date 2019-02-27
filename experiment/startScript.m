@@ -9,7 +9,7 @@ try
     setupTrigger();
     currentBlock = 1;
     rStyleDefault = 1; 
-    expTyp = -0.5;
+    expTyp = 0;
     eyeTracker = 0;
        
     while(true)

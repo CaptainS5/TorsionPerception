@@ -1,5 +1,5 @@
-% function currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker)
-clear all; close all; clc; currentBlock=1; rStyle = -1; expTyp = 1.5; eyeTracker=0;% debugging
+function currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker)
+% clear all; close all; clc; currentBlock=1; rStyle = -1; expTyp = 1.5; eyeTracker=0;% debugging
 try
     %     clc; clear all; close all; % don't clear the trigger already set up
     global trigger
@@ -243,14 +243,15 @@ try
         % initial welcome
         textBlock = ['Block ', num2str(blockN)];
         Screen('DrawText', prm.screen.windowPtr, textBlock, prm.screen.center(1)-60, prm.screen.center(2), prm.screen.whiteColour);
-        if info.reportStyle==-1
-            reportInstruction = 'Report LOWER';
-        elseif info.reportStyle==1
-            reportInstruction = 'Report HIGHER';
-        else
-            reportStyle = 'Wrong! Get experimenter.'
-        end
-        %         Screen('DrawText', prm.screen.windowPtr, reportInstruction, prm.screen.center(1)-100, prm.screen.center(2)+50, prm.screen.whiteColour);
+%         if info.reportStyle==-1
+%             reportInstruction = 'Report LOWER';
+%         elseif info.reportStyle==1
+%             reportInstruction = 'Report HIGHER';
+%         else
+%             reportInstruction = 'Wrong! Get experimenter.'
+%         end
+        reportInstruction = 'Click to start';
+        Screen('DrawText', prm.screen.windowPtr, reportInstruction, prm.screen.center(1)-100, prm.screen.center(2)+50, prm.screen.whiteColour);
         Screen('Flip', prm.screen.windowPtr);
         %         KbWait();
         buttons = [];
@@ -258,6 +259,41 @@ try
             [x, y, buttons, focus, valuators, valinfo] = GetMouse(prm.screen.windowPtr);
         end
         WaitSecs(prm.ITI);
+        
+        % record the upright eye position for exp 3
+        if info.reportStyle==-1
+            headDir = 'left';
+        elseif info.reportStyle==1
+            headDir = 'right';
+        else
+            headDir = 'Wrong!'
+        end
+        if info.eyeTracker==1
+            trigger.startRecording();
+        end
+        
+        [rectSizeDotX rectSizeDotY] = dva2pxl(prm.fixation.dotRadius, prm.fixation.dotRadius);
+        rectSizeDotX = round(rectSizeDotX);
+        rectSizeDotY = round(rectSizeDotY);
+        rectFixDot = [prm.screen.center(1)-rectSizeDotX,...
+            prm.screen.center(2)-rectSizeDotY,...
+            prm.screen.center(1)+rectSizeDotX,...
+            prm.screen.center(2)+rectSizeDotY];
+        Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
+        WaitSecs(1)
+        reportInstruction = ['Tilt your head to the ', headDir,  ',\n and then click to continue'];
+        Screen('DrawText', prm.screen.windowPtr, reportInstruction, prm.screen.center(1)-100, prm.screen.center(2)+50, prm.screen.whiteColour);
+        Screen('Flip', prm.screen.windowPtr);
+        
+        buttons = [];
+        while ~any(buttons)
+            [x, y, buttons, focus, valuators, valinfo] = GetMouse(prm.screen.windowPtr);
+        end
+        WaitSecs(prm.ITI);
+        
+        if info.eyeTracker==1
+            trigger.stopRecording();
+        end
         
         % run trials
         while tempN<=prm.trialPerBlock+makeUpN
