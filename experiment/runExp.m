@@ -241,7 +241,7 @@ try
         end
         HideCursor;
         % initial welcome
-        textBlock = ['Block ', num2str(blockN)];
+        textBlock = ['Block ', num2str(blockN), '\n Click to start'];
         DrawFormattedText(prm.screen.windowPtr, textBlock,...
             'center', 'center', prm.screen.whiteColour);
         %         if info.reportStyle==-1
@@ -251,9 +251,6 @@ try
         %         else
         %             reportInstruction = 'Wrong! Get experimenter.'
         %         end
-        reportInstruction = 'Click to start';
-        DrawFormattedText(prm.screen.windowPtr, reportInstruction,...
-            'center', 'center', prm.screen.whiteColour);
         Screen('Flip', prm.screen.windowPtr);
         %         KbWait();
         buttons = [];
