@@ -8,9 +8,9 @@ try
     global trigger info;
     setupTrigger();
     currentBlock = 1;
-    rStyleDefault = 1; 
+    rStyleDefault = -1; 
     expTyp = 0;
-    eyeTracker = 0;
+    eyeTracker = 1;
        
     while(true)
         if currentBlock>6
@@ -23,7 +23,7 @@ try
         end
         currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker); % baseline: block 0; experiment: block 1
         if expTyp<1
-            expTyp = expTyp+1;
+            expTyp = expTyp+3;
             if expTyp==0 || expTyp==0.5
                 eyeTracker = 1;
             end

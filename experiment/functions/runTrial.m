@@ -124,7 +124,11 @@ recordFlag=0;
 
 % draw fixation at the beginning of each trial, also show the grating to optimize
 % pupil size...
-Screen('DrawTextures', prm.screen.windowPtr, prm.grating.tex{sizeN});
+if info.expType <0 || (info.expType == 3 && display{blockN}.rotationSpeed(trialN)==25)
+    Screen('DrawTextures', prm.screen.windowPtr, prm.baseline.uniformTex{sizeN}, [], [], rotationAngle);
+else
+    Screen('DrawTextures', prm.screen.windowPtr, prm.grating.tex{sizeN}, [], [], rotationAngle);
+end
 % Screen('FrameOval', prm.screen.windowPtr, prm.fixation.colour, rectFixRing, dva2pxl(0.05), dva2pxl(0.05));
 Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
 if fix(info.expType)~=info.expType % place holder for peripheral stimuli
@@ -148,7 +152,7 @@ fixFrames = round(sec2frm(resp.fixationDuration(tempN, 1)));
 % Screen('AddFrameToMovie', prm.screen.windowPtr, [], [], mPtr, fixFrames)
 
 for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuration) % Reversal--rotationFrames, motion stops when presenting flash
-    if info.expType>=1 % experiment
+    if  info.expType>=1 % experiment 1&2, and experimental trials in 3
         if frameN<=rotationFramesBefore+flashOnset % first direction
             rotationAngle = rotationAngle + direction*prm.rotation.anglePerFrame(speedIdx);
             %     elseif frameN==rotationFrames/2+flashOnset
@@ -201,7 +205,10 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
     end
     
     % draw rotating grating
-    if info.expType>=0 && fix(info.expType)~=info.expType % control & baseline torsion        
+    if info.expType==3 && display{blockN}.rotationSpeed(trialN)==25 % experiment 3, interleaved baseline perception trials
+        Screen('DrawTextures', prm.screen.windowPtr, prm.baseline.uniformTex{sizeN});
+        Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
+    elseif info.expType>=0 && fix(info.expType)~=info.expType % control & baseline torsion        
         Screen('DrawTextures', prm.screen.windowPtr, prm.grating.tex{sizeN}, [], rectRotationL, rotationAngleL);
         Screen('DrawTextures', prm.screen.windowPtr, prm.grating.tex{sizeN}, [], rectRotationR, rotationAngleR);
         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
@@ -230,7 +237,10 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
             %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectL);
             %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectR);
             % dots flash -- how the hell can I get the transparency?????
-            if info.expType==1 % experiment
+            if info.expType==3 && display{blockN}.rotationSpeed(trialN)==25 % experiment 3, interleaved baseline perception trials, always vertical
+                Screen('DrawTextures', prm.screen.windowPtr, prm.baseline.flashTex{sizeN}, [], [], [], [], 1);
+                Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
+            elseif info.expType==1 || info.expType==3 % experiment trials
                 Screen('DrawTextures', prm.screen.windowPtr, prm.flash.tex{sizeN}, [], [], rotationAngle, [], 1);
             elseif info.expType==1.5
                 Screen('DrawTextures', prm.screen.windowPtr, prm.flash.tex{sizeN}, [], rectRotationL, rotationAngleL, [], 1);

@@ -23,17 +23,8 @@ try
     end
     
     % creating saving path and filenames
-    if info.expType==-1 % for baseline perception, exp 1 & 3
-%         prm.rotation.freq = [2 4 8 12 16]; % the angle of the flash...
-%         
-%         prm.blockN = 1; % total number of blocks
-%         prm.trialPerCondition = 6; % trial number per condition
-%         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
-%             length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
-%             length(prm.rotation.freq);
-%         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
-        % exp 3
-        prm.rotation.freq = [4 8 16 24 32]; % the angle of the flash...
+    if info.expType==-1 % for baseline perception, exp 1
+        prm.rotation.freq = [2 4 8 12 16]; % the angle of the flash...
         
         prm.blockN = 1; % total number of blocks
         prm.trialPerCondition = 6; % trial number per condition
@@ -41,6 +32,15 @@ try
             length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
             length(prm.rotation.freq);
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
+%         % exp 3
+%         prm.rotation.freq = [4 8 16 24 32]; % the angle of the flash...
+%         
+%         prm.blockN = 1; % total number of blocks
+%         prm.trialPerCondition = 6; % trial number per condition
+%         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
+%             length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
+%             length(prm.rotation.freq);
+%         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         
         prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baseline'];
     elseif info.expType==-0.5 % baseline perception for exp 2
@@ -67,8 +67,8 @@ try
         prm.blockN = 1; % total number of blocks
         prm.trialPerCondition = 10; % trial number per condition
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
-        prm.rotation.beforeDuration = 1; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
-        prm.rotation.afterDuration = 1;
+        prm.rotation.beforeDuration = 2; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
+        prm.rotation.afterDuration = 2;
         
         prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baselineTorsion'];
     elseif info.expType==0.5 % baseline torsion, exp 2
@@ -85,7 +85,7 @@ try
         prm.rotation.afterDuration = 1;
         
         prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baselineTorsion'];
-    elseif info.expType==1 % exp 1 & 3
+    elseif info.expType==1 || info.expType==3 % exp 1 & 3
         prm.fileName.folder = [folder, '\data\', info.subID{1}];
     elseif info.expType==1.5 % exp 2, two peripheral stimuli
         %         prm.grating.outerRadius = 23.6/2;
@@ -129,7 +129,7 @@ try
     Screen('BlendFunction', prm.screen.windowPtr, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     %     generate textures for the stimuli
     for ii = 1:size(prm.grating.outerRadius, 2)
-        if info.expType>=0 % baseline torsion, experiment, or control
+%         if info.expType>=0 % baseline torsion, experiment, or control
             % rotation stimuli
             imgGrating = generateRotationTexture(prm.grating.outerRadius(ii), ...
                 prm.grating.innerRadius, prm.grating.freq, 0, prm.grating.contrast, prm.grating.averageLum);
@@ -143,7 +143,7 @@ try
             % gratingOuterRadius, gratingInnerRadius, flashRadius, color
             % (RGB 0-255), axis (0-horizontal, 1-vertical)
             prm.flash.tex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgFlash);
-        elseif info.expType<0 % baseline perception
+%         elseif info.expType<0 % baseline perception
             imgUniform = generateRespTexture(prm.grating.outerRadius(ii), ...
                 0, 0, ...
                 prm.flash.respColour, prm.flash.axis);
@@ -155,7 +155,7 @@ try
                 prm.flash.colour, prm.flash.axis);
             % gratingOuterRadius, gratingInnerRadius, flashRadius, color (RGB 0-255)
             prm.baseline.flashTex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgBaseFlash);
-        end
+%         end
         % texture for the adjustment response, initial position vertical
         imgResp = generateRespTexture(prm.grating.outerRadius(ii), ...
             prm.grating.innerRadius, prm.flash.radius, ...
@@ -163,7 +163,7 @@ try
         % gratingOuterRadius, gratingInnerRadius, flashRadius, color (RGB 0-255)
         prm.resp.tex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgResp);
     end
-%     prm.fixation.colour = prm.screen.whiteColour;
+    prm.fixation.colour = prm.screen.whiteColour;
     % calculate angle per frame for display
     prm.rotation.anglePerFrame = prm.rotation.freq./prm.screen.refreshRate; % in degree
     % set up folders, files and running paras

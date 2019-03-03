@@ -19,7 +19,7 @@ prm.screen.monitorHeight = 27;
 % fixation
 prm.fixation.ringRadius = 0.5; % in dva
 prm.fixation.dotRadius = 0.15; % in dva
-prm.fixation.colour = [1 0 0]; % fixation colour, currently set in runExp.m
+prm.fixation.colour = [255 0 0]; % fixation colour, currently set in runExp.m
 prm.fixation.durationBase = 0.6;
 prm.fixation.durationJitter = 0.2;
 % fixation duration before each block is base+rand*jitter
