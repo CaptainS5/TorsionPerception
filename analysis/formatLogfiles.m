@@ -9,7 +9,7 @@ clear all; close all; clc
 % names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 % names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
 % names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol' 'FScontrol' 'XWcontrol' 'SCcontrol' 'JFcontrol'};
-names = {'test' 'test2' 'tCW'};
+names = {'t2Up' 't2CW' 't2CCW'}; %{'test' 'test2' 'tCW'};
 folder = pwd;
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 % % for Exp1
@@ -22,7 +22,7 @@ roundN = -4; % keep how many numbers after the point when rounding and matching.
 expTpB = 40; % trial per block in the experiment
 baseTpB = 40; % trial per block in baseline
 
-for ii = 3:size(names, 2)
+for ii = 1:size(names, 2)
     % Read all raw data
     cd(folder)
     cd ..

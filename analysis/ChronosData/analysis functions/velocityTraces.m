@@ -2,8 +2,9 @@
 % tilted
 clear all; close all; clc
 
-names = {'test' 'test2' 'tCW'};
-conditions = [50 200];
+names = {'t2Up' 't2CCW'}; 
+% t2CW only have available data for the first two secs...
+conditions = [25 200];
 sampleRate = 200;
 eyeName = {'L' 'R'};
 dirCons = [-1 1]; % -1 = ccw; 1 = cw
@@ -162,7 +163,8 @@ for eye = 2:2
                     endI = eyeTrialDataBase.stim.offset(subN, validI(validTrialN));
                     startIF = maxBeforeFrames-eyeTrialDataBase.stim.beforeFrames(subN, validI(validTrialN))+1;
                     endIF = maxBeforeFrames+reversalFrames+eyeTrialDataBase.stim.afterFrames(subN, validI(validTrialN));
-                    frames{subN}{speedI, dirI}(validTrialN, startIF:endIF) = eyeTrialDataBase.frames{subN, validI(validTrialN)}.DT_noSac(startI:endI);                end
+                    frames{subN}{speedI, dirI}(validTrialN, startIF:endIF) = eyeTrialDataBase.frames{subN, validI(validTrialN)}.DT_noSac(startI:endI);                
+                end
             end
         end
     end
@@ -188,7 +190,7 @@ for eye = 2:2
             timePReversal = [0:(reversalFrames-1)]*framePerSec*1000;
             timePBeforeReversal = timePReversal(1)-(beforeFrames+1-[1:beforeFrames])*framePerSec*1000;
             timePAfterReversal = timePReversal(end)+[1:afterFrames]*framePerSec*1000;
-            timePoints = [timePBeforeReversal timePReversal timePAfterReversal]; % align at the reversal and after...
+            timePoints = [timePBeforeReversal timePReversal timePAfterReversal]-min(timePBeforeReversal); % align at the reversal and after...
             % reversal onset is 0
             velTmean{speedI, dirI} = nanmean(velTAverage{speedI, dirI}(:, (maxFrameLength-minFrameLength+1):end));
             % need to plot ste? confidence interval...?
@@ -201,14 +203,14 @@ for eye = 2:2
             hold on
             plot(timePoints, velTAverage{speedI, 2}(subN, (maxFrameLength-minFrameLength+1):end), '-', 'color', colorPlot(subN, :)) % cw
         end
-        legend({'tiltCCW-motionCCW' 'tiltCCW-motionCW' 'noTilt-CCW' 'noTilt-CW' 'tiltCW-motionCCW' 'tiltCW-motionCW' }, ...
-            'location', 'southeast')
+        legend({'tiltCCW-motionCCW' 'tiltCCW-motionCW' 'noTilt-CCW' 'noTilt-CW'});% 'tiltCW-motionCCW' 'tiltCW-motionCW' }, ...
+%             'location', 'southeast')
         title([eyeName{eye}, ' base rotational speed ', num2str(conditions(speedI))])
         xlabel('Time (ms)')
         ylabel('Torsional velocity (deg/s)')
-        ylim([-6 3])
+        ylim([-6 6])
         
-        saveas(gca, ['velocityTracesSub_', num2str(conditions(speedI)), '.pdf'])
+        saveas(gca, ['velocityTraces2Sub_', num2str(conditions(speedI)), '.pdf'])
     end
     
     % average across participants, each speed
@@ -218,13 +220,13 @@ for eye = 2:2
         hold on
         plot(timePoints, velTmean{speedI, 2}, '-', 'color', colorPlot(speedI, :)) % cw
     end
-    legend({'50-CCW' '50-CW' '200-CCW' '200-CW'}, 'location', 'southeast')
+    legend({'25-CCW' '25-CW' '200-CCW' '200-CW'}, 'location', 'southeast')
     title([eyeName{eye}])
     xlabel('Time (ms)')
     ylabel('Torsional velocity (deg/s)')
-    ylim([-6 3])
+    ylim([-6 6])
     
-    saveas(gca, ['velocityTracesSpeeds_', eyeName{eye}, '.pdf'])
+    saveas(gca, ['velocityTracesSpeeds_', eyeName{eye}, '2.pdf'])
 end
 %
 %     % generate csv files, each file for one speed condition

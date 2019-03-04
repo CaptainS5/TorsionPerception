@@ -4,7 +4,7 @@ trial.number = currentTrial;
 trial.valid = 1; % whether this is a valid trial
 
 %% get start and end frame
-trial.startFrame = data.startFrames(trial.number)+1;
+trial.startFrame = data.startFrames(trial.number)+1; % skip the first "upPositin" trial
 trial.endFrame = data.endFrames(trial.number)+1;
 
 %% get data for this trial

@@ -13,6 +13,13 @@ slowPhases(endFrame+1:end) = 0;
 temp = diff(slowPhases);
 torsion.slowPhases.onsets = find(temp == 1);
 torsion.slowPhases.offsets = find(temp == -1);
+% for some reason sometimes onsets and offsets doesn't match... mostly
+% for very noise data trials, probably fail to detect torsion...
+% need to figure out later; but now just use the same length
+minLength = min(length(torsion.slowPhases.onsets), length(torsion.slowPhases.offsets));
+torsion.slowPhases.onsets = torsion.slowPhases.onsets(1:minLength, 1);
+torsion.slowPhases.offsets = torsion.slowPhases.offsets(1:minLength, 1);
+
 torsion.slowPhases.direction = trial.frames.T_filt(torsion.slowPhases.onsets) > trial.frames.T_filt(torsion.slowPhases.offsets);
 
 %% get quickPhase speed
