@@ -56,7 +56,7 @@ try
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         
         prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baseline'];
-    elseif info.expType==0 % baseline of torsion, exp 1 & 3
+    elseif info.expType==0 % baseline torsion, exp 1 & 3
 %         % epx 1
 %         prm.blockN = 1; % total number of blocks
 %         prm.trialPerCondition = 5; % trial number per condition
@@ -64,11 +64,15 @@ try
 %         prm.rotation.beforeDuration = 1; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
 %         prm.rotation.afterDuration = 1;
         % epx 3
-        prm.blockN = 1; % total number of blocks
-        prm.trialPerCondition = 10; % trial number per condition
+        prm.rotation.freq = [200];
+        prm.blockN = 3; % total number of blocks
+        prm.trialPerCondition = 20*length(prm.headTilt); %60; % trial number per condition, including head tilt
+        prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
+            length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
+            length(prm.rotation.freq);
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
-        prm.rotation.beforeDuration = 2; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
-        prm.rotation.afterDuration = 2;
+        prm.rotation.beforeDuration = 1; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
+        prm.rotation.afterDuration = 1;
         
         prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baselineTorsion'];
     elseif info.expType==0.5 % baseline torsion, exp 2
@@ -260,17 +264,19 @@ try
         WaitSecs(prm.ITI);
         
         % record the upright eye position for exp 3
-        if info.reportStyle==-1
-            headDir = 'left';
-        elseif info.reportStyle==1
-            headDir = 'right';
+        if display{blockN}.headTilt(1)==-1
+            headDir = 'Tilt your head to the left';
+        elseif display{blockN}.headTilt(1)==1
+            headDir = 'Tilt your head to the right';
+        elseif display{blockN}.headTilt(1)==0
+            headDir = 'Remain still';
         else
-            headDir = 'Wrong!'
-        end
-        if info.eyeTracker==1
-            trigger.startRecording();
+            headDir = 'WRONG!!';
         end
         
+        if info.eyeTracker==1
+            trigger.startRecording();
+        end        
         [rectSizeDotX rectSizeDotY] = dva2pxl(prm.fixation.dotRadius, prm.fixation.dotRadius);
         rectSizeDotX = round(rectSizeDotX);
         rectSizeDotY = round(rectSizeDotY);
@@ -281,20 +287,19 @@ try
         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
         Screen('Flip', prm.screen.windowPtr);
         WaitSecs(2)
-        reportInstruction = ['Tilt your head to the ', headDir,  ',\n and then click to continue'];
+        reportInstruction = [headDir, ',\n and then click to continue'];
         DrawFormattedText(prm.screen.windowPtr, reportInstruction,...
             'center', 'center', prm.screen.whiteColour);
-        Screen('Flip', prm.screen.windowPtr);
+        Screen('Flip', prm.screen.windowPtr);        
+        if info.eyeTracker==1
+            trigger.stopRecording();
+        end
         
         buttons = [];
         while ~any(buttons)
             [x, y, buttons, focus, valuators, valinfo] = GetMouse(prm.screen.windowPtr);
         end
-        WaitSecs(prm.ITI);
-        
-        if info.eyeTracker==1
-            trigger.stopRecording();
-        end
+        WaitSecs(prm.ITI);        
         
         % run trials
         while tempN<=prm.trialPerBlock+makeUpN
@@ -341,6 +346,7 @@ try
             resp.durationBefore(tempN, 1) = display{blockN}.durationBefore(trialN);
             resp.durationAfter(tempN, 1) = display{blockN}.durationAfter(trialN);
             resp.rotationSpeed(tempN, 1) = display{blockN}.rotationSpeed(trialN);
+            resp.headTilt(tempN, 1) = display{blockN}.headTilt(trialN); % 0=up, -1=CCW, 1=CW
             %             resp.sideDisplaced(tempN, 1) = display{blockN}.sideDisplaced(trialN);
             %             resp.reportStyle(tempN, 1) = info.reportStyle; % report lower or higher
             

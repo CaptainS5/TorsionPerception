@@ -15,6 +15,9 @@ flashEcc = round(flashEcc);
 gratingRadiusX = round(gratingRadiusX);
 gratingRadiusY = round(gratingRadiusY);
 speedIdx = find(prm.rotation.freq==display{blockN}.rotationSpeed(trialN));
+if length(speedIdx)>1
+    speedIdx = min(speedIdx);
+end
 % flashOnset = round(sec2frm(display{blockN}.flashOnset(trialN)));
 flashOnset = round(sec2frm(0.4*rand-0.2)); % random duration within -200 to 200ms
 [temp flashDisplacement] = dva2pxl(0, display{blockN}.flashDisplaceLeft(trialN));
@@ -124,7 +127,7 @@ recordFlag=0;
 
 % draw fixation at the beginning of each trial, also show the grating to optimize
 % pupil size...
-if info.expType <0 || (info.expType == 3 && display{blockN}.rotationSpeed(trialN)==25)
+if info.expType <0 || (info.expType == 3 && display{blockN}.rotationSpeed(trialN)==0)
     Screen('DrawTextures', prm.screen.windowPtr, prm.baseline.uniformTex{sizeN}, [], [], rotationAngle);
 else
     Screen('DrawTextures', prm.screen.windowPtr, prm.grating.tex{sizeN}, [], [], rotationAngle);
@@ -205,7 +208,7 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
     end
     
     % draw rotating grating
-    if info.expType==3 && display{blockN}.rotationSpeed(trialN)==25 % experiment 3, interleaved baseline perception trials
+    if info.expType==3 && display{blockN}.rotationSpeed(trialN)==0 % experiment 3, interleaved baseline perception trials
         Screen('DrawTextures', prm.screen.windowPtr, prm.baseline.uniformTex{sizeN});
         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
     elseif info.expType>=0 && fix(info.expType)~=info.expType % control & baseline torsion        
@@ -237,7 +240,7 @@ for frameN = 1:(rotationFramesBefore+rotationFramesAfter+flashOnset+flashDuratio
             %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectL);
             %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour, flashRectR);
             % dots flash -- how the hell can I get the transparency?????
-            if info.expType==3 && display{blockN}.rotationSpeed(trialN)==25 % experiment 3, interleaved baseline perception trials, always vertical
+            if info.expType==3 && display{blockN}.rotationSpeed(trialN)==0 % experiment 3, interleaved baseline perception trials, always vertical
                 Screen('DrawTextures', prm.screen.windowPtr, prm.baseline.flashTex{sizeN}, [], [], [], [], 1);
                 Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot); % center of the wheel
             elseif info.expType==1 || info.expType==3 % experiment trials

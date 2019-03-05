@@ -14,12 +14,14 @@ cons = genCombinations(cons, prm.flash.displacement');
 cons = genCombinations(cons, prm.rotation.initialDirection');
 cons = genCombinations(cons, prm.rotation.freq');
 trialsBlock = repmat(cons, copyN, 1);
+headTilt = prm.headTilt;
 
 % assign to each block
     for ii = 1:prm.blockN
         tempI = randperm(size(trialsBlock, 1));
         % assign to the final parameter
         display{ii} = table(trialsBlock(tempI, 1), trialsBlock(tempI, 2), trialsBlock(tempI, 3), trialsBlock(tempI, 4), trialsBlock(tempI, 5), 'VariableNames', varNames);
+        display{ii}.headTilt = repmat(headTilt(prm.blockN), size(display{ii}.rotationSpeed, 1), 1);
     end
 
 %% All blocks together, then randomly assign into each block; each block is different in trials
