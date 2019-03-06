@@ -12,15 +12,18 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-names = {'tXW0'};
-merged = 0; % whether initial direction is merged; 1=merged, 0=not
+% names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
+% names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
+names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol' 'FScontrol' 'XWcontrol' 'SCcontrol' 'JFcontrol'};
+merged = 1; % whether initial direction is merged; 1=merged
+mergedSide = 1; % for Exp2
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 % loadData = 0; % whether get new fitting or using existing fitting
 howMany = -12;% include the first howMany trials for each condition*each initialDirection
 % using for pilot to see how many trials we need... the file name
 % would be 2*howMany as the total number of trials per condition (direction merged)
 % if not using this, set howMany to a negative number such as -1
-trialPerCon = 20; % trials per condition in the experiment; 30 for Exp1, 18 for Exp2
+trialPerCon = 18; % trials per condition in the experiment; 30 for Exp1, 18 for Exp2
 fontSize = 15; % for plot
 dirCons = [-1 1]; % initial counterclockwise and clockwise; in plots shows direction after reversal
 
@@ -35,27 +38,27 @@ dirCons = [-1 1]; % initial counterclockwise and clockwise; in plots shows direc
 %     mergeName = 'notMerged';
 % end
 
-% if merged==1
-%     if mergedSide==1
-%         conditionNames = {'rotationSpeed'}; % rotationSpeed here is the tilt angle
-%         mergeName = 'mergedBoth';
-%         legendName = {'allMerged'};
-%     else
-%         conditionNames = {'rotationSpeed', 'targetSide'}; % rotationSpeed here is the tilt angle
-%         mergeName = 'mergedD';
-%         legendName = {'L' 'R'};
-%     end
-% else
-%     if mergedSide==1
-%         conditionNames = {'rotationSpeed', 'initialDirection'}; % which conditions are different
-%         mergeName = 'mergedS';
-%         legendName = {'CC' 'CCW'};
-%     else
-%         conditionNames = {'rotationSpeed', 'initialDirection', 'targetSide'}; % which conditions are different
-%         mergeName = 'notMerged';
-%         legendName = {'CC-L' 'CC-R' 'CCW-L' 'CCW-R'};
-%     end
-% end
+if merged==1
+    if mergedSide==1
+        conditionNames = {'rotationSpeed'}; % rotationSpeed here is the tilt angle
+        mergeName = 'mergedBoth';
+        legendName = {'allMerged'};
+    else
+        conditionNames = {'rotationSpeed', 'targetSide'}; % rotationSpeed here is the tilt angle
+        mergeName = 'mergedD';
+        legendName = {'L' 'R'};
+    end
+else
+    if mergedSide==1
+        conditionNames = {'rotationSpeed', 'initialDirection'}; % which conditions are different
+        mergeName = 'mergedS';
+        legendName = {'CC' 'CCW'};
+    else
+        conditionNames = {'rotationSpeed', 'initialDirection', 'targetSide'}; % which conditions are different
+        mergeName = 'notMerged';
+        legendName = {'CC-L' 'CC-R' 'CCW-L' 'CCW-R'};
+    end
+end
 
 cd ..
 % load baseline
@@ -68,7 +71,7 @@ cd(folder)
 
 dataPercept = table();
 dataPMFall = table(); % experiment
-% dataPMFbaseAll = table(); % baseline
+dataPMFbaseAll = table(); % baseline
 for ii = 1:size(names, 2)
     % load raw data for each participant
     cd ..
