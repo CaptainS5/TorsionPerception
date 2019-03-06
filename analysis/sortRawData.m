@@ -19,7 +19,7 @@ trialPerBlockBase = 10; %
 
 dataRawAll = table();
 dataRawBaseAll = table();
-for ii = 1:size(names, 2)
+for ii = 1:1%size(names, 2)
     % Read all raw data
     cd ..
     cd(['data\', names{ii}])

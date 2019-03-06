@@ -65,7 +65,8 @@ try
 %         prm.rotation.afterDuration = 1;
         % epx 3
         prm.rotation.freq = [200];
-        prm.blockN = 3; % total number of blocks
+        prm.headTilt = [prm.headTilt(1) prm.headTilt(3)]; % now we have two blocks for each head tilt condition
+        prm.blockN = 2; % total number of blocks
         prm.trialPerCondition = 20*length(prm.headTilt); %60; % trial number per condition, including head tilt
         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
             length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
@@ -232,38 +233,10 @@ try
         tempN = 1; % number of trials presented so far
         trialMakeUp = [];
         makeUpN = 0;
-        % calibration
-        if info.eyeTracker==1
-            try
-                startCalibration(prm.screen.monitorWidth, prm.screen.monitorHeight,...
-                    prm.screen.viewDistance, prm.screen.windowPtr, prm.screen.size);
-            catch ME
-                msgString = getReport(ME);
-                disp(msgString);
-                disp('Calibration interrupted.');
-            end
-        end
-        HideCursor;
-        % initial welcome
-        textBlock = ['Block ', num2str(blockN), '\n Click to start'];
-        DrawFormattedText(prm.screen.windowPtr, textBlock,...
-            'center', 'center', prm.screen.whiteColour);
-        %         if info.reportStyle==-1
-        %             reportInstruction = 'Report LOWER';
-        %         elseif info.reportStyle==1
-        %             reportInstruction = 'Report HIGHER';
-        %         else
-        %             reportInstruction = 'Wrong! Get experimenter.'
-        %         end
-        Screen('Flip', prm.screen.windowPtr);
-        %         KbWait();
-        buttons = [];
-        while ~any(buttons)
-            [x, y, buttons, focus, valuators, valinfo] = GetMouse(prm.screen.windowPtr);
-        end
-        WaitSecs(prm.ITI);
         
-        % record the upright eye position for exp 3
+        HideCursor;
+        
+        % initial welcome
         if display{blockN}.headTilt(1)==-1
             headDir = 'Tilt your head to the left';
         elseif display{blockN}.headTilt(1)==1
@@ -274,26 +247,36 @@ try
             headDir = 'WRONG!!';
         end
         
-        if info.eyeTracker==1
-            trigger.startRecording();
-        end        
-        [rectSizeDotX rectSizeDotY] = dva2pxl(prm.fixation.dotRadius, prm.fixation.dotRadius);
-        rectSizeDotX = round(rectSizeDotX);
-        rectSizeDotY = round(rectSizeDotY);
-        rectFixDot = [prm.screen.center(1)-rectSizeDotX,...
-            prm.screen.center(2)-rectSizeDotY,...
-            prm.screen.center(1)+rectSizeDotX,...
-            prm.screen.center(2)+rectSizeDotY];
-        Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
-        Screen('Flip', prm.screen.windowPtr);
-        WaitSecs(2)
-        reportInstruction = [headDir, ',\n and then click to continue'];
+        reportInstruction = [headDir, ',\n then click to calibrate'];
         DrawFormattedText(prm.screen.windowPtr, reportInstruction,...
             'center', 'center', prm.screen.whiteColour);
-        Screen('Flip', prm.screen.windowPtr);        
-        if info.eyeTracker==1
-            trigger.stopRecording();
+        Screen('Flip', prm.screen.windowPtr);
+        %         KbWait();
+        buttons = [];
+        while ~any(buttons)
+            [x, y, buttons, focus, valuators, valinfo] = GetMouse(prm.screen.windowPtr);
         end
+        WaitSecs(prm.ITI);
+        
+        % Listing's plane calibration, nine points
+        if info.eyeTracker==1
+            try
+                startListingsPlaneCalibration(prm.screen.monitorWidth, prm.screen.monitorHeight,...
+                    prm.screen.viewDistance, prm.screen.windowPtr, prm.screen.size, info);
+%                 startCalibration(prm.screen.monitorWidth, prm.screen.monitorHeight,...
+%                     prm.screen.viewDistance, prm.screen.windowPtr, prm.screen.size);
+            catch ME
+                msgString = getReport(ME);
+                disp(msgString);
+                disp('Calibration interrupted.');
+            end
+        end
+        
+        % block information
+        textBlock = ['Block ', num2str(blockN), '\n Click to start'];
+        DrawFormattedText(prm.screen.windowPtr, textBlock,...
+            'center', 'center', prm.screen.whiteColour);
+        Screen('Flip', prm.screen.windowPtr);    
         
         buttons = [];
         while ~any(buttons)
@@ -366,21 +349,56 @@ try
             Screen('Flip', prm.screen.windowPtr);
             WaitSecs(prm.ITI);
         end
+        
+        % present fixation again, head up, to simply get the eye
+        % rotation
+        reportInstruction = ['Head up straight, \n click when ready to fixate'];
+        DrawFormattedText(prm.screen.windowPtr, reportInstruction,...
+            'center', 'center', prm.screen.whiteColour);
+        Screen('Flip', prm.screen.windowPtr);
+        buttons = [];
+        while ~any(buttons)
+            [x, y, buttons, focus, valuators, valinfo] = GetMouse(prm.screen.windowPtr);
+        end
+%         WaitSecs(prm.ITI);
+        if info.eyeTracker==1
+            trigger.startRecording();
+        end 
+        [rectSizeDotX rectSizeDotY] = dva2pxl(prm.fixation.dotRadius, prm.fixation.dotRadius);
+        rectSizeDotX = round(rectSizeDotX);
+        rectSizeDotY = round(rectSizeDotY);
+        rectFixDot = [prm.screen.center(1)-rectSizeDotX,...
+            prm.screen.center(2)-rectSizeDotY,...
+            prm.screen.center(1)+rectSizeDotX,...
+            prm.screen.center(2)+rectSizeDotY];
+        Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
+        Screen('Flip', prm.screen.windowPtr);
+        WaitSecs(2.5) 
+        if info.eyeTracker==1
+            trigger.stopRecording();
+        end 
+        
+        % save resp for analysis...
+        resp(tempN, :) = NaN;
+        resp.headTilt(tempN, 1) = 0;
+        resp.durationBefore(tempN, 1) = 1.5;
+        resp.durationAfter(tempN, 1) = 1;
+        save(prm.fileName.resp, 'resp');
     end
     prm.fileName.prm = [prm.fileName.folder, '\parameters_', info.fileNameTime];
     save(prm.fileName.prm, 'prm');
     
-    % calibration again
-    if info.eyeTracker==1
-        try
-            startCalibration(prm.screen.monitorWidth, prm.screen.monitorHeight,...
-                prm.screen.viewDistance, prm.screen.windowPtr, prm.screen.size);
-        catch ME
-            msgString = getReport(ME);
-            disp(msgString);
-            disp('Calibration interrupted.');
-        end
-    end
+%     % calibration again
+%     if info.eyeTracker==1
+%         try
+%             startCalibration(prm.screen.monitorWidth, prm.screen.monitorHeight,...
+%                 prm.screen.viewDistance, prm.screen.windowPtr, prm.screen.size);
+%         catch ME
+%             msgString = getReport(ME);
+%             disp(msgString);
+%             disp('Calibration interrupted.');
+%         end
+%     end
     
     Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
     Screen('CloseAll')

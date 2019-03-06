@@ -67,7 +67,7 @@ prm.flash.respColour = [0 0 0]; % RGB in 0-255 range
 % red flash 21.26
 
 % rotation control
-prm.rotation.freq = [0 200 200 200 200]; % in degrees out of a cycle (360 in total)/s
+prm.rotation.freq = [0 200 200 200]; % in degrees out of a cycle (360 in total)/s
 prm.rotation.beforeDuration = .7; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
 prm.rotation.afterDuration = .7; %90./prm.rotation.freq(3); 
 % prm.rotation.randDuration = 0.5; % rotation time = base+-rand
@@ -77,7 +77,7 @@ prm.recording.stopDuration = 0.2; % stop recording after a certain duration afte
 
 % block conditions
 prm.ITI = 0.2; % inter-trial interval
-prm.blockN = 3; % total number of blocks
+prm.blockN = 4; % total number of blocks
 prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
     length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
     length(prm.rotation.freq); % total number of combinations of conditions

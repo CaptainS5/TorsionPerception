@@ -11,7 +11,7 @@ try
     rStyleDefault = -1; 
     expTyp = 0;
     eyeTracker = 1;
-    prm.headTilt = [0 -1 1]; % in this exact order
+    prm.headTilt = [-1 -1 0 0]; % in this exact order
        
     while(true)
         if currentBlock>6
