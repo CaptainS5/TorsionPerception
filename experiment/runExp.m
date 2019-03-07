@@ -18,9 +18,11 @@ try
     cd('experiment\')
     prm.pwd = pwd;
     info = getInfo(currentBlock, rStyle, expTyp, eyeTracker);
-    if info.expType>=1
+%     if currentBlock==1 %info.expType>=1
         currentBlock = currentBlock + 1;
-    end
+%     elseif currentBlock==2
+%         currentBlock = 1;
+%     end
     
     % creating saving path and filenames
     if info.expType==-1 % for baseline perception, exp 1
@@ -65,7 +67,7 @@ try
 %         prm.rotation.afterDuration = 1;
         % epx 3
         prm.rotation.freq = [200];
-        prm.headTilt = [prm.headTilt(1) prm.headTilt(3)]; % now we have two blocks for each head tilt condition
+%         prm.headTilt = [prm.headTilt(1) prm.headTilt(3)]; % now we have two blocks for each head tilt condition
         prm.blockN = 2; % total number of blocks
         prm.trialPerCondition = 20*length(prm.headTilt); %60; % trial number per condition, including head tilt
         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
