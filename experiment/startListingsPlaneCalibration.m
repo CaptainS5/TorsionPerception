@@ -46,8 +46,8 @@ conditionTable = createConditionTable(possibleConditions);
 conditionSampler = createConditionSampler(possibleConditions, 2);
 
 positionLog = (conditionTable(conditionSampler,2:3)-2)*2; %#ok<NASGU>
-fileName = [num2str(parameter.subID) '_' num2str(parameter.expType) '_' datestr(now, '_yyyy_mmmm_dd') '_ListingsPlane_Calibration_' num2str(parameter.block) '.mat'];
-logFileName = fullfile(pwd,'..','LogFiles',fileName);
+fileName = [parameter.subID{1} '_' num2str(parameter.expType) '_' datestr(now, '_yyyy_mmmm_dd') '_ListingsPlane_Calibration_' num2str(parameter.block) '.mat'];
+logFileName = fullfile(pwd, 'LogFiles',fileName);
 
 try
     save(logFileName,'positionLog','-append');
@@ -124,7 +124,7 @@ end
 
 
 Screen('LoadNormalizedGammaTable', display.windowPointer, originalLUT);
-ShowCursor;
+% ShowCursor;
 
 
     function drawCircle(center, diameter, color)

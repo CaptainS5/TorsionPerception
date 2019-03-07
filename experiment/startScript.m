@@ -9,9 +9,9 @@ try
     setupTrigger();
     currentBlock = 1;
     rStyleDefault = -1; 
-    expTyp = 0;
+    expTyp = 3;
     eyeTracker = 1;
-    prm.headTilt = [-1 -1 0 0]; % in this exact order
+    prm.headTilt = [1 1 0 0]; % in this exact order
        
     while(true)
         if currentBlock>6
@@ -25,11 +25,15 @@ try
         currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker); % baseline: block 0; experiment: block 1
         if expTyp==0
             expTyp = 3;
+            if currentBlock==2
+                currentBlock=3;
+            end
 %             if expTyp==0 || expTyp==0.5
 %                 eyeTracker = 1;
 %             end
-        elseif expTyp==3
+        elseif expTyp==3 && currentBlock==3
             expTyp = 0;
+            currentBlock=2;
         end
         %         resetTriggerGUI; % what's this?
         trigger.stopRecording();
