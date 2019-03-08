@@ -9,7 +9,7 @@ clear all; close all; clc
 % names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 % names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
 % names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol' 'FScontrol' 'XWcontrol' 'SCcontrol' 'JFcontrol'};
-names = {'t2Up' 't2CW' 't2CCW'}; %{'test' 'test2' 'tCW'};
+names = {'tJF'}; %{'test' 'test2' 'tCW'};
 folder = pwd;
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 % % for Exp1
@@ -19,7 +19,7 @@ roundN = -4; % keep how many numbers after the point when rounding and matching.
 % expTpB = 48; % trial per block in the experiment
 % baseTpB = 48; % trial per block in baseline
 % for Exp3
-expTpB = 40; % trial per block in the experiment
+expTpB = 50; % trial per block in the experiment
 baseTpB = 40; % trial per block in baseline
 
 for ii = 1:size(names, 2)
@@ -53,26 +53,34 @@ for ii = 1:size(names, 2)
         delete(filePath)
         fileID = fopen(filePath, 'a');
         % print headers
-        fprintf(fileID, ['ExperimentID: 2\n']);
+        fprintf(fileID, ['ExperimentID: 3\n']);
         fprintf(fileID, ['SubjectID: ' num2str(ii) '\n']);
         fprintf(fileID, ['Block: ' blockNstr '\n']);
         fprintf(fileID, ['TrialPerBlock: ' num2str(expTpB) '\n']);
         fprintf(fileID, datestr(now, 'yyyy_mmmm_dd_HH:MM:SS.FFF\n'));
-%         for Exp1
-                    fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s \n',...
-                        resp.Properties.VariableNames{:});
-%         % for Exp2
-%         fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s %s %s %s \n',...
-%             resp.Properties.VariableNames{:});        
+        %         for Exp3
+        fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s %s %s\n',...
+            resp.Properties.VariableNames{:});
+        % %         for Exp1
+        %                     fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s \n',...
+        %                         resp.Properties.VariableNames{:});
+        %         % for Exp2
+        %         fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s %s %s %s \n',...
+        %             resp.Properties.VariableNames{:});
         
         for tt = 1:size(resp, 1)
             % print trial data
-            % for Exp1
-            fprintf(fileID, '%0.3f %0.2f %0.3f %0.2f %0.3f %d %0.2f %0.2f %0.3f %0.3f %0.2f \n',...
+            % for Exp3
+%             if resp.rotationSpeed(tt)~=0
+                fprintf(fileID, '%0.3f %0.2f %0.3f %0.2f %0.3f %d %0.2f %0.2f %0.3f %0.3f %0.2f %d %d\n',...
                     resp{tt, 1:end});
-%             % for Exp2
-%             fprintf(fileID, '%0.3f %0.2f %0.3f %0.2f %0.3f %d %d %0.2f %0.2f %0.2f %0.2f %0.3f %0.3f %0.2f \n',...
-%                 resp{tt, 1:end});
+%             end
+            %             % for Exp1
+            %             fprintf(fileID, '%0.3f %0.2f %0.3f %0.2f %0.3f %d %0.2f %0.2f %0.3f %0.3f %0.2f \n',...
+            %                     resp{tt, 1:end});
+            %             % for Exp2
+            %             fprintf(fileID, '%0.3f %0.2f %0.3f %0.2f %0.3f %d %d %0.2f %0.2f %0.2f %0.2f %0.3f %0.3f %0.2f \n',...
+            %                 resp{tt, 1:end});
         end
         
         fclose(fileID);
@@ -81,7 +89,7 @@ for ii = 1:size(names, 2)
     end
     
     %% Baseline data
-%     if ii>=8 % for Exp1
+    if ii>=2
         cd(['baselineTorsion'])
         % get the filenames to load
         fileResp = dir('response*.mat');
@@ -108,37 +116,37 @@ for ii = 1:size(names, 2)
             delete(filePath)
             fileID = fopen(filePath, 'a');
             % print headers
-            fprintf(fileID, ['ExperimentID: 0.5\n']);
+            fprintf(fileID, ['ExperimentID: 0\n']);
             fprintf(fileID, ['SubjectID: ' num2str(ii) '\n']);
-            fprintf(fileID, ['Experiment: 0\n']);
+            fprintf(fileID, ['Block: ' blockNstr '\n']);
             fprintf(fileID, ['TrialPerBlock: ' num2str(baseTpB) '\n']);
             fprintf(fileID, datestr(now, 'yyyy_mmmm_dd_HH:MM:SS.FFF\n'));
-%             for Exp1
-                        fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s \n',...
-                            resp.Properties.VariableNames{:});
-%             % for Exp2
-%             fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s %s %s %s \n',...
-%                 resp.Properties.VariableNames{:});
-%             % for Exp3
-%         fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s %s\n',...
-%             resp.Properties.VariableNames{:});
+            % %             for Exp1
+            %                         fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s \n',...
+            %                             resp.Properties.VariableNames{:});
+            %             % for Exp2
+            %             fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s %s %s %s \n',...
+            %                 resp.Properties.VariableNames{:});
+            % for Exp3
+            fprintf(fileID, '%s %s %s %s %s %s %s %s %s %s %s %s %s\n',...
+                resp.Properties.VariableNames{:});
             
             for tt = 1:size(resp, 1)
                 % print trial data
-                % for Exp1
-                fprintf(fileID, '%0.3f %0.2f %0.3f %0.2f %0.3f %d %0.2f %0.2f %0.3f %0.3f %0.2f \n',...
+                %                 % for Exp1
+                %                 fprintf(fileID, '%0.3f %0.2f %0.3f %0.2f %0.3f %d %0.2f %0.2f %0.3f %0.3f %0.2f \n',...
+                %                     resp{tt, 1:end});
+                %                 % for Exp2
+                %                 fprintf(fileID, '%0.3f %0.2f %0.3f %0.2f %0.3f %d %d %0.2f %0.2f %0.2f %0.2f %0.3f %0.3f %0.2f \n',...
+                %                     resp{tt, 1:end});
+                % for Exp3
+                fprintf(fileID, '%0.3f %0.2f %0.3f %0.2f %0.3f %d %0.2f %0.2f %0.3f %0.3f %0.2f %d %d \n',...
                     resp{tt, 1:end});
-%                 % for Exp2
-%                 fprintf(fileID, '%0.3f %0.2f %0.3f %0.2f %0.3f %d %d %0.2f %0.2f %0.2f %0.2f %0.3f %0.3f %0.2f \n',...
-%                     resp{tt, 1:end});
-%                 % for Exp3
-%             fprintf(fileID, '%0.3f %0.2f %0.3f %0.2f %0.3f %d %d %0.2f %0.2f %0.3f %0.3f %0.2f \n',...
-%                 resp{tt, 1:end});
             end
             fclose(fileID);
             
             jj = jj+1;
-%         end
+        end
     end
 end
 

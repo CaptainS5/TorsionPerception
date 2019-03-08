@@ -30,7 +30,7 @@ if exist(errorFilePath, 'dir') == 0
   mkdir(errorFilePath);
 end
 
-errorFileName = [errorFilePath 'Exp' num2str(header.experiment) '_Subject' num2str(header.subjectID,'%.2i') '_Block' num2str(block,'%.2i') '_' selectedEye '_errorFile.mat'];
+errorFileName = [errorFilePath 'Exp' num2str(header.experimentID) '_Subject' num2str(header.subjectID,'%.2i') '_Block' num2str(block,'%.2i') '_' selectedEye '_errorFile.mat'];
 
 
 

@@ -12,7 +12,7 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-names = {'tXW0'};
+names = {'tJF' 'tXW'};
 merged = 0; % whether initial direction is merged; 1=merged, 0=not
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 % loadData = 0; % whether get new fitting or using existing fitting

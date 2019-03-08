@@ -2,12 +2,13 @@
 % tilted
 clear all; close all; clc
 
-names = {'t2Up' 't2CCW'}; 
+names = {'tXW0'}; 
 % t2CW only have available data for the first two secs...
-conditions = [25 200];
+conditions = [200];
 sampleRate = 200;
 eyeName = {'L' 'R'};
 dirCons = [-1 1]; % -1 = ccw; 1 = cw
+headCons = [-1 0]; % head tilt direction
 folder = pwd;
 colorPlot = [0.4 0.4 0.4; 0 0 0; 0.7 0.7 0.7];
 
@@ -138,97 +139,97 @@ colorPlot = [0.4 0.4 0.4; 0 0 0; 0.7 0.7 0.7];
 % save('meanLatencyExp1', 'meanLatency', 'meanLatencyB')
 
 %% baseline, directions not merged
-for eye = 2:2
-    cd(folder)
-    if eye==1
-        load('eyeDataAllBase_L.mat');
-    else
-        load('eyeDataAllBase_R.mat');
-    end
-    reversalFrames = eyeTrialDataBase.stim.reversalOffset(1, 1)-eyeTrialDataBase.stim.reversalOnset(1, 1);
-    afterFrames = eyeTrialDataBase.stim.afterFrames(1, 1);
-    for subN = 1:size(names, 2)
-        maxBeforeFrames = max(eyeTrialDataBase.stim.beforeFrames(subN, :));
-        frameLength(subN) = maxBeforeFrames+reversalFrames+afterFrames;
-        for speedI = 1:size(conditions, 2)
-            for dirI = 1:size(dirCons, 2)
-                validI = find(eyeTrialDataBase.errorStatus(subN, :)==0 & eyeTrialDataBase.rotationSpeed(subN, :)==conditions(speedI) & eyeTrialDataBase.afterReversalD(subN, :)==dirCons(dirI));
-                frames{subN}{speedI, dirI} = NaN(length(validI), frameLength(subN)); % align the reversal; filled with NaN
-                % rows are trials, columns are frames
-                
-                % fill in the velocity trace of each frame
-                % interpolate NaN points for a better velocity trace
-                for validTrialN = 1:length(validI)
-                    startI = eyeTrialDataBase.stim.onset(subN, validI(validTrialN));
-                    endI = eyeTrialDataBase.stim.offset(subN, validI(validTrialN));
-                    startIF = maxBeforeFrames-eyeTrialDataBase.stim.beforeFrames(subN, validI(validTrialN))+1;
-                    endIF = maxBeforeFrames+reversalFrames+eyeTrialDataBase.stim.afterFrames(subN, validI(validTrialN));
-                    frames{subN}{speedI, dirI}(validTrialN, startIF:endIF) = eyeTrialDataBase.frames{subN, validI(validTrialN)}.DT_noSac(startI:endI);                
-                end
-            end
-        end
-    end
-    maxFrameLength = max(frameLength);
-    
-    % for each rotational speed and direction, draw the mean filtered and unfiltered
-    % velocity trace
-    for speedI = 1:size(conditions, 2)
-        for dirI = 1:size(dirCons, 2)
-            velTAverage{speedI, dirI} = NaN(length(names), maxFrameLength);
-            velTStd{speedI, dirI} = NaN(length(names), maxFrameLength);
-            
-            for subN = 1:size(names, 2)
-                tempStartI = maxFrameLength-frameLength(subN)+1;
-                velTAverage{speedI, dirI}(subN, tempStartI:end) = nanmean(frames{subN}{speedI, dirI});
-                velTStd{speedI, dirI}(subN, tempStartI:end) = nanstd(frames{subN}{speedI, dirI});
-            end
-            
-            % plotting parameters
-            minFrameLength = min(frameLength);
-            beforeFrames = minFrameLength-reversalFrames-afterFrames;
-            framePerSec = 1/sampleRate;
-            timePReversal = [0:(reversalFrames-1)]*framePerSec*1000;
-            timePBeforeReversal = timePReversal(1)-(beforeFrames+1-[1:beforeFrames])*framePerSec*1000;
-            timePAfterReversal = timePReversal(end)+[1:afterFrames]*framePerSec*1000;
-            timePoints = [timePBeforeReversal timePReversal timePAfterReversal]-min(timePBeforeReversal); % align at the reversal and after...
-            % reversal onset is 0
-            velTmean{speedI, dirI} = nanmean(velTAverage{speedI, dirI}(:, (maxFrameLength-minFrameLength+1):end));
-            % need to plot ste? confidence interval...?
-        end
-        % individual traces
-        figure
-        for subN = 1:size(names, 2)
-            % filtered mean velocity trace
-            plot(timePoints, velTAverage{speedI, 1}(subN, (maxFrameLength-minFrameLength+1):end), '--', 'color', colorPlot(subN, :)) % ccw
-            hold on
-            plot(timePoints, velTAverage{speedI, 2}(subN, (maxFrameLength-minFrameLength+1):end), '-', 'color', colorPlot(subN, :)) % cw
-        end
-        legend({'tiltCCW-motionCCW' 'tiltCCW-motionCW' 'noTilt-CCW' 'noTilt-CW'});% 'tiltCW-motionCCW' 'tiltCW-motionCW' }, ...
-%             'location', 'southeast')
-        title([eyeName{eye}, ' base rotational speed ', num2str(conditions(speedI))])
-        xlabel('Time (ms)')
-        ylabel('Torsional velocity (deg/s)')
-        ylim([-6 6])
-        
-        saveas(gca, ['velocityTraces2Sub_', num2str(conditions(speedI)), '.pdf'])
-    end
-    
-    % average across participants, each speed
-    figure
-    for speedI = 1:size(conditions, 2)
-        plot(timePoints, velTmean{speedI, 1}, '--', 'color', colorPlot(speedI, :)) % ccw
-        hold on
-        plot(timePoints, velTmean{speedI, 2}, '-', 'color', colorPlot(speedI, :)) % cw
-    end
-    legend({'25-CCW' '25-CW' '200-CCW' '200-CW'}, 'location', 'southeast')
-    title([eyeName{eye}])
-    xlabel('Time (ms)')
-    ylabel('Torsional velocity (deg/s)')
-    ylim([-6 6])
-    
-    saveas(gca, ['velocityTracesSpeeds_', eyeName{eye}, '2.pdf'])
-end
-%
+% for eye = 2:2
+%     cd(folder)
+%     if eye==1
+%         load('eyeDataAllBase_L.mat');
+%     else
+%         load('eyeDataAllBase_R.mat');
+%     end
+%     reversalFrames = eyeTrialDataBase.stim.reversalOffset(1, 1)-eyeTrialDataBase.stim.reversalOnset(1, 1);
+%     afterFrames = eyeTrialDataBase.stim.afterFrames(1, 1);
+%     for subN = 1:size(names, 2)
+%         maxBeforeFrames = max(eyeTrialDataBase.stim.beforeFrames(subN, :));
+%         frameLength(subN) = maxBeforeFrames+reversalFrames+afterFrames;
+%         for speedI = 1:size(conditions, 2)
+%             for dirI = 1:size(dirCons, 2)
+%                 validI = find(eyeTrialDataBase.errorStatus(subN, :)==0 & eyeTrialDataBase.rotationSpeed(subN, :)==conditions(speedI) & eyeTrialDataBase.afterReversalD(subN, :)==dirCons(dirI));
+%                 frames{subN}{speedI, dirI} = NaN(length(validI), frameLength(subN)); % align the reversal; filled with NaN
+%                 % rows are trials, columns are frames
+%                 
+%                 % fill in the velocity trace of each frame
+%                 % interpolate NaN points for a better velocity trace
+%                 for validTrialN = 1:length(validI)
+%                     startI = eyeTrialDataBase.stim.onset(subN, validI(validTrialN));
+%                     endI = eyeTrialDataBase.stim.offset(subN, validI(validTrialN));
+%                     startIF = maxBeforeFrames-eyeTrialDataBase.stim.beforeFrames(subN, validI(validTrialN))+1;
+%                     endIF = maxBeforeFrames+reversalFrames+eyeTrialDataBase.stim.afterFrames(subN, validI(validTrialN));
+%                     frames{subN}{speedI, dirI}(validTrialN, startIF:endIF) = eyeTrialDataBase.frames{subN, validI(validTrialN)}.DT_noSac(startI:endI);                
+%                 end
+%             end
+%         end
+%     end
+%     maxFrameLength = max(frameLength);
+%     
+%     % for each rotational speed and direction, draw the mean filtered and unfiltered
+%     % velocity trace
+%     for speedI = 1:size(conditions, 2)
+%         for dirI = 1:size(dirCons, 2)
+%             velTAverage{speedI, dirI} = NaN(length(names), maxFrameLength);
+%             velTStd{speedI, dirI} = NaN(length(names), maxFrameLength);
+%             
+%             for subN = 1:size(names, 2)
+%                 tempStartI = maxFrameLength-frameLength(subN)+1;
+%                 velTAverage{speedI, dirI}(subN, tempStartI:end) = nanmean(frames{subN}{speedI, dirI});
+%                 velTStd{speedI, dirI}(subN, tempStartI:end) = nanstd(frames{subN}{speedI, dirI});
+%             end
+%             
+%             % plotting parameters
+%             minFrameLength = min(frameLength);
+%             beforeFrames = minFrameLength-reversalFrames-afterFrames;
+%             framePerSec = 1/sampleRate;
+%             timePReversal = [0:(reversalFrames-1)]*framePerSec*1000;
+%             timePBeforeReversal = timePReversal(1)-(beforeFrames+1-[1:beforeFrames])*framePerSec*1000;
+%             timePAfterReversal = timePReversal(end)+[1:afterFrames]*framePerSec*1000;
+%             timePoints = [timePBeforeReversal timePReversal timePAfterReversal]-min(timePBeforeReversal); % align at the reversal and after...
+%             % reversal onset is 0
+%             velTmean{speedI, dirI} = nanmean(velTAverage{speedI, dirI}(:, (maxFrameLength-minFrameLength+1):end));
+%             % need to plot ste? confidence interval...?
+%         end
+%         % individual traces
+%         figure
+%         for subN = 1:size(names, 2)
+%             % filtered mean velocity trace
+%             plot(timePoints, velTAverage{speedI, 1}(subN, (maxFrameLength-minFrameLength+1):end), '--', 'color', colorPlot(subN, :)) % ccw
+%             hold on
+%             plot(timePoints, velTAverage{speedI, 2}(subN, (maxFrameLength-minFrameLength+1):end), '-', 'color', colorPlot(subN, :)) % cw
+%         end
+%         legend({'tiltCCW-motionCCW' 'tiltCCW-motionCW' 'noTilt-CCW' 'noTilt-CW'});% 'tiltCW-motionCCW' 'tiltCW-motionCW' }, ...
+% %             'location', 'southeast')
+%         title([eyeName{eye}, ' base rotational speed ', num2str(conditions(speedI))])
+%         xlabel('Time (ms)')
+%         ylabel('Torsional velocity (deg/s)')
+%         ylim([-6 6])
+%         
+%         saveas(gca, ['velocityTracesSub_', num2str(conditions(speedI)), '.pdf'])
+%     end
+%     
+%     % average across participants, each speed
+%     figure
+%     for speedI = 1:size(conditions, 2)
+%         plot(timePoints, velTmean{speedI, 1}, '--', 'color', colorPlot(speedI, :)) % ccw
+%         hold on
+%         plot(timePoints, velTmean{speedI, 2}, '-', 'color', colorPlot(speedI, :)) % cw
+%     end
+%     legend({'25-CCW' '25-CW' '200-CCW' '200-CW'}, 'location', 'southeast')
+%     title([eyeName{eye}])
+%     xlabel('Time (ms)')
+%     ylabel('Torsional velocity (deg/s)')
+%     ylim([-6 6])
+%     
+%     saveas(gca, ['velocityTracesSpeeds_', eyeName{eye}, '.pdf'])
+% end
+
 %     % generate csv files, each file for one speed condition
 %     % each row is the mean velocity trace of one participant
 %     % use the min frame length--the lengeth where all participants have

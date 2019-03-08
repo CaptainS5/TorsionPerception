@@ -1,11 +1,12 @@
 function [trial] = setupTrial(data, header, logData, currentTrial)
 
 trial.number = currentTrial;
+trial.log.trialIdx = logData.trialIdx(trial.number); % now is the same with currentTrial...
 trial.valid = 1; % whether this is a valid trial
 
 %% get start and end frame
-trial.startFrame = data.startFrames(trial.number)+1; % skip the first "upPositin" trial
-trial.endFrame = data.endFrames(trial.number)+1;
+trial.startFrame = data.startFrames(trial.log.trialIdx)+1; % skip the first "upPositin" trial
+trial.endFrame = data.endFrames(trial.log.trialIdx)+1;
 
 %% get data for this trial
 trial.frames.X = data.X(trial.startFrame:trial.endFrame);
@@ -39,23 +40,23 @@ trial.lostTframes = data.lostTframes(trial.startFrame:trial.endFrame);
 
 %% calculate stim_onset and stim_offset
 % 
-trial.stim_start = ms2frames(logData.fixationDuration(currentTrial)*1000);
-trial.stim_onset = ms2frames(logData.fixationDuration(currentTrial)*1000);
-trial.stim_reversalOnset = ms2frames((logData.fixationDuration(currentTrial)+logData.durationBefore(currentTrial))*1000);
+trial.stim_start = ms2frames(logData.fixationDuration(trial.number)*1000);
+trial.stim_onset = ms2frames(logData.fixationDuration(trial.number)*1000);
+trial.stim_reversalOnset = ms2frames((logData.fixationDuration(trial.number)+logData.durationBefore(trial.number))*1000);
 trial.stim_reversalOffset = trial.stim_reversalOnset + ms2frames((0.047)*1000); % flash duration
 % trial.stim_onset = ms2frames((logData.fixationDuration(currentTrial)+logData.durationBefore(currentTrial)+0.12)*1000);                          
-trial.stim_offset = trial.stim_reversalOffset + ms2frames(logData.durationAfter(currentTrial)*1000);
+trial.stim_offset = trial.stim_reversalOffset + ms2frames(logData.durationAfter(trial.number)*1000);
 
 trial.length = length(trial.startFrame:trial.endFrame);
 
 %% read log data
-trial.log.experiment = header.experiment;
+trial.log.experiment = header.experimentID;
 trial.log.subject = header.subjectID;
 trial.log.block = logData.block;
 trial.log.eye = data.eye;
 % trial.log.number = logData.trial(currentTrial);
-trial.log.afterReversalD = -logData.initialDirection(currentTrial);
-trial.log.rotationalSpeed = logData.rotationSpeed(currentTrial);
+trial.log.afterReversalD = -logData.initialDirection(trial.number);
+trial.log.rotationalSpeed = logData.rotationSpeed(trial.number);
 % trial.log.translationalDirection = logData.translationalDirection(currentTrial);
 % trial.log.rotationalDirection = logData.rotationalDirection(currentTrial);
 % trial.log.rotationalSpeed = ((double(logData.randomSpeed(currentTrial))+100)/100)*logData.rotationalSpeed(currentTrial);

@@ -113,7 +113,7 @@ plot(trial.saccades.T.offsets,trial.frames.T_filt(trial.saccades.T.offsets),'k*'
 % start of stimuli and reversal point
 % line([trial.stim_start trial.stim_start], [-100 100],'Color','b','LineStyle','--', 'LineWidth', 2);
 line([trial.stim_reversalOnset trial.stim_reversalOnset], [-100 100],'Color','b','LineStyle','--', 'LineWidth', 2);
-line([trial.stim_reversalOffset+latency trial.stim_reversalOffset+latency], [-100 100],'Color','k','LineStyle','--', 'LineWidth', 2);
+line([trial.stim_reversalOffset+latency trial.stim_reversalOffset+latency], [-100 100],'Color','b','LineStyle','--', 'LineWidth', 2);
 
 % analysis window
 line([trial.stim_onset+latency trial.stim_onset+latency], [-100 100],'Color','k','LineStyle','--', 'LineWidth', 2);
@@ -158,8 +158,8 @@ plot(trial.saccades.T.offsets,trial.frames.DT_filt(trial.saccades.T.offsets),'k*
 % plot(pursuit.onset,trial.frames.DT_filt(pursuit.onset),'r:+');
 
 % time points
-line([trial.stim_reversalOnset trial.stim_reversalOnset], [-100 100],'Color','k','LineStyle','--', 'LineWidth', 2);
-line([trial.stim_reversalOffset+latency trial.stim_reversalOffset+latency], [-100 100],'Color','k','LineStyle','--', 'LineWidth', 2);
+line([trial.stim_reversalOnset trial.stim_reversalOnset], [-100 100],'Color','b','LineStyle','--', 'LineWidth', 2);
+line([trial.stim_reversalOffset+latency trial.stim_reversalOffset+latency], [-100 100],'Color','b','LineStyle','--', 'LineWidth', 2);
 line([trial.stim_onset+latency trial.stim_onset+latency], [-100 100],'Color','k','LineStyle','--', 'LineWidth', 2);
 line([trial.stim_offset trial.stim_offset], [-100 100],'Color','k','LineStyle','--', 'LineWidth', 2);
 

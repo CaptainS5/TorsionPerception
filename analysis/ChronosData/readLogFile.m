@@ -62,7 +62,7 @@ textscan(fid, '%*[^\n]', 2);
 % skipLines = sum(blockSizes(blockNumbers<block)); %skip lines of previous blocks
 % textscan(fid, '%*[^\n]', skipLines);
 
-allData = textscan(fid, '%f %f %f %f %f %d %d %f %f %f %f %f %*[^\n]');
+allData = textscan(fid, '%f %f %f %f %f %d %f %f %f %f %f %d %d %*[^\n]');
 
 logData.fileName = selectedLogFile;
 logData.block = block;
@@ -77,15 +77,8 @@ logData.reversalAngle = allData{8};
 logData.durationBefore = allData{9};
 logData.durationAfter = allData{10};
 logData.rotationSpeed = allData{11};
-% logData.targetSide = allData{6};
-% logData.initialDirection = allData{7}; % -1 counterclockwise, 1 clockwise
-% logData.initialAngle = allData{8};
-% logData.reversalAngle = allData{9};
-% % logData.initialAngle2 = allData{10};
-% % logData.reversalAngle2 = allData{11};
-% logData.durationBefore = allData{10};
-% logData.durationAfter = allData{11};
-% logData.rotationSpeed = allData{12};
+logData.headTilt = allData{12};
+logData.trialIdx = allData{13};
 
 % rightNatural = ~logData.translationalDirection & ~logData.rotationalDirection;
 % leftNatural  = logData.translationalDirection & logData.rotationalDirection;

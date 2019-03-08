@@ -332,6 +332,7 @@ try
             resp.durationAfter(tempN, 1) = display{blockN}.durationAfter(trialN);
             resp.rotationSpeed(tempN, 1) = display{blockN}.rotationSpeed(trialN);
             resp.headTilt(tempN, 1) = display{blockN}.headTilt(trialN); % 0=up, -1=CCW, 1=CW
+            resp.trialIdx(tempN, 1) = tempN;
             %             resp.sideDisplaced(tempN, 1) = display{blockN}.sideDisplaced(trialN);
             %             resp.reportStyle(tempN, 1) = info.reportStyle; % report lower or higher
             
@@ -373,6 +374,7 @@ try
             prm.screen.center(2)-rectSizeDotY,...
             prm.screen.center(1)+rectSizeDotX,...
             prm.screen.center(2)+rectSizeDotY];
+        Screen('DrawTextures', prm.screen.windowPtr, prm.grating.tex{sizeN});
         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
         Screen('Flip', prm.screen.windowPtr);
         WaitSecs(2.5) 
@@ -381,10 +383,10 @@ try
         end 
         
         % save resp for analysis...
-        resp(tempN, :) = NaN;
         resp.headTilt(tempN, 1) = 0;
         resp.durationBefore(tempN, 1) = 1.5;
         resp.durationAfter(tempN, 1) = 1;
+        resp.trialIdx(tempN, 1) = tempN;
         save(prm.fileName.resp, 'resp');
     end
     prm.fileName.prm = [prm.fileName.folder, '\parameters_', info.fileNameTime];
