@@ -374,7 +374,7 @@ try
             prm.screen.center(2)-rectSizeDotY,...
             prm.screen.center(1)+rectSizeDotX,...
             prm.screen.center(2)+rectSizeDotY];
-        Screen('DrawTextures', prm.screen.windowPtr, prm.grating.tex{sizeN});
+        Screen('DrawTextures', prm.screen.windowPtr, prm.grating.tex{1});
         Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
         Screen('Flip', prm.screen.windowPtr);
         WaitSecs(2.5) 

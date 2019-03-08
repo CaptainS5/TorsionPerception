@@ -7,21 +7,21 @@ clc; clear all; close all;
 try
     global trigger info prm
     setupTrigger();
-    currentBlock = 1;
-    rStyleDefault = -1; 
-    expTyp = 3;
+    currentBlock = 2;
+    rStyleDefault = -1; % no use right now...
+    expTyp = 0;
     eyeTracker = 1;
-    prm.headTilt = [-1 0]; % in this exact order, -1=left/CCW, 1=right/CW
+    prm.headTilt = [1 0]; % in this exact order, -1=left/CCW, 1=right/CW
        
     while(true)
-        if currentBlock>6
+        if expTyp==3 && currentBlock>2
             break
         end
-        if currentBlock<=2
+%         if currentBlock<=2
             rStyle = rStyleDefault;
-        else
-            rStyle = -1*rStyleDefault;
-        end
+%         else
+%             rStyle = -1*rStyleDefault;
+%         end
         currentBlock = runExp(currentBlock, rStyle, expTyp, eyeTracker); % baseline: block 0; experiment: block 1
         if expTyp==0 && currentBlock==3
             expTyp = 3;
