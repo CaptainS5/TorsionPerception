@@ -7,7 +7,7 @@
 clear all; close all; clc
 
 % basic setting
-names = {'tJF'};
+names = {'tXW0'}; %{'tJF' 'AD'};
 folder = pwd;
 howMany = -13; % include the first howMany trials for each condition*each initialDirection
 % using for pilot to see how many trials we need...
@@ -19,7 +19,7 @@ trialPerBlockBase = 10; %
 
 dataRawAll = table();
 dataRawBaseAll = table();
-for ii = 1:1%size(names, 2)
+for ii = 1:size(names, 2)
     % Read all raw data
     cd ..
     cd(['data\', names{ii}])
@@ -37,12 +37,12 @@ for ii = 1:1%size(names, 2)
             % regular processing below, first putting all data together
             if jj==1
                 idxExp = find(resp.rotationSpeed~=0);
-                idxBase = find(resp.rotationSpeed==0);
+                idxBase = find(resp.rotationSpeed==0 & resp.initialDirection~=0);
                 dataRaw = resp(idxExp, :);
                 dataRawBase = resp(idxBase, :);
             else
                 idxExp = find(resp.rotationSpeed~=0);
-                idxBase = find(resp.rotationSpeed==0);
+                idxBase = find(resp.rotationSpeed==0 & resp.initialDirection~=0);
                 dataRaw = [dataRaw; resp(idxExp, :)];
                 dataRawBase = [dataRawBase; resp(idxBase, :)];
             end
