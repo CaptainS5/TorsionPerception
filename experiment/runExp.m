@@ -384,8 +384,9 @@ try
         
         % save resp for analysis...
         resp.headTilt(tempN, 1) = 0;
-        resp.durationBefore(tempN, 1) = 1.5;
-        resp.durationAfter(tempN, 1) = 1;
+        resp.fixationDuration(tempN, 1) = 2.5;
+%         resp.durationBefore(tempN, 1) = 1.5;
+%         resp.durationAfter(tempN, 1) = 1;
         resp.trialIdx(tempN, 1) = tempN;
         save(prm.fileName.resp, 'resp');
     end

@@ -130,7 +130,7 @@ for eye = 2:2
                     eyeTrialDataBase.rotationSpeed(subN, trialN) = resp.rotationSpeed(t);
                     eyeTrialDataBase.afterReversalD(subN, trialN) = -resp.initialDirection(t); % 1=clockwise, -1=counterclockwise
                     eyeTrialDataBase.errorStatus(subN, trialN) = errors.errorStatus(t);
-                    eyeTrialData.headTilt(subN, trialN) = resp.headTilt(t);
+                    eyeTrialDataBase.headTilt(subN, trialN) = resp.headTilt(t);
                     
                     % read in data and socscalexy
                     filename = ['session_' num2str(blockN,'%.2i') '_' eyeName{eye} '.dat'];

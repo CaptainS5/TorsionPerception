@@ -9,7 +9,7 @@ clear all; close all; clc
 % names = {'JL' 'RD' 'MP' 'CB' 'KT' 'MS' 'IC' 'SZ' 'NY' 'SD' 'JZ' 'BK' 'RR' 'TM' 'LK'};
 % names = {'XWcontrolTest' 'XWcontrolTest2' 'XWcontrolTest3'};
 % names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol' 'FScontrol' 'XWcontrol' 'SCcontrol' 'JFcontrol'};
-names = {'tJF' 'AD'}; %{'test' 'test2' 'tCW'};
+names = {'tJF' 'AD' 'tXW0'}; 
 folder = pwd;
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 % % for Exp1
@@ -89,7 +89,7 @@ for ii = 1:size(names, 2)
     end
     
     %% Baseline data
-    if ii>=2
+    if ii<3
         cd(['baselineTorsion'])
         % get the filenames to load
         fileResp = dir('response*.mat');

@@ -40,12 +40,20 @@ trial.lostTframes = data.lostTframes(trial.startFrame:trial.endFrame);
 
 %% calculate stim_onset and stim_offset
 % 
-trial.stim_start = ms2frames(logData.fixationDuration(trial.number)*1000);
-trial.stim_onset = ms2frames(logData.fixationDuration(trial.number)*1000);
-trial.stim_reversalOnset = ms2frames((logData.fixationDuration(trial.number)+logData.durationBefore(trial.number))*1000);
-trial.stim_reversalOffset = trial.stim_reversalOnset + ms2frames((0.047)*1000); % flash duration
-% trial.stim_onset = ms2frames((logData.fixationDuration(currentTrial)+logData.durationBefore(currentTrial)+0.12)*1000);                          
-trial.stim_offset = trial.stim_reversalOffset + ms2frames(logData.durationAfter(trial.number)*1000);
+if logData.fixationDuration(trial.number)==0
+    trial.stim_start = 41;
+    trial.stim_onset = 41;
+    trial.stim_reversalOnset = 0;
+    trial.stim_reversalOffset = 0; % flash duration
+    trial.stim_offset = ms2frames(2500);
+else
+    trial.stim_start = ms2frames(logData.fixationDuration(trial.number)*1000);
+    trial.stim_onset = ms2frames(logData.fixationDuration(trial.number)*1000);
+    trial.stim_reversalOnset = ms2frames((logData.fixationDuration(trial.number)+logData.durationBefore(trial.number))*1000);
+    trial.stim_reversalOffset = trial.stim_reversalOnset + ms2frames((0.047)*1000); % flash duration
+    % trial.stim_onset = ms2frames((logData.fixationDuration(currentTrial)+logData.durationBefore(currentTrial)+0.12)*1000);
+    trial.stim_offset = trial.stim_reversalOffset + ms2frames(logData.durationAfter(trial.number)*1000);
+end
 
 trial.length = length(trial.startFrame:trial.endFrame);
 
