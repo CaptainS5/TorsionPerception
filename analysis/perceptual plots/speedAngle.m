@@ -12,7 +12,7 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-names = {'tJF' 'AD'};
+names = {'tJF' 'AD' 'tXW0'};
 merged = 0; % whether initial direction is merged; 1=merged, 0=not
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 % loadData = 0; % whether get new fitting or using existing fitting
@@ -25,10 +25,10 @@ fontSize = 15; % for plot
 headCons = [-1 0 1]; % head tilt direction
 headNames = {'CCW' 'Up' 'CW'};
 dirCons = [-1 1]; % initial counterclockwise and clockwise; in plots shows direction after reversal
-colorPlot = [0 0 0; 0.5 0.5 0.5];
+colorPlot = [232 71 12; 2 255 44; 12 76 150; 140 0 255; 255 212 13]/255;
 
 cd ..
-% load baseline
+% % load baseline
 load(['dataBase_all', num2str(size(names, 2)), '.mat']);
 % % load raw data collapsed
 % load(['dataRaw_all', num2str(size(names, 2))])
@@ -46,7 +46,7 @@ for ii = 1:size(names, 2)
         load(['dataRaw', num2str(2*howMany), '_', names{ii}])
     else
         load(['dataRaw_', names{ii}])
-        load(['dataRawBase_', names{ii}])
+%         load(['dataRawBase_', names{ii}])
     end
     %     load(['dataRawBase_', names{ii}])
     % back into the folder
@@ -76,14 +76,15 @@ for ii = 1:size(names, 2)
         dataPercept = [dataPercept; data];
     end
         
-%     % merged
-%     onset = unique(data.rotationSpeed);
-%     for ll = 1:length(onset)
-%         data.flashOnsetIdx(data.rotationSpeed==onset(ll), 1) = ll;
-%     end
-%     meanError = accumarray(data.flashOnsetIdx, data.angleError, [], @mean);
-%     stdError = accumarray(data.flashOnsetIdx, data.angleError, [], @std);
-%     
+    % initial direction merged
+    headIdx = unique(data.headTilt);
+    headSub{ii} = headIdx;
+    for ll = 1:length(headIdx)
+        data.headTiltIdx(data.headTilt==headIdx(ll), 1) = ll;
+    end
+    meanErrorSubM{ii} = accumarray(data.headTiltIdx, data.angleError, [], @mean);
+    stdErrorSubM{ii} = accumarray(data.headTiltIdx, data.angleError, [], @std);
+    
     % initial direction seperated
     headIdx = unique(data.headTilt);
     for ll = 1:length(headIdx)
@@ -97,21 +98,36 @@ for ii = 1:size(names, 2)
         end
     end
 
-% draw plots
+% % draw individual plots
+% figure
+% box off
+% hold on
+% p1 = errorbar(headIdx, meanErrorSub{ii}(:, 1), stdErrorSub{ii}(:, 1), '-o', 'LineWidth', 1, 'color', colorPlot(1, :));
+% p2 = errorbar(headIdx, meanErrorSub{ii}(:, 2), stdErrorSub{ii}(:, 2), '--o', 'LineWidth', 1, 'color', colorPlot(1, :));
+% 
+% legend([p1, p2], {'visual CW' 'visual CCW'}, 'box', 'off', 'Location', 'northwest')
+% %         ylim([-25, 25])
+% xlim([-1.5 1.5])
+% xlabel('Head tilt direction')
+% ylabel('Perceived shift in direction (°)')
+% set(gca, 'FontSize', fontSize, 'box', 'off')
+% saveas(gca, [names{ii}, '_illusion.pdf'])
+end
+
+% draw plots for all together
 figure
 box off
-hold on
-p1 = errorbar(headIdx, meanErrorSub{ii}(:, 1), stdErrorSub{ii}(:, 1), '-o', 'LineWidth', 1, 'color', colorPlot(1, :));
-p2 = errorbar(headIdx, meanErrorSub{ii}(:, 2), stdErrorSub{ii}(:, 2), '--o', 'LineWidth', 1, 'color', colorPlot(1, :));
-
-legend([p1, p2], {'visual CW' 'visual CCW'}, 'box', 'off', 'Location', 'northwest')
+for subN = 1:size(names, 2)
+    hold on
+    p{subN} = errorbar(headSub{subN}, meanErrorSubM{subN}, stdErrorSubM{subN}, '-o', 'LineWidth', 1, 'color', colorPlot(subN, :));
+end
+legend([p{1}, p{2}, p{3}], {'tJF' 'AD' 'tXW0'}, 'box', 'off', 'Location', 'northwest')
 %         ylim([-25, 25])
 xlim([-1.5 1.5])
 xlabel('Head tilt direction')
 ylabel('Perceived shift in direction (°)')
 set(gca, 'FontSize', fontSize, 'box', 'off')
-saveas(gca, [names{ii}, '_illusion.pdf'])
-end
+saveas(gca, ['all_illusion.pdf'])
 
 % cd ..
 % save(['dataPercept_all', num2str(ii), '.mat'], 'dataPercept')

@@ -1,23 +1,26 @@
 # install.packages('ggthemes')
 # library(ggthemes)
+# install.packages("ggnetwork", type="source")
 library(ggplot2)
 library(RColorBrewer)
 library(matrixStats)
 library(ppcor)
 library(reshape)
+library(dplyr)
 
 #### clear environment
 rm(list = ls())
 
 #### load data
-# on ASUS
-setwd("E:/XiuyunWu/Torsion-FDE/analysis")
-folder1 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp1/")
-folder2 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp2/")
-# # on XPS13
-# setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/analysis")
-# folder1 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp1/")
-# folder2 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp2/")
+# # on ASUS
+# setwd("E:/XiuyunWu/Torsion-FDE/analysis")
+# folder1 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp1/")
+# folder2 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp2/")
+# on XPS13
+setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/analysis/R")
+folder1 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp1/")
+folder2 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp2/")
+folder3 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp3/")
 # conData1Original <- read.csv('conDataAllExp1.csv')
 # conData2Original <- read.csv('conDataAllExp2BothEyes.csv')
 # # eye: 1 left eye, 2 right eye
@@ -31,6 +34,8 @@ baseTorsion2Original <- read.csv("trialDataBaseAllExp2.csv")
 trialData1Original <- read.csv("trialDataAllExp1.csv")
 trialData2Original <- read.csv("trialDataAllExp2.csv")
 trialDataBoth2Original <- read.csv("trialDataAllBothEyeExp2.csv")
+baseTorsion3Original <- read.csv("trialDataBaseAllExp3pilot.csv")
+trialData3Original <- read.csv("trialDataAllExp3pilot.csv")
 # eye: 1 left eye, 2 right eye
 # afterReversalD: -1 CCW, 1 CW, 0 merged as CW
 # time window: -1 120ms after onset to flash onset; 0-flash onset to flash offset; 1 120ms after flash offset to end
@@ -117,6 +122,48 @@ p <- ggplot(dataAgg2, aes(x = rotationSpeed, y = perceptualError)) +
         geom_segment(aes_all(c('x', 'y', 'xend', 'yend')), data = data.frame(x = c(25, 0), xend = c(200, 0), y = c(-1, 0), yend = c(-1, 30)), size = axisLineWidth) +
         scale_y_continuous(name = "Illusory position shift (°)", limits = c(-1, 32), expand = c(0, 0)) +
         scale_x_continuous(name = "Rotational speed (°/s)", limits = c(0, 220), breaks=c(25, 50, 100, 200), expand = c(0, 0)) +
+        # scale_colour_discrete(name = "After reversal\ndirection", labels = c("CCW", "CW")) +
+        theme(axis.text=element_text(colour="black"),
+              axis.ticks=element_line(colour="black", size = axisLineWidth),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.border = element_blank(),
+              panel.background = element_blank(),
+              text = element_text(size = textSize, colour = "black"),
+              legend.background = element_rect(fill="transparent"),
+              legend.key = element_rect(colour = "transparent", fill = "white"))
+print(p)
+dev.off()
+
+### Exp3
+trialData3 <- filter(trialData3Original, timeWindow == 1)
+# show(trialData3)
+sub <- trialData3["sub"]
+exp <- trialData3["exp"]
+afterReversalD <- trialData3["afterReversalD"]
+headTilt <- trialData3["headTilt"]
+perceptualError <- trialData3["perceptualError"]
+dataExp3 <- data.frame(sub, exp, afterReversalD, headTilt, perceptualError)
+dataExp3$exp <- as.factor(dataExp3$exp)
+# dataExp3$sub <- as.factor(dataExp3$sub)
+dataExp3$afterReversalD <- as.factor(dataExp3$afterReversalD)
+# dataExp3$headTilt <- as.factor(dataExp3$headTilt)
+colnames(dataExp3)[5] <- "perceptualError"
+
+dataAgg3 <- aggregate(. ~ exp * sub * headTilt, data = dataExp3, FUN = "mean")
+dataAgg3$psd <- aggregate(perceptualError ~ exp * sub * headTilt, data = dataExp3, FUN = "sd")$perceptualError
+show(dataAgg3$perceptualError)
+
+pdf(paste(folder3,"perceptionExp3.pdf", sep = ""))
+p <- ggplot(dataAgg3, aes(x = headTilt, y = perceptualError)) +
+        # stat_summary(aes(y = perceptualError), fun.y = mean, geom = "point", shape = 95, size = 15) +
+        # stat_summary(fun.data = mean_se, geom = "errorbar", width = 10, size = 1) +
+        # geom_boxplot(aes(x = headTilt, y = perceptualError, group = headTilt), size = 0.8, outlier.size = 1.5, outlier.shape = 21) +
+        geom_point(aes(x = headTilt, y = perceptualError), size = dotSize, shape = 1) +
+        # geom_segment(aes_all(c('x', 'y', 'xend', 'yend')), data = data.frame(x = 25, xend = 400, y = 0, yend = 0), size = axisLineWidth, linetype = "dashed") +
+        geom_segment(aes_all(c('x', 'y', 'xend', 'yend')), data = data.frame(x = c(-1, -1.5), xend = c(1, -1.5), y = c(-1, 0), yend = c(-1, 20)), size = axisLineWidth) +
+        scale_y_continuous(name = "Illusory position shift (°)", limits = c(-1, 20), expand = c(0, 0)) +
+        scale_x_continuous(name = "Head tilt direction", limits = c(-1.5, 1.5), breaks=c(-1, 0, 1), expand = c(0, 0)) +
         # scale_colour_discrete(name = "After reversal\ndirection", labels = c("CCW", "CW")) +
         theme(axis.text=element_text(colour="black"),
               axis.ticks=element_line(colour="black", size = axisLineWidth),
@@ -1093,27 +1140,50 @@ p <- ggplot(dataAgg2, aes(x = rotationSpeed, y = torsionAngleSame)) +
 print(p)
 dev.off()
 
-# # correlation of angle
-# dataExp2$rotationSpeed <- as.factor(dataExp2$rotationSpeed)
-# dataAgg2 <- aggregate(. ~ rotationSpeed * exp * sub * timeWindow, data = dataExp2, FUN = "mean")
-#
-# twN <- c("beforeReversal", "afterReversal")
-# twValues <- c(-1, 1)
-# for (tw in 1:2) {
-#     dataAgg2sub <- dataAgg2[which(dataAgg2$timeWindow==twValues[tw]), ]
-#     pdf(paste(folder2, "correlationAngleExp2_", twN[tw], ".pdf"))
-#     p <- ggplot(dataAgg2sub, aes(x = perceptualError, y = torsionAngleSame, fill = rotationSpeed)) +
-#             geom_point(size = dotCorSize, shape = 23, alpha = dotCorAlpha) +
-#             scale_fill_brewer(palette="Accent") +
-#             theme(axis.line = element_line(colour = "black", size = 0.5),
-#                   panel.grid.major = element_blank(),
-#                   panel.grid.minor = element_blank(),
-#                   panel.border = element_blank(),
-#                   panel.background = element_blank(),
-#                   legend.background = element_rect(fill="transparent"),
-#                   legend.key = element_rect(colour = "transparent", fill = "white"),
-#                   aspect.ratio=1) +
-#                   facet_wrap(~timeWindow)
-#     print(p)
-#     dev.off()
-# }
+#### Exp3
+## experiment
+# torsion velocity
+trialData3 <- trialData3Original
+sub <- trialData3["sub"]
+exp <- trialData3["exp"]
+afterReversalD <- trialData3["afterReversalD"]
+headTilt <- trialData3["headTilt"]
+timeWindow <- trialData3["timeWindow"]
+perceptualError <- trialData3["perceptualError"]
+torsionVelT <- trialData3["RtorsionVelT"] * trialData3["afterReversalD"]
+dataExp3 <- data.frame(sub, exp, headTilt, timeWindow, perceptualError, torsionVelT)
+dataExp3$exp <- as.factor(dataExp3$exp)
+dataExp3$sub <- as.factor(dataExp3$sub)
+dataExp3$timeWindow <- as.factor(dataExp3$timeWindow)
+colnames(dataExp3)[6] <- "torsionVelT"
+
+dataAgg3 <- aggregate(. ~ headTilt * exp * sub * timeWindow, data = dataExp3, FUN = "mean")
+dataAgg3$psd <- aggregate(perceptualError ~ headTilt * exp * sub * timeWindow, data = dataExp3, FUN = "sd")$perceptualError
+dataAgg3$tsd <- aggregate(torsionVelT ~ headTilt *exp * sub * timeWindow, data = dataExp3, FUN = "sd")$torsionVelT
+levels(dataAgg3$timeWindow) <- c("Before reversal", "After reversal")
+show(dataAgg3$sub)
+
+pdf(paste(folder3, "torsionVExp3.pdf", sep = ""), width = 12)
+p <- ggplot(dataAgg3, aes(x = headTilt, y = torsionVelT, colour = sub)) +
+        # stat_summary(fun.data = mean_se, geom = "errorbar", width = 10, size = 1) +
+        stat_summary(aes(y = torsionVelT), fun.y = mean, geom = "point", shape = 45, size = 15) +
+        # geom_boxplot(aes(x = headTilt, y = torsionVelT, colour = afterReversalD, group = interaction(headTilt, afterReversalD)), position = position_dodge(width = 0.8), size = 0.8, outlier.size = 1.5, outlier.shape = 21) +
+        geom_point(aes(x = headTilt, y = torsionVelT), size = dotSize, shape = 1) +
+        # coord_cartesian(ylim=c(-2, 2)) +
+        # geom_segment(aes_all(c('x', 'y', 'xend', 'yend')), data = data.frame(x = 25, xend = 400, y = 0, yend = 0), size = axisLineWidth, linetype = "dotted", colour = "black") +
+        geom_segment(aes_all(c('x', 'y', 'xend', 'yend')), data = data.frame(x = c(-1, -1.5), xend = c(1, -1.5), y = c(-2.5, -2), yend = c(-2.5, 2)), size = axisLineWidth, colour = "black") +
+        scale_y_continuous(name = "Torsional velocity (°/s)", breaks=seq(-2, 2, 1), limits = c(-2.5, 2.5), expand = c(0, 0)) +
+        scale_x_continuous(name = "Head tilt direction", breaks=c(-1, 0, 1), limits = c(-1.5, 1.5), expand = c(0, 0)) +
+        # scale_colour_discrete(name = "After-reversal\ndirection", labels = c("CCW", "CW")) +
+        theme(axis.text=element_text(colour="black"),
+              axis.ticks=element_line(colour="black", size = axisLineWidth),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.border = element_blank(),
+              panel.background = element_blank(),
+              text = element_text(size = textSize),
+              legend.background = element_rect(fill="transparent"),
+              legend.key = element_rect(colour = "transparent", fill = "white")) +
+              facet_wrap(~timeWindow)
+print(p)
+dev.off()
