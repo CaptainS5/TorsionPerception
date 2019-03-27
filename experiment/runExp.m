@@ -18,11 +18,11 @@ try
     cd('experiment\')
     prm.pwd = pwd;
     info = getInfo(currentBlock, rStyle, expTyp, eyeTracker);
-%     if currentBlock==1 %info.expType>=1
-        currentBlock = currentBlock + 1;
-%     elseif currentBlock==2
-%         currentBlock = 1;
-%     end
+    %     if currentBlock==1 %info.expType>=1
+    currentBlock = currentBlock + 1;
+    %     elseif currentBlock==2
+    %         currentBlock = 1;
+    %     end
     
     % creating saving path and filenames
     if info.expType==-1 % for baseline perception, exp 1
@@ -34,15 +34,15 @@ try
             length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
             length(prm.rotation.freq);
         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
-%         % exp 3
-%         prm.rotation.freq = [4 8 16 24 32]; % the angle of the flash...
-%         
-%         prm.blockN = 1; % total number of blocks
-%         prm.trialPerCondition = 6; % trial number per condition
-%         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
-%             length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
-%             length(prm.rotation.freq);
-%         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
+        %         % exp 3
+        %         prm.rotation.freq = [4 8 16 24 32]; % the angle of the flash...
+        %
+        %         prm.blockN = 1; % total number of blocks
+        %         prm.trialPerCondition = 6; % trial number per condition
+        %         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
+        %             length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
+        %             length(prm.rotation.freq);
+        %         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
         
         prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baseline'];
     elseif info.expType==-0.5 % baseline perception for exp 2
@@ -59,17 +59,17 @@ try
         
         prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baseline'];
     elseif info.expType==0 % baseline torsion, exp 1 & 3
-%         % epx 1
-%         prm.blockN = 1; % total number of blocks
-%         prm.trialPerCondition = 5; % trial number per condition
-%         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
-%         prm.rotation.beforeDuration = 1; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
-%         prm.rotation.afterDuration = 1;
+        %         % epx 1
+        %         prm.blockN = 1; % total number of blocks
+        %         prm.trialPerCondition = 5; % trial number per condition
+        %         prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
+        %         prm.rotation.beforeDuration = 1; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
+        %         prm.rotation.afterDuration = 1;
         % epx 3
         prm.rotation.freq = [200];
-%         prm.headTilt = [prm.headTilt(1) prm.headTilt(3)]; % now we have two blocks for each head tilt condition
+        %         prm.headTilt = [prm.headTilt(1) prm.headTilt(3)]; % now we have two blocks for each head tilt condition
         prm.blockN = 2; % total number of blocks
-        prm.trialPerCondition = 20*length(prm.headTilt); %60; % trial number per condition, including head tilt
+        prm.trialPerCondition = 20*length(prm.headTilt); % trial number per condition, including head tilt
         prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
             length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
             length(prm.rotation.freq);
@@ -94,6 +94,8 @@ try
         prm.fileName.folder = [folder, '\data\', info.subID{1}, '\baselineTorsion'];
     elseif info.expType==1 || info.expType==3 % exp 1 & 3
         prm.fileName.folder = [folder, '\data\', info.subID{1}];
+    elseif info.expType==-3 % listing's plane calibration block
+        prm.fileName.folder = [folder, '\data\', info.subID{1}, '\listingsPlane'];
     elseif info.expType==1.5 % exp 2, two peripheral stimuli
         %         prm.grating.outerRadius = 23.6/2;
         %         prm.flash.radius = 2.5/2;
@@ -136,33 +138,33 @@ try
     Screen('BlendFunction', prm.screen.windowPtr, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     %     generate textures for the stimuli
     for ii = 1:size(prm.grating.outerRadius, 2)
-%         if info.expType>=0 % baseline torsion, experiment, or control
-            % rotation stimuli
-            imgGrating = generateRotationTexture(prm.grating.outerRadius(ii), ...
-                prm.grating.innerRadius, prm.grating.freq, 0, prm.grating.contrast, prm.grating.averageLum);
-            % outer radius, inner radius, frequency, phase, contrast, average luminance
-            prm.grating.tex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgGrating);
-            
-            % flash dots, vertically aligned
-            imgFlash = generateFlashTexture(prm.grating.outerRadius(ii), ...
-                prm.grating.innerRadius, prm.flash.radius, ...
-                prm.flash.colour, prm.flash.axis, imgGrating);
-            % gratingOuterRadius, gratingInnerRadius, flashRadius, color
-            % (RGB 0-255), axis (0-horizontal, 1-vertical)
-            prm.flash.tex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgFlash);
-%         elseif info.expType<0 % baseline perception
-            imgUniform = generateRespTexture(prm.grating.outerRadius(ii), ...
-                0, 0, ...
-                prm.flash.respColour, prm.flash.axis);
-            % gratingOuterRadius, gratingInnerRadius, flashRadius, color (RGB 0-255)
-            prm.baseline.uniformTex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgUniform);
-            
-            imgBaseFlash = generateRespTexture(prm.grating.outerRadius(ii), ...
-                prm.grating.innerRadius, prm.flash.radius, ...
-                prm.flash.colour, prm.flash.axis);
-            % gratingOuterRadius, gratingInnerRadius, flashRadius, color (RGB 0-255)
-            prm.baseline.flashTex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgBaseFlash);
-%         end
+        %         if info.expType>=0 % baseline torsion, experiment, or control
+        % rotation stimuli
+        imgGrating = generateRotationTexture(prm.grating.outerRadius(ii), ...
+            prm.grating.innerRadius, prm.grating.freq, 0, prm.grating.contrast, prm.grating.averageLum);
+        % outer radius, inner radius, frequency, phase, contrast, average luminance
+        prm.grating.tex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgGrating);
+        
+        % flash dots, vertically aligned
+        imgFlash = generateFlashTexture(prm.grating.outerRadius(ii), ...
+            prm.grating.innerRadius, prm.flash.radius, ...
+            prm.flash.colour, prm.flash.axis, imgGrating);
+        % gratingOuterRadius, gratingInnerRadius, flashRadius, color
+        % (RGB 0-255), axis (0-horizontal, 1-vertical)
+        prm.flash.tex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgFlash);
+        %         elseif info.expType<0 % baseline perception
+        imgUniform = generateRespTexture(prm.grating.outerRadius(ii), ...
+            0, 0, ...
+            prm.flash.respColour, prm.flash.axis);
+        % gratingOuterRadius, gratingInnerRadius, flashRadius, color (RGB 0-255)
+        prm.baseline.uniformTex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgUniform);
+        
+        imgBaseFlash = generateRespTexture(prm.grating.outerRadius(ii), ...
+            prm.grating.innerRadius, prm.flash.radius, ...
+            prm.flash.colour, prm.flash.axis);
+        % gratingOuterRadius, gratingInnerRadius, flashRadius, color (RGB 0-255)
+        prm.baseline.flashTex{ii} = Screen('MakeTexture', prm.screen.windowPtr, imgBaseFlash);
+        %         end
         % texture for the adjustment response, initial position vertical
         imgResp = generateRespTexture(prm.grating.outerRadius(ii), ...
             prm.grating.innerRadius, prm.flash.radius, ...
@@ -177,43 +179,43 @@ try
     
     if strcmp(info.subID{1}, 'luminance')
         % testing monitor luminance
-        Screen('FillRect', prm.screen.windowPtr, 88); % fill background
+        %         Screen('FillRect', prm.screen.windowPtr, 88); % fill background
+        %         Screen('Flip', prm.screen.windowPtr);
+        %         KbWait();
+        %         clear KbCheck
+        %         WaitSecs(0.2);
+        
+        %         Screen('FillRect', prm.screen.windowPtr, prm.flash.colour); % fill background
+        %         Screen('Flip', prm.screen.windowPtr);
+        %         KbWait();
+        %         clear KbCheck
+        %         WaitSecs(0.2);
+        
+        Screen('FillRect', prm.screen.windowPtr, prm.screen.backgroundColour); % fill background 17
         Screen('Flip', prm.screen.windowPtr);
         KbWait();
         clear KbCheck
         WaitSecs(0.2);
         
-        Screen('FillRect', prm.screen.windowPtr, prm.flash.colour); % fill background
+        Screen('FillRect', prm.screen.windowPtr, prm.grating.darkest); % fill background 38.5
         Screen('Flip', prm.screen.windowPtr);
         KbWait();
         clear KbCheck
         WaitSecs(0.2);
         
-        Screen('FillRect', prm.screen.windowPtr, prm.grating.darkest); % fill background
+        Screen('FillRect', prm.screen.windowPtr, prm.grating.lightest); % fill background 58.5
         Screen('Flip', prm.screen.windowPtr);
         KbWait();
         clear KbCheck
         WaitSecs(0.2);
         
-        Screen('FillRect', prm.screen.windowPtr, prm.grating.lightest); % fill background
+        Screen('FillRect', prm.screen.windowPtr, prm.grating.respColour); % fill background 40
         Screen('Flip', prm.screen.windowPtr);
         KbWait();
         clear KbCheck
         WaitSecs(0.2);
         
-        Screen('FillRect', prm.screen.windowPtr, prm.grating.respColour); % fill background
-        Screen('Flip', prm.screen.windowPtr);
-        KbWait();
-        clear KbCheck
-        WaitSecs(0.2);
-        
-        Screen('FillRect', prm.screen.windowPtr, prm.screen.backgroundColour); % fill background
-        Screen('Flip', prm.screen.windowPtr);
-        KbWait();
-        clear KbCheck
-        WaitSecs(0.2);
-        
-        Screen('FillRect', prm.screen.windowPtr, prm.screen.whiteColour); % fill background
+        Screen('FillRect', prm.screen.windowPtr, prm.screen.whiteColour); % fill background 80
         Screen('Flip', prm.screen.windowPtr);
         KbWait();
     else
@@ -260,150 +262,160 @@ try
         end
         WaitSecs(prm.ITI);
         
-        % Listing's plane calibration, nine points
-        if info.eyeTracker==1
+        if info.expType==-3
             try
-                startListingsPlaneCalibration(prm.screen.monitorWidth, prm.screen.monitorHeight,...
+                startListingsPlaneBlock(prm.screen.monitorWidth, prm.screen.monitorHeight,...
                     prm.screen.viewDistance, prm.screen.windowPtr, prm.screen.size, info);
-%                 startCalibration(prm.screen.monitorWidth, prm.screen.monitorHeight,...
-%                     prm.screen.viewDistance, prm.screen.windowPtr, prm.screen.size);
+                %                 startCalibration(prm.screen.monitorWidth, prm.screen.monitorHeight,...
+                %                     prm.screen.viewDistance, prm.screen.windowPtr, prm.screen.size);
             catch ME
                 msgString = getReport(ME);
                 disp(msgString);
                 disp('Calibration interrupted.');
             end
-        end
-        
-        % block information
-        textBlock = ['Block ', num2str(blockN), '\n Click to start'];
-        DrawFormattedText(prm.screen.windowPtr, textBlock,...
-            'center', 'center', prm.screen.whiteColour);
-        Screen('Flip', prm.screen.windowPtr);    
-        
-        buttons = [];
-        while ~any(buttons)
-            [x, y, buttons, focus, valuators, valinfo] = GetMouse(prm.screen.windowPtr);
-        end
-        WaitSecs(prm.ITI);        
-        
-        % run trials
-        while tempN<=prm.trialPerBlock+makeUpN
-            clear KbCheck
-            if tempN>prm.trialPerBlock
-                trialN = trialMakeUp(tempN-prm.trialPerBlock);
-            end
-            % present the stimuli and recording response
-            [key rt] = runTrial(blockN, trialN, tempN); % display rotating grating and the flash
-            % trialN is the index for looking up in display;
-            % tempN is the actual trial number, including invalid trials
-            %             if strcmp(key, 'LeftArrow')
-            %             if strcmp(key, 'z') % counterclockwise
-            %                 resp.choice(tempN, 1) = -1;
-            %             elseif strcmp(key, '/') % clockwise
-            %                 %             elseif strcmp(key, 'RightArrow')
-            %                 resp.choice(tempN, 1) = 1;
-            %                 %             elseif strcmp(key, 'void') % no response
-            %                 %                 resp{blockN}.choice(trialN, 1) = 0;
-            %             else % wrong key
-            %                 resp.choice(tempN, 1) = 0;
-            %                 % repeat this trial at the end of the block
-            %                 makeUpN = makeUpN + 1;
-            %                 trialMakeUp(makeUpN) = trialN;
-            %                 % feedback on the screen
-            %                 respText = 'Invalid Key';
-            %                 Screen('DrawText', prm.screen.windowPtr, respText, prm.screen.center(1)-80, prm.screen.center(2), prm.screen.whiteColour);
-            %             end
-            resp.RTms(tempN, 1) = rt*1000; % in ms
-            %             resp.trialIdx(tempN, 1) = trialN; % index for the condition used
-            
-            % replicate the display parameters for each trial
-            %             resp.gratingRadiusIdx(tempN, 1) = display{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
-            resp.gratingRadius(tempN, 1) = prm.grating.outerRadius(display{blockN}.gratingRadiusIdx(trialN)); % actual value of the grating outer radius
-            resp.flashOnset(tempN, 1) = display{blockN}.flashOnset(trialN);
-            resp.initialDirection(tempN, 1) = display{blockN}.initialDirection(trialN);
-            resp.initialAngle(tempN, 1) = display{blockN}.initialAngle(trialN);
-            resp.reversalAngle(tempN, 1) = display{blockN}.reversalAngle(trialN);
-            if fix(info.expType)~=info.expType
-                resp.targetSide(tempN, 1) = display{blockN}.flashDisplaceLeft(trialN); % -1 left, 1 right
-                resp.initialAngle2(tempN, 1) = display{blockN}.initialAngle2(trialN);
-                resp.reversalAngle2(tempN, 1) = display{blockN}.reversalAngle2(trialN);
-            end
-            resp.durationBefore(tempN, 1) = display{blockN}.durationBefore(trialN);
-            resp.durationAfter(tempN, 1) = display{blockN}.durationAfter(trialN);
-            resp.rotationSpeed(tempN, 1) = display{blockN}.rotationSpeed(trialN);
-            resp.headTilt(tempN, 1) = display{blockN}.headTilt(trialN); % 0=up, -1=CCW, 1=CW
-            resp.trialIdx(tempN, 1) = tempN;
-            %             resp.sideDisplaced(tempN, 1) = display{blockN}.sideDisplaced(trialN);
-            %             resp.reportStyle(tempN, 1) = info.reportStyle; % report lower or higher
-            
-            % save the response
-            save(prm.fileName.disp, 'display');
-            save(prm.fileName.resp, 'resp');
-            
-            trialN = trialN+1
-            tempN = tempN+1;
-            
-            % quit, only for debugging
-            if strcmp(key, 'q')
-                break
+        else
+            if info.eyeTracker==1
+                try
+                    startCalibration(prm.screen.monitorWidth, prm.screen.monitorHeight,...
+                        prm.screen.viewDistance, prm.screen.windowPtr, prm.screen.size);
+                catch ME
+                    msgString = getReport(ME);
+                    disp(msgString);
+                    disp('Calibration interrupted.');
+                end
             end
             
-            % ITI
+            % block information
+            textBlock = ['Block ', num2str(blockN), '\n Click to start'];
+            DrawFormattedText(prm.screen.windowPtr, textBlock,...
+                'center', 'center', prm.screen.whiteColour);
             Screen('Flip', prm.screen.windowPtr);
+            
+            buttons = [];
+            while ~any(buttons)
+                [x, y, buttons, focus, valuators, valinfo] = GetMouse(prm.screen.windowPtr);
+            end
             WaitSecs(prm.ITI);
+            
+            % run trials
+            while tempN<=prm.trialPerBlock+makeUpN
+                clear KbCheck
+                if tempN>prm.trialPerBlock
+                    trialN = trialMakeUp(tempN-prm.trialPerBlock);
+                end
+                % present the stimuli and recording response
+                [key rt] = runTrial(blockN, trialN, tempN); % display rotating grating and the flash
+                % trialN is the index for looking up in display;
+                % tempN is the actual trial number, including invalid trials
+                %             if strcmp(key, 'LeftArrow')
+                %             if strcmp(key, 'z') % counterclockwise
+                %                 resp.choice(tempN, 1) = -1;
+                %             elseif strcmp(key, '/') % clockwise
+                %                 %             elseif strcmp(key, 'RightArrow')
+                %                 resp.choice(tempN, 1) = 1;
+                %                 %             elseif strcmp(key, 'void') % no response
+                %                 %                 resp{blockN}.choice(trialN, 1) = 0;
+                %             else % wrong key
+                %                 resp.choice(tempN, 1) = 0;
+                %                 % repeat this trial at the end of the block
+                %                 makeUpN = makeUpN + 1;
+                %                 trialMakeUp(makeUpN) = trialN;
+                %                 % feedback on the screen
+                %                 respText = 'Invalid Key';
+                %                 Screen('DrawText', prm.screen.windowPtr, respText, prm.screen.center(1)-80, prm.screen.center(2), prm.screen.whiteColour);
+                %             end
+                resp.RTms(tempN, 1) = rt*1000; % in ms
+                %             resp.trialIdx(tempN, 1) = trialN; % index for the condition used
+                
+                % replicate the display parameters for each trial
+                %             resp.gratingRadiusIdx(tempN, 1) = display{blockN}.gratingRadiusIdx(trialN); % index of the grating stimulus outer radius
+                resp.gratingRadius(tempN, 1) = prm.grating.outerRadius(display{blockN}.gratingRadiusIdx(trialN)); % actual value of the grating outer radius
+                resp.flashOnset(tempN, 1) = display{blockN}.flashOnset(trialN);
+                resp.initialDirection(tempN, 1) = display{blockN}.initialDirection(trialN);
+                resp.initialAngle(tempN, 1) = display{blockN}.initialAngle(trialN);
+                resp.reversalAngle(tempN, 1) = display{blockN}.reversalAngle(trialN);
+                if fix(info.expType)~=info.expType
+                    resp.targetSide(tempN, 1) = display{blockN}.flashDisplaceLeft(trialN); % -1 left, 1 right
+                    resp.initialAngle2(tempN, 1) = display{blockN}.initialAngle2(trialN);
+                    resp.reversalAngle2(tempN, 1) = display{blockN}.reversalAngle2(trialN);
+                end
+                resp.durationBefore(tempN, 1) = display{blockN}.durationBefore(trialN);
+                resp.durationAfter(tempN, 1) = display{blockN}.durationAfter(trialN);
+                resp.rotationSpeed(tempN, 1) = display{blockN}.rotationSpeed(trialN);
+                resp.headTilt(tempN, 1) = display{blockN}.headTilt(trialN); % 0=up, -1=CCW, 1=CW
+                resp.trialIdx(tempN, 1) = tempN;
+                %             resp.sideDisplaced(tempN, 1) = display{blockN}.sideDisplaced(trialN);
+                %             resp.reportStyle(tempN, 1) = info.reportStyle; % report lower or higher
+                
+                % save the response
+                save(prm.fileName.disp, 'display');
+                save(prm.fileName.resp, 'resp');
+                
+                trialN = trialN+1
+                tempN = tempN+1;
+                
+                % quit, only for debugging
+                if strcmp(key, 'q')
+                    break
+                end
+                
+                % ITI
+                Screen('Flip', prm.screen.windowPtr);
+                WaitSecs(prm.ITI);
+            end
+            
+            % present fixation again, head up, to simply get the eye
+            % rotation
+            reportInstruction = ['Head up straight, \n click when ready to fixate'];
+            DrawFormattedText(prm.screen.windowPtr, reportInstruction,...
+                'center', 'center', prm.screen.whiteColour);
+            Screen('Flip', prm.screen.windowPtr);
+            buttons = [];
+            while ~any(buttons)
+                [x, y, buttons, focus, valuators, valinfo] = GetMouse(prm.screen.windowPtr);
+            end
+            %         WaitSecs(prm.ITI);
+            if info.eyeTracker==1
+                trigger.startRecording();
+            end
+            [rectSizeDotX rectSizeDotY] = dva2pxl(prm.fixation.dotRadius, prm.fixation.dotRadius);
+            rectSizeDotX = round(rectSizeDotX);
+            rectSizeDotY = round(rectSizeDotY);
+            rectFixDot = [prm.screen.center(1)-rectSizeDotX,...
+                prm.screen.center(2)-rectSizeDotY,...
+                prm.screen.center(1)+rectSizeDotX,...
+                prm.screen.center(2)+rectSizeDotY];
+            Screen('DrawTextures', prm.screen.windowPtr, prm.grating.tex{1});
+            Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
+            Screen('Flip', prm.screen.windowPtr);
+            WaitSecs(2.5)
+            if info.eyeTracker==1
+                trigger.stopRecording();
+            end
+            
+            % save resp for analysis...
+            resp.headTilt(tempN, 1) = 0;
+            resp.fixationDuration(tempN, 1) = 2.5;
+            %         resp.durationBefore(tempN, 1) = 1.5;
+            %         resp.durationAfter(tempN, 1) = 1;
+            resp.trialIdx(tempN, 1) = tempN;
+            save(prm.fileName.resp, 'resp');
         end
-        
-        % present fixation again, head up, to simply get the eye
-        % rotation
-        reportInstruction = ['Head up straight, \n click when ready to fixate'];
-        DrawFormattedText(prm.screen.windowPtr, reportInstruction,...
-            'center', 'center', prm.screen.whiteColour);
-        Screen('Flip', prm.screen.windowPtr);
-        buttons = [];
-        while ~any(buttons)
-            [x, y, buttons, focus, valuators, valinfo] = GetMouse(prm.screen.windowPtr);
-        end
-%         WaitSecs(prm.ITI);
-        if info.eyeTracker==1
-            trigger.startRecording();
-        end 
-        [rectSizeDotX rectSizeDotY] = dva2pxl(prm.fixation.dotRadius, prm.fixation.dotRadius);
-        rectSizeDotX = round(rectSizeDotX);
-        rectSizeDotY = round(rectSizeDotY);
-        rectFixDot = [prm.screen.center(1)-rectSizeDotX,...
-            prm.screen.center(2)-rectSizeDotY,...
-            prm.screen.center(1)+rectSizeDotX,...
-            prm.screen.center(2)+rectSizeDotY];
-        Screen('DrawTextures', prm.screen.windowPtr, prm.grating.tex{1});
-        Screen('FillOval', prm.screen.windowPtr, prm.fixation.colour, rectFixDot);
-        Screen('Flip', prm.screen.windowPtr);
-        WaitSecs(2.5) 
-        if info.eyeTracker==1
-            trigger.stopRecording();
-        end 
-        
-        % save resp for analysis...
-        resp.headTilt(tempN, 1) = 0;
-        resp.fixationDuration(tempN, 1) = 2.5;
-%         resp.durationBefore(tempN, 1) = 1.5;
-%         resp.durationAfter(tempN, 1) = 1;
-        resp.trialIdx(tempN, 1) = tempN;
-        save(prm.fileName.resp, 'resp');
     end
     prm.fileName.prm = [prm.fileName.folder, '\parameters_', info.fileNameTime];
     save(prm.fileName.prm, 'prm');
     
-%     % calibration again
-%     if info.eyeTracker==1
-%         try
-%             startCalibration(prm.screen.monitorWidth, prm.screen.monitorHeight,...
-%                 prm.screen.viewDistance, prm.screen.windowPtr, prm.screen.size);
-%         catch ME
-%             msgString = getReport(ME);
-%             disp(msgString);
-%             disp('Calibration interrupted.');
-%         end
-%     end
+    %     % calibration again
+    %     if info.eyeTracker==1
+    %         try
+    %             startCalibration(prm.screen.monitorWidth, prm.screen.monitorHeight,...
+    %                 prm.screen.viewDistance, prm.screen.windowPtr, prm.screen.size);
+    %         catch ME
+    %             msgString = getReport(ME);
+    %             disp(msgString);
+    %             disp('Calibration interrupted.');
+    %         end
+    %     end
     
     Screen('LoadNormalizedGammaTable', prm.screen.windowPtr, originalLUT);
     Screen('CloseAll')

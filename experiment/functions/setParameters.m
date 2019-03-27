@@ -67,7 +67,7 @@ prm.flash.respColour = [0 0 0]; % RGB in 0-255 range
 % red flash 21.26
 
 % rotation control
-prm.rotation.freq = [0 200 200 200 200]; % in degrees out of a cycle (360 in total)/s
+prm.rotation.freq = [200]; % in degrees out of a cycle (360 in total)/s
 prm.rotation.beforeDuration = .7; %90./prm.rotation.freq(3); % the baseline of rotation in one interval, s
 prm.rotation.afterDuration = .7; %90./prm.rotation.freq(3); 
 % prm.rotation.randDuration = 0.5; % rotation time = base+-rand
@@ -81,9 +81,10 @@ prm.blockN = 2; % total number of blocks
 prm.conditionN = length(prm.grating.outerRadius)*length(prm.flash.onsetInterval)* ...
     length(prm.flash.displacement)*length(prm.rotation.initialDirection)* ...
     length(prm.rotation.freq); % total number of combinations of conditions
-% conditions differ in: radial stimulus size; flash onset interval;
+% conditions differ in: radial stimulus size; flash onset interval; initial
+% rotational direction; rotational speed
 % flash displacement
-prm.trialPerCondition = 5*length(prm.headTilt); %5; % trial number per condition
+prm.trialPerCondition = 20*length(prm.headTilt); %5; % trial number per condition
 prm.trialPerBlock = prm.trialPerCondition*prm.conditionN/prm.blockN;
 
 % end

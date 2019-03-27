@@ -40,13 +40,13 @@ end
 Screen('FillRect', display.windowPointer, grey);
 
 
-horizontalFixationPoints= 5;
-verticalFixationPoints = 5;
+horizontalFixationPoints= 3;
+verticalFixationPoints = 3;
 
 numberFixationPoints = horizontalFixationPoints * verticalFixationPoints;
 
-numberOfRepititions = parameter.trialsPerCondition;
-numberOfFixationTrials = numberFixationPoints * numberOfRepititions;
+numberOfrepetitions = 5;%parameter.trialsPerCondition;
+numberOfFixationTrials = numberFixationPoints * numberOfrepetitions;
 
 fixationPoints = [horizontalFixationPoints,verticalFixationPoints];
 
@@ -71,7 +71,7 @@ while(true)
 end
 
 fixationPointsConditionTable = createConditionTable(fixationPoints);
-fixationPointsConditionTable(:,2:3) = fixationPointsConditionTable(:,2:3)-3;
+fixationPointsConditionTable(:,2:3) = fixationPointsConditionTable(:,2:3)-2;
 
 horizontalOffset = fixationPointsConditionTable(:,2);
 verticalOffset = fixationPointsConditionTable(:,3);
@@ -82,8 +82,6 @@ drawCross(positionCenter, halfDegree, red);
 
 Screen('Flip',display.windowPointer);
 
-
-
 pause(1);
 
 positionLog = [];
@@ -91,8 +89,8 @@ orderCounter = 1;
 
 for run = conditions
     
-    horizontalPosition = positionCenter(1) - horizontalOffset(run) * fiveDegreeHorizontal;
-    verticalPosition = positionCenter(2) + verticalOffset(run) * fiveDegreeVertical;
+    horizontalPosition = positionCenter(1) - horizontalOffset(run) * 2 * fiveDegreeHorizontal;
+    verticalPosition = positionCenter(2) + verticalOffset(run) * 2 * fiveDegreeVertical;
     
     positionLog(orderCounter, 1:3) = [orderCounter horizontalOffset(run) verticalOffset(run)];
     orderCounter = orderCounter + 1;
@@ -120,8 +118,9 @@ for run = conditions
     
     trigger.stopRecording();
     
-    
-    drawCross(positionCenter, halfDegree, red);
+    drawCircle(positionCenter, 0.75, black);
+    drawCircle(positionCenter, 0.25, grey);
+%     drawCross(positionCenter, halfDegree, red);
     
     Screen('Flip',display.windowPointer);
     trigger.startRecording();
@@ -138,7 +137,7 @@ Screen('LoadNormalizedGammaTable', display.windowPointer, originalLUT);
 ShowCursor;
 
 %write  log file
-fileName = [num2str(parameter.subjectID) '_' num2str(parameter.experimentID) '_' datestr(now, '_yyyy_mmmm_dd') '_ListingsPlane_Block_' num2str(parameter.block) '.mat'];
+fileName = [num2str(parameter.subID) '_' num2str(parameter.expType) '_' datestr(now, '_yyyy_mmmm_dd') '_ListingsPlane_Block_' num2str(parameter.block) '.mat'];
 filePath = fullfile(pwd,'..','LogFiles',fileName);
 save(filePath,'positionLog');
 
