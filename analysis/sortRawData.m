@@ -7,18 +7,18 @@
 clear all; close all; clc
 
 % basic setting
-names = {'tXW0'}; %{'tJF' 'AD'};
+names = {'XW3' 'DC3'};
 folder = pwd;
 howMany = -13; % include the first howMany trials for each condition*each initialDirection
 % using for pilot to see how many trials we need...
 % if not using this, set howMany to a negative number such as -1
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
-trialPerBlockTotal = 50;
+trialPerBlockTotal = 40;
 trialPerBlockExp = 40; % 
 trialPerBlockBase = 10; % 
 
 dataRawAll = table();
-dataRawBaseAll = table();
+% dataRawBaseAll = table();
 for ii = 1:size(names, 2)
     % Read all raw data
     cd ..
@@ -29,7 +29,7 @@ for ii = 1:size(names, 2)
 
     % load raw data into dataRaw
     dataRaw = table();
-    dataRawBase = table();
+%     dataRawBase = table();
     for jj = 1:size(fileResp, 2)
         load(fileResp{1, jj})
         
@@ -37,14 +37,14 @@ for ii = 1:size(names, 2)
             % regular processing below, first putting all data together
             if jj==1
                 idxExp = find(resp.rotationSpeed~=0);
-                idxBase = find(resp.rotationSpeed==0 & resp.initialDirection~=0);
+%                 idxBase = find(resp.rotationSpeed==0 & resp.initialDirection~=0);
                 dataRaw = resp(idxExp, :);
-                dataRawBase = resp(idxBase, :);
+%                 dataRawBase = resp(idxBase, :);
             else
                 idxExp = find(resp.rotationSpeed~=0);
-                idxBase = find(resp.rotationSpeed==0 & resp.initialDirection~=0);
+%                 idxBase = find(resp.rotationSpeed==0 & resp.initialDirection~=0);
                 dataRaw = [dataRaw; resp(idxExp, :)];
-                dataRawBase = [dataRawBase; resp(idxBase, :)];
+%                 dataRawBase = [dataRawBase; resp(idxBase, :)];
             end
         end
     end
@@ -85,17 +85,17 @@ for ii = 1:size(names, 2)
 %     else
         save(['dataRaw_', names{ii}], 'dataRaw') % experiment
 %     end
-    save(['dataRawBase_', names{ii}], 'dataRawBase') % baseline
+%     save(['dataRawBase_', names{ii}], 'dataRawBase') % baseline
     
     % collapse all data
     if ii==1
         dataRawAll = dataRaw; % experiment
-        dataRawBaseAll = dataRawBase; % baseline
+%         dataRawBaseAll = dataRawBase; % baseline
     else
         dataRawAll = [dataRawAll; dataRaw]; % experiment
-        dataRawBaseAll = [dataRawBaseAll; dataRawBase]; % baseline
+%         dataRawBaseAll = [dataRawBaseAll; dataRawBase]; % baseline
     end
     
 end
 save(['dataRaw_all', num2str(size(names, 2))], 'dataRawAll')
-save(['dataRawBase_all', num2str(size(names, 2))], 'dataRawBaseAll')
+% save(['dataRawBase_all', num2str(size(names, 2))], 'dataRawBaseAll')

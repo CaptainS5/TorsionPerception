@@ -4,7 +4,7 @@ clear all; close all; clc
 
 global trial
 
-names = {'tJF' 'AD'};
+names = {'XW3' 'DC3'};
 conditions = [200]; % rotationSpeed
 % load('meanLatencyExp1')
 cd ..
@@ -14,18 +14,18 @@ dirCons = [-1 1]; % initial direction; in the plot shows the direction after rev
 headCons = [-1 0 1]; % head tilt direction
 headNames = {'CCW' 'Up' 'CW'};
 trialPerCon = 20; % for each head tilt, directions separated
-torsionThreshold = 5*ones(size(names));
+torsionThreshold = 7*ones(size(names));
 torsionFrames = 3*ones(size(names));
 eyeName = {'L' 'R'};
 endNames = {'BeforeReversal' 'AfterReversal'};
 
 cd ..
-load(['dataBase_all', num2str(size(names, 2)), '.mat'])
+% load(['dataBase_all', num2str(size(names, 2)), '.mat'])
 %% Experimental trials
 for endN = 1:2
     endName = endNames{endN};
     trialData = table(); % organize into long format
-    trialDeleted = zeros(1, length(names));
+%     trialDeleted = zeros(1, length(names));
     for subj = 1:length(names)
         cd(analysisF)
         % Subject details
@@ -59,10 +59,14 @@ for endN = 1:2
                     if resp.reportAngle(t) < 0
                         resp.reportAngle(t) = resp.reportAngle(t)+180;
                     end
-                    idxBase = find(dataBase.sub==subj & dataBase.headTilt==resp.headTilt(t));
-                    baseAngle = dataBase.baseMeanAngle(idxBase, 1);
+                    resp.reversalAngle(t) = resp.reversalAngle(t)-90;
+                    if resp.reversalAngle(t) < 0
+                        resp.reversalAngle(t) = resp.reversalAngle(t)+180;
+                    end
+%                     idxBase = find(dataBase.sub==subj & dataBase.headTilt==resp.headTilt(t));
+%                     baseAngle = dataBase.baseMeanAngle(idxBase, 1);
                     
-                    dataTemp.perceptualError(countLt, 1) = -(resp.reportAngle(t)-baseAngle)*resp.initialDirection(t);
+                    dataTemp.perceptualError(countLt, 1) = -(resp.reportAngle(t)-resp.reversalAngle(t))*resp.initialDirection(t);
                     
                     currentTrial = t;
                     eye = 2;
@@ -114,30 +118,30 @@ for endN = 1:2
                     %                             if abs(torsion.slowPhases.meanSpeed)<20
                     
                     %% retinal torsion angle
-                    dataTemp.RtorsionPosition(countLt, 1) = nanmean(torsion.slowPhases.onsetPosition);
+                    dataTemp.torsionPosition(countLt, 1) = nanmean(torsion.slowPhases.onsetPosition);
                     
                     %% torsion velocity
-                    dataTemp.RtorsionVelT(countLt, 1) = torsion.slowPhases.meanSpeed;
+                    dataTemp.torsionVelT(countLt, 1) = torsion.slowPhases.meanSpeed;
                     
                     %% torsion magnitude
-                    dataTemp.RtorsionAngleTotal(countLt, 1) = torsion.slowPhases.totalAngle;
-                    dataTemp.RtorsionAngleCW(countLt, 1) = torsion.slowPhases.totalAngleCW;
-                    dataTemp.RtorsionAngleCCW(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                    dataTemp.torsionAngleTotal(countLt, 1) = torsion.slowPhases.totalAngle;
+                    dataTemp.torsionAngleCW(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                    dataTemp.torsionAngleCCW(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
                     
                     %% saccade numbers
-                    dataTemp.RsacNumT(countLt, 1) = trial.saccades.T.number;
-                    dataTemp.RsacNumTCW(countLt, 1) = trial.saccades.T_CW.number;
-                    dataTemp.RsacNumTCCW(countLt, 1) = trial.saccades.T_CCW.number;
+                    dataTemp.sacNumT(countLt, 1) = trial.saccades.T.number;
+                    dataTemp.sacNumTCW(countLt, 1) = trial.saccades.T_CW.number;
+                    dataTemp.sacNumTCCW(countLt, 1) = trial.saccades.T_CCW.number;
                     
                     %% saccade sum amplitudes
-                    dataTemp.RsacAmpSumT(countLt, 1) = trial.saccades.T.sum;
-                    dataTemp.RsacAmpSumTCW(countLt, 1) = trial.saccades.T_CW.sum;
-                    dataTemp.RsacAmpSumTCCW(countLt, 1) = trial.saccades.T_CCW.sum;
+                    dataTemp.sacAmpSumT(countLt, 1) = trial.saccades.T.sum;
+                    dataTemp.sacAmpSumTCW(countLt, 1) = trial.saccades.T_CW.sum;
+                    dataTemp.sacAmpSumTCCW(countLt, 1) = trial.saccades.T_CCW.sum;
                     
                     %% saccade mean amplitudes
-                    dataTemp.RsacAmpMeanT(countLt, 1) = trial.saccades.T.meanAmplitude;
-                    dataTemp.RsacAmpMeanTCW(countLt, 1) = trial.saccades.T_CW.meanAmplitude;
-                    dataTemp.RsacAmpMeanTCCW(countLt, 1) = trial.saccades.T_CCW.meanAmplitude;
+                    dataTemp.sacAmpMeanT(countLt, 1) = trial.saccades.T.meanAmplitude;
+                    dataTemp.sacAmpMeanTCW(countLt, 1) = trial.saccades.T_CW.meanAmplitude;
+                    dataTemp.sacAmpMeanTCCW(countLt, 1) = trial.saccades.T_CCW.meanAmplitude;
                     %                             end
                     countLt = countLt+1;
                 end
@@ -224,30 +228,30 @@ for subj = 1:length(names)
                 %                             if abs(torsion.slowPhases.meanSpeed)<20
                 
                 %% retinal torsion angle
-                dataTemp.RtorsionPosition(countLt, 1) = nanmean(torsion.slowPhases.onsetPosition);
+                dataTemp.torsionPosition(countLt, 1) = nanmean(torsion.slowPhases.onsetPosition);
                 
                 %% torsion velocity
-                dataTemp.RtorsionVelT(countLt, 1) = torsion.slowPhases.meanSpeed;
+                dataTemp.torsionVelT(countLt, 1) = torsion.slowPhases.meanSpeed;
                 
                 %% torsion magnitude
-                dataTemp.RtorsionAngleTotal(countLt, 1) = torsion.slowPhases.totalAngle;
-                dataTemp.RtorsionAngleCW(countLt, 1) = torsion.slowPhases.totalAngleCW;
-                dataTemp.RtorsionAngleCCW(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                dataTemp.torsionAngleTotal(countLt, 1) = torsion.slowPhases.totalAngle;
+                dataTemp.torsionAngleCW(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                dataTemp.torsionAngleCCW(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
                 
                 %% saccade numbers
-                dataTemp.RsacNumT(countLt, 1) = trial.saccades.T.number;
-                dataTemp.RsacNumTCW(countLt, 1) = trial.saccades.T_CW.number;
-                dataTemp.RsacNumTCCW(countLt, 1) = trial.saccades.T_CCW.number;
+                dataTemp.sacNumT(countLt, 1) = trial.saccades.T.number;
+                dataTemp.sacNumTCW(countLt, 1) = trial.saccades.T_CW.number;
+                dataTemp.sacNumTCCW(countLt, 1) = trial.saccades.T_CCW.number;
                 
                 %% saccade sum amplitudes
-                dataTemp.RsacAmpSumT(countLt, 1) = trial.saccades.T.sum;
-                dataTemp.RsacAmpSumTCW(countLt, 1) = trial.saccades.T_CW.sum;
-                dataTemp.RsacAmpSumTCCW(countLt, 1) = trial.saccades.T_CCW.sum;
+                dataTemp.sacAmpSumT(countLt, 1) = trial.saccades.T.sum;
+                dataTemp.sacAmpSumTCW(countLt, 1) = trial.saccades.T_CW.sum;
+                dataTemp.sacAmpSumTCCW(countLt, 1) = trial.saccades.T_CCW.sum;
                 
                 %% saccade mean amplitudes
-                dataTemp.RsacAmpMeanT(countLt, 1) = trial.saccades.T.meanAmplitude;
-                dataTemp.RsacAmpMeanTCW(countLt, 1) = trial.saccades.T_CW.meanAmplitude;
-                dataTemp.RsacAmpMeanTCCW(countLt, 1) = trial.saccades.T_CCW.meanAmplitude;
+                dataTemp.sacAmpMeanT(countLt, 1) = trial.saccades.T.meanAmplitude;
+                dataTemp.sacAmpMeanTCW(countLt, 1) = trial.saccades.T_CW.meanAmplitude;
+                dataTemp.sacAmpMeanTCCW(countLt, 1) = trial.saccades.T_CCW.meanAmplitude;
                 %                             end
                 countLt = countLt+1;
             end

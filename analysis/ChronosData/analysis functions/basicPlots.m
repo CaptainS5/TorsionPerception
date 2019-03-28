@@ -2,7 +2,7 @@
 % Xiuyun Wu, 03/08/2019
 clear all; close all; clc
 
-names = {'tJF' 'AD' 'tXW0'};
+names = {'XW3' 'DC3'};
 conditions = [200]; % rotationSpeed
 startT = 1; % start from which participant for individual plots
 individualPlots = 1; % whether plot individual data
@@ -12,8 +12,8 @@ dirCons = [-1 1]; % after reversal directions
 headCons = [-1 0 1];
 trialPerCon = 20; % for each head tilt, directions separated
 eyeName = {'L' 'R'};
-% endName = 'BeforeReversal'; % from beginning of stimulus to reversal
-endName = 'AfterReversal';
+endName = 'BeforeReversal'; % from beginning of stimulus to reversal
+% endName = 'AfterReversal';
 colorPlot = [0 0 0; 0.5 0.5 0.5];
 
 % if merged==0
@@ -21,7 +21,7 @@ colorPlot = [0 0 0; 0.5 0.5 0.5];
 % else
 %     mergeName = 'merged';
 % end
-load(['dataLong', endName, '3.mat'])
+load(['dataLong', endName, '.mat'])
 load(['dataLongBase.mat'])
 
 cd ..
@@ -42,8 +42,8 @@ if individualPlots==1
                 dataT = data(data.afterReversalD==(dirCons(dirI)) & data.headTilt==(headIdx(headI)), :);
                 meanSub{t}.percept(headI, dirI) = mean(dataT.perceptualError);
                 stdSub{t}.percept(headI, dirI) = std(dataT.perceptualError);
-                meanSub{t}.torsionVelT(headI, dirI) = mean(dataT.RtorsionVelT);
-                stdSub{t}.torsionVelT(headI, dirI) = std(dataT.RtorsionVelT);
+                meanSub{t}.torsionVelT(headI, dirI) = mean(dataT.torsionVelT);
+                stdSub{t}.torsionVelT(headI, dirI) = std(dataT.torsionVelT);
             end
         end
         cd([analysisF '\torsionPlots'])
@@ -181,34 +181,34 @@ if individualPlots==1
     end
     
     %% Baseline plots
-%     for t = startT:size(names, 2)
-%         data = trialDataBase(trialDataBase.sub==t, :);
-%         
-%         %% Perception and torsion plots
-%         % head tilt and direction separated
-%         headIdx = unique(data.headTilt);
-%         for headI = 1:length(headIdx)
-%             for dirI = 1:2
-%                 dataT = data(data.afterReversalD==(dirCons(dirI)) & data.headTilt==(headIdx(headI)), :);
-%                 meanSub{t}.torsionVelT(headI, dirI) = mean(dataT.RtorsionVelT);
-%                 stdSub{t}.torsionVelT(headI, dirI) = std(dataT.RtorsionVelT);
-%             end
-%         end
-%         cd([analysisF '\baselinePlots'])
-%         % torsion velocity
-%         figure
-%         eyeN = 2; % 2-right
-%         errorbar(headIdx, abs(meanSub{t}.torsionVelT(:, 1)), stdSub{t}.torsionVelT(:, 1), '--o', 'LineWidth', 1, 'color', colorPlot(1, :))
-%         hold on
-%         errorbar(headIdx, abs(meanSub{t}.torsionVelT(:, 2)), stdSub{t}.torsionVelT(:, 2), '-o', 'LineWidth', 1, 'color', colorPlot(1, :))
-%         legend({'visual CCW' 'visual CW'}, 'box', 'off', 'Location', 'northwest')
-%         xlabel('Head tilt direction')
-%         ylabel('Torsional velocity (abs) (°/s)')
-%         set(gca, 'FontSize', 15, 'box', 'off')
-%         %             xlim([0 420])
-%         %         ylim([-25 25])
-%         saveas(gca, ['torsionVelTBase_' names{t} '_' endName '.pdf'])
-%     end
+    for t = startT:size(names, 2)
+        data = trialDataBase(trialDataBase.sub==t, :);
+        
+        %% Perception and torsion plots
+        % head tilt and direction separated
+        headIdx = unique(data.headTilt);
+        for headI = 1:length(headIdx)
+            for dirI = 1:2
+                dataT = data(data.afterReversalD==(dirCons(dirI)) & data.headTilt==(headIdx(headI)), :);
+                meanSub{t}.torsionVelT(headI, dirI) = mean(dataT.torsionVelT);
+                stdSub{t}.torsionVelT(headI, dirI) = std(dataT.torsionVelT);
+            end
+        end
+        cd([analysisF '\baselinePlots'])
+        % torsion velocity
+        figure
+        eyeN = 2; % 2-right
+        errorbar(headIdx, abs(meanSub{t}.torsionVelT(:, 1)), stdSub{t}.torsionVelT(:, 1), '--o', 'LineWidth', 1, 'color', colorPlot(1, :))
+        hold on
+        errorbar(headIdx, abs(meanSub{t}.torsionVelT(:, 2)), stdSub{t}.torsionVelT(:, 2), '-o', 'LineWidth', 1, 'color', colorPlot(1, :))
+        legend({'visual CCW' 'visual CW'}, 'box', 'off', 'Location', 'northwest')
+        xlabel('Head tilt direction')
+        ylabel('Torsional velocity (abs) (°/s)')
+        set(gca, 'FontSize', 15, 'box', 'off')
+        %             xlim([0 420])
+        %         ylim([-25 25])
+        saveas(gca, ['torsionVelTBase_' names{t} '_' endName '.pdf'])
+    end
 end
 
 %% averaged plots

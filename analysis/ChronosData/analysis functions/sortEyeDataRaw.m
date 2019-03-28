@@ -9,7 +9,7 @@ global trial
 
 % names = {'SDcontrol' 'MScontrol' 'KTcontrol' 'JGcontrol' 'APcontrol' 'RTcontrol' 'FScontrol' 'XWcontrol' 'SCcontrol' 'JFcontrol'};
 % conditions = [25 50 100 200];
-names = {'tJF' 'AD'};
+names = {'XW3' 'DC3'};
 conditions = [200];
 cd ..
 analysisF = pwd;
