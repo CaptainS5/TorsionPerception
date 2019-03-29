@@ -2,7 +2,7 @@
 % tilted
 clear all; close all; clc
 
-names = {'tJF' 'AD'};
+names = {'XW3' 'DC3'};
 % t2CW only have available data for the first two secs...
 conditions = [200];
 sampleRate = 200;
@@ -83,8 +83,8 @@ for eye = 2:2
     timePoints = [timePBeforeReversal timePReversal timePAfterReversal]; % align at the reversal and after...
     % reversal onset is 0
     
-    figure % plot individual traces in different figures
     for subN = 1:size(names, 2)
+        figure % plot individual traces in different figures
         headSub = unique(eyeTrialData.headTilt(subN, :));
         headI(1) = find(headCons==headSub(1));
         headI(2) = find(headCons==headSub(2));
@@ -101,9 +101,8 @@ for eye = 2:2
         xlabel('Time (ms)')
         ylabel('Torsional velocity (deg/s)')
         % ylim([-0.5 0.5])
+        saveas(gca, ['velocityTracesSub_', names{subN}, '.pdf'])
     end
-    saveas(gca, ['velocityTracesSub_', names{subN}, '.pdf'])
-    
     %     % generate csv files, each file for one speed condition
     %     % each row is the mean velocity trace of one participant
     %     % use the min frame length--the lengeth where all participants have
@@ -205,8 +204,8 @@ for eye = 2:2
     timePoints = [timePBeforeReversal timePReversal timePAfterReversal]; % align at the reversal and after...
     % reversal onset is 0
     
-    figure % plot individual traces in different figures
     for subN = 1:size(names, 2)
+        figure % plot individual traces in different figures
         headSub = unique(eyeTrialDataBase.headTilt(subN, :));
         headI(1) = find(headCons==headSub(1));
         headI(2) = find(headCons==headSub(2));
@@ -222,9 +221,10 @@ for eye = 2:2
         %         title([eyeName{eye}, ' rotational speed ', num2str(conditions(headI))])
         xlabel('Time (ms)')
         ylabel('Torsional velocity (deg/s)')
-        ylim([-3 3])
+        ylim([-3.5 3.5])
+        
+        saveas(gca, ['velocityTracesBaseSub_', names{subN}, '.pdf'])
     end
-    saveas(gca, ['velocityTracesBaseSub_', names{subN}, '.pdf'])
 end
 
 %     % generate csv files, each file for one speed condition

@@ -12,7 +12,7 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-names = {'tJF' 'AD' 'tXW0'};
+names = {'XW3' 'DC3'};
 merged = 0; % whether initial direction is merged; 1=merged, 0=not
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 % loadData = 0; % whether get new fitting or using existing fitting
@@ -29,7 +29,7 @@ colorPlot = [232 71 12; 2 255 44; 12 76 150; 140 0 255; 255 212 13]/255;
 
 cd ..
 % % load baseline
-load(['dataBase_all', num2str(size(names, 2)), '.mat']);
+% load(['dataBase_all', num2str(size(names, 2)), '.mat']);
 % % load raw data collapsed
 % load(['dataRaw_all', num2str(size(names, 2))])
 % load(['dataRawBase_all', num2str(size(names, 2))])
@@ -64,9 +64,9 @@ for ii = 1:size(names, 2)
             data.reversalAngle(tt) = data.reversalAngle(tt)+180;
         end
         
-        idxBase = find(dataBase.sub==ii & dataBase.headTilt==data.headTilt(tt));
-        baseAngle = dataBase.baseMeanAngle(idxBase, 1);
-        data.angleError(tt, 1) = -(data.reportAngle(tt)-baseAngle)*data.initialDirection(tt);
+%         idxBase = find(dataBase.sub==ii & dataBase.headTilt==data.headTilt(tt));
+%         baseAngle = dataBase.baseMeanAngle(idxBase, 1);
+        data.angleError(tt, 1) = -(data.reportAngle(tt)-data.reversalAngle(tt))*data.initialDirection(tt);
     end
     
     % save the generated data
@@ -98,20 +98,20 @@ for ii = 1:size(names, 2)
         end
     end
 
-% % draw individual plots
-% figure
-% box off
-% hold on
-% p1 = errorbar(headIdx, meanErrorSub{ii}(:, 1), stdErrorSub{ii}(:, 1), '-o', 'LineWidth', 1, 'color', colorPlot(1, :));
-% p2 = errorbar(headIdx, meanErrorSub{ii}(:, 2), stdErrorSub{ii}(:, 2), '--o', 'LineWidth', 1, 'color', colorPlot(1, :));
-% 
-% legend([p1, p2], {'visual CW' 'visual CCW'}, 'box', 'off', 'Location', 'northwest')
-% %         ylim([-25, 25])
-% xlim([-1.5 1.5])
-% xlabel('Head tilt direction')
-% ylabel('Perceived shift in direction (°)')
-% set(gca, 'FontSize', fontSize, 'box', 'off')
-% saveas(gca, [names{ii}, '_illusion.pdf'])
+% draw individual plots
+figure
+box off
+hold on
+p1 = errorbar(headIdx, meanErrorSub{ii}(:, 1), stdErrorSub{ii}(:, 1), '-o', 'LineWidth', 1, 'color', colorPlot(1, :));
+p2 = errorbar(headIdx, meanErrorSub{ii}(:, 2), stdErrorSub{ii}(:, 2), '--o', 'LineWidth', 1, 'color', colorPlot(1, :));
+
+legend([p1, p2], {'visual CW' 'visual CCW'}, 'box', 'off', 'Location', 'northwest')
+%         ylim([-25, 25])
+xlim([-1.5 1.5])
+xlabel('Head tilt direction')
+ylabel('Perceived shift in direction (°)')
+set(gca, 'FontSize', fontSize, 'box', 'off')
+saveas(gca, [names{ii}, '_illusion.pdf'])
 end
 
 % draw plots for all together
@@ -121,7 +121,7 @@ for subN = 1:size(names, 2)
     hold on
     p{subN} = errorbar(headSub{subN}, meanErrorSubM{subN}, stdErrorSubM{subN}, '-o', 'LineWidth', 1, 'color', colorPlot(subN, :));
 end
-legend([p{1}, p{2}, p{3}], {'tJF' 'AD' 'tXW0'}, 'box', 'off', 'Location', 'northwest')
+legend([p{1}, p{2}, p{3}], names, 'box', 'off', 'Location', 'northwest')
 %         ylim([-25, 25])
 xlim([-1.5 1.5])
 xlabel('Head tilt direction')
