@@ -454,6 +454,6 @@ end
 
 % Screen('FinalizeMovie', mPtr);
 
-% HideCursor();
+HideCursor();
 
 % end

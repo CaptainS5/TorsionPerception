@@ -134,7 +134,7 @@ end
 
 
 Screen('LoadNormalizedGammaTable', display.windowPointer, originalLUT);
-ShowCursor;
+% ShowCursor;
 
 %write  log file
 fileName = [num2str(parameter.subID) '_' num2str(parameter.expType) '_' datestr(now, '_yyyy_mmmm_dd') '_ListingsPlane_Block_' num2str(parameter.block) '.mat'];

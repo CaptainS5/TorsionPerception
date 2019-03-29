@@ -11,7 +11,7 @@ try
     rStyleDefault = -1; % no use right now...
     expTyp = 3;
     eyeTracker = 1;
-    prm.headTilt = [1 0]; % in this exact order, -1=left/CCW, 1=right/CW
+    prm.headTilt = [-1 0]; % in this exact order, -1=left/CCW, 1=right/CW
     
     while(true)
         if expTyp==3 && currentBlock>2

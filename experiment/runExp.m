@@ -284,6 +284,7 @@ try
                     disp('Calibration interrupted.');
                 end
             end
+            HideCursor;
             
             % block information
             textBlock = ['Block ', num2str(blockN), '\n Click to start'];
