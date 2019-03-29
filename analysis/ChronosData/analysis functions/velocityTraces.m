@@ -2,7 +2,7 @@
 % tilted
 clear all; close all; clc
 
-names = {'XW3' 'DC3'};
+names = {'XW3' 'DC3' 'AR3'};
 % t2CW only have available data for the first two secs...
 conditions = [200];
 sampleRate = 200;

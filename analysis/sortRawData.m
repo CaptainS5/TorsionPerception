@@ -7,7 +7,7 @@
 clear all; close all; clc
 
 % basic setting
-names = {'XW3' 'DC3'};
+names = {'XW3' 'DC3' 'AR3'};
 folder = pwd;
 howMany = -13; % include the first howMany trials for each condition*each initialDirection
 % using for pilot to see how many trials we need...
