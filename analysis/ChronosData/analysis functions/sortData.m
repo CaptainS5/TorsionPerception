@@ -4,7 +4,7 @@ clear all; close all; clc
 
 global trial
 
-names = {'XW3' 'DC3' 'AR3'};
+names = {'XW3' 'DC3' 'AR3' 'JF3'};
 conditions = [200]; % rotationSpeed
 % load('meanLatencyExp1')
 cd ..

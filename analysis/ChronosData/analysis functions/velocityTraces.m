@@ -2,7 +2,7 @@
 % tilted
 clear all; close all; clc
 
-names = {'XW3' 'DC3' 'AR3'};
+names = {'XW3' 'DC3' 'AR3' 'JF3'};
 % t2CW only have available data for the first two secs...
 conditions = [200];
 sampleRate = 200;
@@ -204,6 +204,8 @@ for eye = 2:2
     timePoints = [timePBeforeReversal timePReversal timePAfterReversal]; % align at the reversal and after...
     % reversal onset is 0
     
+    cd ..
+    cd('velocity trace plots')
     for subN = 1:size(names, 2)
         figure % plot individual traces in different figures
         headSub = unique(eyeTrialDataBase.headTilt(subN, :));
