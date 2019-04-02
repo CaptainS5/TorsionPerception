@@ -13,7 +13,8 @@ names = {'XW3' 'DC3' 'AR3' 'JF3'};
 conditions = [200];
 cd ..
 analysisF = pwd;
-dataFolder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1stYear\TorsionPerception\data'};
+% dataFolder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1stYear\TorsionPerception\data'};
+dataFolder = {'E:\XiuyunWu\Torsion-FDE\data'};
 trialPerCon = 40; % for each rotation speed, all directions together though...
 totalBlocks = 2; % how many blocks in total
 totalBlocksBase = 2;

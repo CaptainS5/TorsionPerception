@@ -9,12 +9,13 @@ conditions = [200]; % rotationSpeed
 % load('meanLatencyExp1')
 cd ..
 analysisF = pwd;
-folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1stYear\TorsionPerception\data'};
+% folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1stYear\TorsionPerception\data'};
+folder = {'E:\XiuyunWu\Torsion-FDE\data'};
 dirCons = [-1 1]; % initial direction; in the plot shows the direction after reversal
 headCons = [-1 0 1]; % head tilt direction
 headNames = {'CCW' 'Up' 'CW'};
 trialPerCon = 20; % for each head tilt, directions separated
-torsionThreshold = 7*ones(size(names));
+torsionThreshold = 5*ones(size(names));
 torsionFrames = 3*ones(size(names));
 eyeName = {'L' 'R'};
 endNames = {'BeforeReversal' 'AfterReversal'};
@@ -23,6 +24,11 @@ cd ..
 % load(['dataBase_all', num2str(size(names, 2)), '.mat'])
 %% Experimental trials
 for endN = 1:2
+    if endN<=1 % before reversal
+        checkAngle = -1;
+    else % after reversal
+        checkAngle = 1;
+    end
     endName = endNames{endN};
     trialData = table(); % organize into long format
 %     trialDeleted = zeros(1, length(names));
@@ -118,7 +124,7 @@ for endN = 1:2
                     %                             if abs(torsion.slowPhases.meanSpeed)<20
                     
                     %% retinal torsion angle
-                    dataTemp.torsionPosition(countLt, 1) = nanmean(torsion.slowPhases.onsetPosition);
+                    dataTemp.torsionPosition(countLt, 1) = nanmean(trial.frames.T_filt(trial.stim_reversalOnset:trial.stim_reversalOffset));
                     
                     %% torsion velocity
                     dataTemp.torsionVelT(countLt, 1) = torsion.slowPhases.meanSpeed;
@@ -127,6 +133,17 @@ for endN = 1:2
                     dataTemp.torsionAngleTotal(countLt, 1) = torsion.slowPhases.totalAngle;
                     dataTemp.torsionAngleCW(countLt, 1) = torsion.slowPhases.totalAngleCW;
                     dataTemp.torsionAngleCCW(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                     % just take the one that is not zero, if both
+                        % not zero, take the expected direction
+                if torsion.slowPhases.totalAngleCW==0
+                    dataTemp.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                elseif torsion.slowPhases.totalAngleCCW==0
+                    dataTemp.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                elseif dataTemp.afterReversalD(countLt, 1)*checkAngle==1
+                    dataTemp.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                elseif dataTemp.afterReversalD(countLt, 1)*checkAngle==-1
+                    dataTemp.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                end
                     
                     %% saccade numbers
                     dataTemp.sacNumT(countLt, 1) = trial.saccades.T.number;
@@ -227,8 +244,8 @@ for subj = 1:length(names)
                 
                 %                             if abs(torsion.slowPhases.meanSpeed)<20
                 
-                %% retinal torsion angle
-                dataTemp.torsionPosition(countLt, 1) = nanmean(torsion.slowPhases.onsetPosition);
+%                 %% retinal torsion angle during flash presentation
+%                 dataTemp.torsionPosition(countLt, 1) = nanmean(trial.frames.T_filt(trial.stim_reversalOnset:trial.stim_reversalOffset));
                 
                 %% torsion velocity
                 dataTemp.torsionVelT(countLt, 1) = torsion.slowPhases.meanSpeed;
@@ -237,6 +254,17 @@ for subj = 1:length(names)
                 dataTemp.torsionAngleTotal(countLt, 1) = torsion.slowPhases.totalAngle;
                 dataTemp.torsionAngleCW(countLt, 1) = torsion.slowPhases.totalAngleCW;
                 dataTemp.torsionAngleCCW(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                 % just take the one that is not zero, if both
+                        % not zero, take the expected direction
+                if torsion.slowPhases.totalAngleCW==0
+                    dataTemp.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                elseif torsion.slowPhases.totalAngleCCW==0
+                    dataTemp.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                elseif dataTemp.afterReversalD(countLt, 1)==1
+                    dataTemp.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
+                elseif dataTemp.afterReversalD(countLt, 1)==-1
+                    dataTemp.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
+                end
                 
                 %% saccade numbers
                 dataTemp.sacNumT(countLt, 1) = trial.saccades.T.number;

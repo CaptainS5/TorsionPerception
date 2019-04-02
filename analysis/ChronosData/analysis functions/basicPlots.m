@@ -12,8 +12,8 @@ dirCons = [-1 1]; % after reversal directions
 headCons = [-1 0 1];
 trialPerCon = 20; % for each head tilt, directions separated
 eyeName = {'L' 'R'};
-% endName = 'BeforeReversal'; % from beginning of stimulus to reversal
-endName = 'AfterReversal';
+endName = 'BeforeReversal'; % from beginning of stimulus to reversal
+% endName = 'AfterReversal';
 colorPlot = [0 0 0; 0.5 0.5 0.5];
 
 % if merged==0
@@ -44,9 +44,22 @@ if individualPlots==1
                 stdSub{t}.percept(headI, dirI) = std(dataT.perceptualError);
                 meanSub{t}.torsionVelT(headI, dirI) = mean(dataT.torsionVelT);
                 stdSub{t}.torsionVelT(headI, dirI) = std(dataT.torsionVelT);
+                meanSub{t}.torsionAngle(headI, dirI) = mean(dataT.torsionAngle);
+                stdSub{t}.torsionAngle(headI, dirI) = std(dataT.torsionAngle);
+                meanSub{t}.torsionPosition(headI, dirI) = mean(dataT.torsionPosition);
+                stdSub{t}.torsionPosition(headI, dirI) = std(dataT.torsionPosition);
             end
+            dataT = data(data.headTilt==(headIdx(headI)), :);
+            meanSubM{t}.percept(headI, 1) = mean(dataT.perceptualError);
+            stdSubM{t}.percept(headI, 1) = std(dataT.perceptualError);
+            meanSubM{t}.torsionVelT(headI, 1) = mean(dataT.torsionVelT.*dataT.afterReversalD);
+            stdSubM{t}.torsionVelT(headI, 1) = std(dataT.torsionVelT.*dataT.afterReversalD);
+            meanSubM{t}.torsionAngle(headI, 1) = mean(dataT.torsionAngle.*dataT.afterReversalD);
+            stdSubM{t}.torsionAngle(headI, 1) = std(dataT.torsionAngle.*dataT.afterReversalD);
+            meanSubM{t}.torsionPosition(headI, 1) = mean(dataT.torsionPosition.*dataT.afterReversalD);
+            stdSubM{t}.torsionPosition(headI, 1) = std(dataT.torsionPosition.*dataT.afterReversalD);
         end
-%         cd([analysisF '\torsionPlots'])
+        cd([analysisF '\torsionPlots'])
 %         % perceptual data
 %         figure
 %         eyeN = 2; % 2-right
@@ -55,14 +68,14 @@ if individualPlots==1
 %         errorbar(headIdx, meanSub{t}.percept(:, 2), stdSub{t}.percept(:, 2), '-o', 'LineWidth', 1, 'color', colorPlot(1, :))
 %         legend({'visual CCW' 'visual CW'}, 'box', 'off', 'Location', 'northwest')
 %         xlabel('Head tilt direction')
-%         ylabel('Perceived shift in direction (°)')
+%         ylabel('Perceived shift in direction (?)')
 %         set(gca, 'FontSize', 15, 'box', 'off')
 %         %             xlim([0 420])
 %         %         ylim([-25 25])
 %         %         title([eyeName{eye}, ' eye'])
 %         saveas(gca, ['perceptualError_' names{t} '.pdf'])
-%         
-%         % torsion velocity
+        
+%         % torsion velocity£¬ direction not merged
 %         figure
 %         eyeN = 2; % 2-right
 %         errorbar(headIdx, abs(meanSub{t}.torsionVelT(:, 1)), stdSub{t}.torsionVelT(:, 1), '--o', 'LineWidth', 1, 'color', colorPlot(1, :))
@@ -70,16 +83,80 @@ if individualPlots==1
 %         errorbar(headIdx, abs(meanSub{t}.torsionVelT(:, 2)), stdSub{t}.torsionVelT(:, 2), '-o', 'LineWidth', 1, 'color', colorPlot(1, :))
 %         legend({'visual CCW' 'visual CW'}, 'box', 'off', 'Location', 'northwest')
 %         xlabel('Head tilt direction')
-%         ylabel('Torsional velocity (abs) (°/s)')
+%         ylabel('Torsional velocity (abs) (?/s)')
 %         set(gca, 'FontSize', 15, 'box', 'off')
 %         %             xlim([0 420])
 %         %         ylim([-25 25])
 %         title([endName])
-%         saveas(gca, ['torsionVelT_' names{t} '_' endName '.pdf'])
+%         saveas(gca, ['torsionVelT_notMerged_' names{t} '_' endName '.pdf'])
+
+% % torsion velocity£¬ direction merged
+% figure
+% eyeN = 2; % 2-right
+% errorbar(headIdx, abs(meanSubM{t}.torsionVelT(:, 1)), stdSubM{t}.torsionVelT(:, 1), '--o', 'LineWidth', 1, 'color', colorPlot(1, :))
+% xlabel('Head tilt direction')
+% ylabel('Torsional velocity (abs) (?/s)')
+% set(gca, 'FontSize', 15, 'box', 'off')
+% %             xlim([0 420])
+% %         ylim([-25 25])
+% title([endName])
+% saveas(gca, ['torsionVelT_merged_' names{t} '_' endName '.pdf'])
+
+% % torsion angle£¬ direction not merged
+% figure
+% eyeN = 2; % 2-right
+% errorbar(headIdx, abs(meanSub{t}.torsionAngle(:, 1)), stdSub{t}.torsionAngle(:, 1), '--o', 'LineWidth', 1, 'color', colorPlot(1, :))
+% hold on
+% errorbar(headIdx, abs(meanSub{t}.torsionAngle(:, 2)), stdSub{t}.torsionAngle(:, 2), '-o', 'LineWidth', 1, 'color', colorPlot(1, :))
+% legend({'visual CCW' 'visual CW'}, 'box', 'off', 'Location', 'northwest')
+% xlabel('Head tilt direction')
+% ylabel('Torsional angle (abs) (deg)')
+% set(gca, 'FontSize', 15, 'box', 'off')
+% %             xlim([0 420])
+% %         ylim([-25 25])
+% title([endName])
+% saveas(gca, ['torsionAngle_notMerged_' names{t} '_' endName '.pdf'])
+% 
+% % torsion angle£¬ direction merged
+% figure
+% eyeN = 2; % 2-right
+% errorbar(headIdx, abs(meanSubM{t}.torsionAngle(:, 1)), stdSubM{t}.torsionAngle(:, 1), '--o', 'LineWidth', 1, 'color', colorPlot(1, :))
+% xlabel('Head tilt direction')
+% ylabel('Torsional angle (abs) (deg)')
+% set(gca, 'FontSize', 15, 'box', 'off')
+% %             xlim([0 420])
+% %         ylim([-25 25])
+% title([endName])
+% saveas(gca, ['torsionAngle_merged_' names{t} '_' endName '.pdf'])
+
+% torsion position£¬ direction not merged
+figure
+eyeN = 2; % 2-right
+errorbar(headIdx, abs(meanSub{t}.torsionPosition(:, 1)), stdSub{t}.torsionPosition(:, 1), '--o', 'LineWidth', 1, 'color', colorPlot(1, :))
+hold on
+errorbar(headIdx, abs(meanSub{t}.torsionPosition(:, 2)), stdSub{t}.torsionPosition(:, 2), '-o', 'LineWidth', 1, 'color', colorPlot(1, :))
+legend({'visual CCW' 'visual CW'}, 'box', 'off', 'Location', 'northwest')
+xlabel('Head tilt direction')
+ylabel('Torsional position (deg)')
+set(gca, 'FontSize', 15, 'box', 'off')
+%             xlim([0 420])
+%         ylim([-25 25])
+saveas(gca, ['torsionPosition_notMerged_' names{t} '.pdf'])
+
+% torsion position£¬ direction merged
+figure
+eyeN = 2; % 2-right
+errorbar(headIdx, abs(meanSubM{t}.torsionPosition(:, 1)), stdSubM{t}.torsionPosition(:, 1), '--o', 'LineWidth', 1, 'color', colorPlot(1, :))
+xlabel('Head tilt direction')
+ylabel('Torsional position (deg)')
+set(gca, 'FontSize', 15, 'box', 'off')
+%             xlim([0 420])
+%         ylim([-25 25])
+saveas(gca, ['torsionPosition_merged_' names{t} '.pdf'])
         
         %% Correlation plots
-        cd([analysisF '\correlationPlots\individual'])
-        % torsion velocity trial correlation with perception, merged direction
+%         cd([analysisF '\correlationPlots\individual'])
+% %         torsion velocity trial correlation with perception, merged direction
 %         figure
 %         eyeN = 2; % right eye        
 %         scatter(data.perceptualError, data.torsionVelT.*data.afterReversalD, 'LineWidth', 1)
@@ -91,33 +168,33 @@ if individualPlots==1
 % %         [rho pval] = corr(trialData.torsionVelTMerged(tempI, 1), trialData.perceptualError(tempI, 1));
 % %         title([eyeName{eye}, ', rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.3f')])
 %         saveas(gca, ['trialCorrelationVelocity&Perception_dirMerged_' names{t} '_' endName '.pdf'])
-        
-        % torsion velocity trial correlation with perception,
-        % direction not merged
-        figure
-        eyeN = 2; % right eye        
-        subplot(1, 2, 1)
-        tempI = find(data.afterReversalD==1);
-        scatter(data.perceptualError(tempI, :), data.torsionVelT(tempI, :), 'LineWidth', 1)
-        xlabel('Perceptual errors (deg)')
-        ylabel('Torsion velocity (deg/s)')
-        title('visual CW')
-        set(gca, 'FontSize', 15, 'box', 'off')
-        axis square
-        
-        subplot(1, 2, 2)
-        tempI = find(data.afterReversalD==-1);
-        scatter(data.perceptualError(tempI, :), data.torsionVelT(tempI, :), 'LineWidth', 1)
-        xlabel('Perceptual errors (deg)')
-        ylabel('Torsion velocity (deg/s)')
-        title('visual CCW')
-        set(gca, 'FontSize', 15, 'box', 'off')
-        axis square
-        %             xlim([0 420])
-        %             ylim([-2 2])
-%         [rho pval] = corr(trialData.torsionVelTMerged(tempI, 1), trialData.perceptualError(tempI, 1));
-%         title([eyeName{eye}, ', rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.3f')])
-        saveas(gca, ['trialCorrelationVelocity&Perception_dirNotMerged_' names{t} '_' endName '.pdf'])
+%         
+%         % torsion velocity trial correlation with perception,
+%         % direction not merged
+%         figure
+%         eyeN = 2; % right eye        
+%         subplot(1, 2, 1)
+%         tempI = find(data.afterReversalD==1);
+%         scatter(data.perceptualError(tempI, :), data.torsionVelT(tempI, :), 'LineWidth', 1)
+%         xlabel('Perceptual errors (deg)')
+%         ylabel('Torsion velocity (deg/s)')
+%         title('visual CW')
+%         set(gca, 'FontSize', 15, 'box', 'off')
+%         axis square
+%         
+%         subplot(1, 2, 2)
+%         tempI = find(data.afterReversalD==-1);
+%         scatter(data.perceptualError(tempI, :), data.torsionVelT(tempI, :), 'LineWidth', 1)
+%         xlabel('Perceptual errors (deg)')
+%         ylabel('Torsion velocity (deg/s)')
+%         title('visual CCW')
+%         set(gca, 'FontSize', 15, 'box', 'off')
+%         axis square
+%         %             xlim([0 420])
+%         %             ylim([-2 2])
+% %         [rho pval] = corr(trialData.torsionVelTMerged(tempI, 1), trialData.perceptualError(tempI, 1));
+% %         title([eyeName{eye}, ', rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.3f')])
+%         saveas(gca, ['trialCorrelationVelocity&Perception_dirNotMerged_' names{t} '_' endName '.pdf'])
         %
         %         % torsion angle trial correlation with perception, merged direction
         %         figure
@@ -164,7 +241,7 @@ if individualPlots==1
         %                 %             xlim([0 420])
         %                 %             ylim([-2 2])
         %                 [rho pval] = corr(trialData.torsionVelTMerged(tempI, 1), trialData.perceptualError(tempI, 1));
-        %                 title([eyeName{eye}, ', ', num2str(speedN(ii)), '°/s, rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.3f')])
+        %                 title([eyeName{eye}, ', ', num2str(speedN(ii)), '?/s, rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.3f')])
         %             end
         %             saveas(gca, ['trialCorrelationVelocity&perception', num2str(speedN(ii)), '_' names{t} '_' endName '.pdf'])
         %
@@ -187,7 +264,7 @@ if individualPlots==1
         %                 %             xlim([0 420])
         %                 %             ylim([-2 2])
         %                 [rho pval] = corr(trialData.torsionAngleMerged(tempI, 1), trialData.perceptualError(tempI, 1));
-        %                 title([eyeName{eye}, ', ', num2str(speedN(ii)), '°/s, rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.3f')])
+        %                 title([eyeName{eye}, ', ', num2str(speedN(ii)), '?/s, rho=', num2str(rho, '%.2f'), ', p=', num2str(pval, '%.3f')])
         %             end
         %             saveas(gca, ['trialCorrelationAngle&perception', num2str(speedN(ii)), '_' names{t} '_' endName '.pdf'])
         %         end
@@ -220,7 +297,7 @@ if individualPlots==1
     %         errorbar(headIdx, abs(meanSub{t}.torsionVelT(:, 2)), stdSub{t}.torsionVelT(:, 2), '-o', 'LineWidth', 1, 'color', colorPlot(1, :))
     %         legend({'visual CCW' 'visual CW'}, 'box', 'off', 'Location', 'northwest')
     %         xlabel('Head tilt direction')
-    %         ylabel('Torsional velocity (abs) (°/s)')
+    %         ylabel('Torsional velocity (abs) (?/s)')
     %         set(gca, 'FontSize', 15, 'box', 'off')
     %         %             xlim([0 420])
     %         %         ylim([-25 25])
@@ -289,16 +366,16 @@ if averagedPlots==1
     subplot(1, 2, 1)
     scatter(meanDiffPercept(:, 1), meanDiffTorsion(:, 1))
     title('visual CW')
-    xlabel('Diff perception (°)')
-    ylabel('Diff torsional velocity (°/s)')
+    xlabel('Diff perception (?)')
+    ylabel('Diff torsional velocity (?/s)')
     set(gca, 'FontSize', 15, 'box', 'off')
     
     subplot(1, 2, 2)
     scatter(meanDiffPercept(:, 2), meanDiffTorsion(:, 2))
     title('visual CCW')
     %     legend({'visual CW' 'visual CCW'}, 'box', 'off', 'Location', 'northwest')
-    xlabel('Diff perception (°)')
-    ylabel('Diff torsional velocity (°/s)')
+    xlabel('Diff perception (?)')
+    ylabel('Diff torsional velocity (?/s)')
     set(gca, 'FontSize', 15, 'box', 'off')
     %             xlim([0 420])
     %         ylim([-25 25])
@@ -332,8 +409,8 @@ if averagedPlots==1
     eyeN = 2; % 2-right
     
     scatter(meanDiffPerceptM, meanDiffTorsionM)
-    xlabel('Diff perception (°)')
-    ylabel('Diff torsional velocity (°/s)')
+    xlabel('Diff perception (?)')
+    ylabel('Diff torsional velocity (?/s)')
     set(gca, 'FontSize', 15, 'box', 'off')
     %             xlim([0 420])
     %         ylim([-25 25])

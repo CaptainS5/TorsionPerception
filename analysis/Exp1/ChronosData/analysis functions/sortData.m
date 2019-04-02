@@ -30,7 +30,7 @@ for endN = 1:2
     conData = table();
     countLc = 1; % for conData
     trialDeleted = zeros(1, length(names));
-    if endN<=2 % before reversal
+    if endN<=1 % before reversal
         checkAngle = -1;
     else % after reversal
         checkAngle = 1;
@@ -171,7 +171,7 @@ for endN = 1:2
                         %                     if dataTemp.perceptualError(countLt, 1)>-10 && abs(torsion.slowPhases.meanSpeed)<30
                         
                         %% retinal torsion angle
-                        dataTemp.torsionPosition(countLt, 1) = nanmean(torsion.slowPhases.onsetPosition);
+                        dataTemp.torsionPosition(countLt, 1) = nanmean(trial.frames.T_filt(trial.stim_reversalOnset:trial.stim_reversalOffset));
                         
                         %% torsion velocity
                         dataTemp.torsionVelT(countLt, 1) = torsion.slowPhases.meanSpeed;
@@ -239,154 +239,154 @@ for endN = 1:2
         end
         
         %%
-        for ii = 1:2 % two directions
-            for eye = 1:size(eyeName, 2)
-                for conI = 1:size(conditions, 2)
-                    conData.sub(countLc, 1) = subj;
-                    if strcmp(eyeName{eye}, 'L')
-                        conData.eye(countLc, 1) = 1; % 1-left,
-                    elseif strcmp(eyeName{eye}, 'R')
-                        conData.eye(countLc, 1) = 2; % 2-right
-                    end
-                    conData.rotationSpeed(countLc, 1) = conditions(conI);
-                    conData.afterReversalD(countLc, 1) = -direction(ii); % 1-clockwise, -1 counterclockwise, direction after reversal
-                    
-                    tempI = find(all(trialData{:, 1:4}==repmat(conData{countLc, 1:4}, [size(trialData, 1) 1]), 2));
-                    
-                    conData.perceptualErrorMean(countLc, 1) = nanmean(trialData.perceptualError(tempI, 1));
-                    conData.perceptualErrorStd(countLc, 1) = nanstd(trialData.perceptualError(tempI, 1));
-                    
-                    conData.torsionPosMean(countLc, 1) = nanmean(trialData.torsionPosition(tempI, 1));
-                    conData.torsionPosStd(countLc, 1) = nanstd(trialData.torsionPosition(tempI, 1));
-                    
-                    conData.torsionVelTMean(countLc, 1) = nanmean(trialData.torsionVelT(tempI, 1));
-                    conData.torsionVelTStd(countLc, 1) = nanstd(trialData.torsionVelT(tempI, 1));
-                    
-                    conData.torsionVelTGainMean(countLc, 1) = nanmean(trialData.torsionVGain(tempI, 1));
-                    conData.torsionVelTGainStd(countLc, 1) = nanstd(trialData.torsionVGain(tempI, 1));
-                    
-                    conData.torsionAngleTotalMean(countLc, 1) = nanmean(trialData.torsionAngleTotal(tempI, 1));
-                    conData.torsionAngleTotalStd(countLc, 1) = nanstd(trialData.torsionAngleTotal(tempI, 1));
-                    
-                    conData.torsionAngleCWMean(countLc, 1) = nanmean(trialData.torsionAngleCW(tempI, 1));
-                    conData.torsionAngleCWStd(countLc, 1) = nanstd(trialData.torsionAngleCW(tempI, 1));
-                    
-                    conData.torsionAngleCCWMean(countLc, 1) = nanmean(trialData.torsionAngleCCW(tempI, 1));
-                    conData.torsionAngleCCWStd(countLc, 1) = nanstd(trialData.torsionAngleCCW(tempI, 1));
-                    
-                    %                 conData.torsionAngleSameMean(countLc, 1) = nanmean(trialData.torsionAngleSame(tempI, 1));
-                    %                 conData.torsionAngleSameStd(countLc, 1) = nanstd(trialData.torsionAngleSame(tempI, 1));
-                    %
-                    %                 conData.torsionAngleAntiMean(countLc, 1) = nanmean(trialData.torsionAngleAnti(tempI, 1));
-                    %                 conData.torsionAngleAntiStd(countLc, 1) = nanstd(trialData.torsionAngleAnti(tempI, 1));
-                    
-                    conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngle(tempI, 1));
-                    conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngle(tempI, 1));
-                    
-                    conData.sacNumTMean(countLc, 1) = nanmean(trialData.sacNumT(tempI, 1));
-                    conData.sacNumTStd(countLc, 1) = nanstd(trialData.sacNumT(tempI, 1));
-                    
-                    conData.sacAmpSumTMean(countLc, 1) = nanmean(trialData.sacAmpSumT(tempI, 1));
-                    conData.sacAmpSumTStd(countLc, 1) = nanstd(trialData.sacAmpSumT(tempI, 1));
-                    
-                    conData.sacAmpMeanTMean(countLc, 1) = nanmean(trialData.sacAmpMeanT(tempI, 1));
-                    conData.sacAmpMeanTStd(countLc, 1) = nanstd(trialData.sacAmpMeanT(tempI, 1));
-                    
-                    conData.nonErrorTrialN(countLc, 1) = length(tempI);
-                    
-                    countLc = countLc+1;
-                end
-            end
-        end
+%         for ii = 1:2 % two directions
+%             for eye = 1:size(eyeName, 2)
+%                 for conI = 1:size(conditions, 2)
+%                     conData.sub(countLc, 1) = subj;
+%                     if strcmp(eyeName{eye}, 'L')
+%                         conData.eye(countLc, 1) = 1; % 1-left,
+%                     elseif strcmp(eyeName{eye}, 'R')
+%                         conData.eye(countLc, 1) = 2; % 2-right
+%                     end
+%                     conData.rotationSpeed(countLc, 1) = conditions(conI);
+%                     conData.afterReversalD(countLc, 1) = -direction(ii); % 1-clockwise, -1 counterclockwise, direction after reversal
+%                     
+%                     tempI = find(all(trialData{:, 1:4}==repmat(conData{countLc, 1:4}, [size(trialData, 1) 1]), 2));
+%                     
+%                     conData.perceptualErrorMean(countLc, 1) = nanmean(trialData.perceptualError(tempI, 1));
+%                     conData.perceptualErrorStd(countLc, 1) = nanstd(trialData.perceptualError(tempI, 1));
+%                     
+%                     conData.torsionPosMean(countLc, 1) = nanmean(trialData.torsionPosition(tempI, 1));
+%                     conData.torsionPosStd(countLc, 1) = nanstd(trialData.torsionPosition(tempI, 1));
+%                     
+%                     conData.torsionVelTMean(countLc, 1) = nanmean(trialData.torsionVelT(tempI, 1));
+%                     conData.torsionVelTStd(countLc, 1) = nanstd(trialData.torsionVelT(tempI, 1));
+%                     
+%                     conData.torsionVelTGainMean(countLc, 1) = nanmean(trialData.torsionVGain(tempI, 1));
+%                     conData.torsionVelTGainStd(countLc, 1) = nanstd(trialData.torsionVGain(tempI, 1));
+%                     
+%                     conData.torsionAngleTotalMean(countLc, 1) = nanmean(trialData.torsionAngleTotal(tempI, 1));
+%                     conData.torsionAngleTotalStd(countLc, 1) = nanstd(trialData.torsionAngleTotal(tempI, 1));
+%                     
+%                     conData.torsionAngleCWMean(countLc, 1) = nanmean(trialData.torsionAngleCW(tempI, 1));
+%                     conData.torsionAngleCWStd(countLc, 1) = nanstd(trialData.torsionAngleCW(tempI, 1));
+%                     
+%                     conData.torsionAngleCCWMean(countLc, 1) = nanmean(trialData.torsionAngleCCW(tempI, 1));
+%                     conData.torsionAngleCCWStd(countLc, 1) = nanstd(trialData.torsionAngleCCW(tempI, 1));
+%                     
+%                     %                 conData.torsionAngleSameMean(countLc, 1) = nanmean(trialData.torsionAngleSame(tempI, 1));
+%                     %                 conData.torsionAngleSameStd(countLc, 1) = nanstd(trialData.torsionAngleSame(tempI, 1));
+%                     %
+%                     %                 conData.torsionAngleAntiMean(countLc, 1) = nanmean(trialData.torsionAngleAnti(tempI, 1));
+%                     %                 conData.torsionAngleAntiStd(countLc, 1) = nanstd(trialData.torsionAngleAnti(tempI, 1));
+%                     
+%                     conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngle(tempI, 1));
+%                     conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngle(tempI, 1));
+%                     
+%                     conData.sacNumTMean(countLc, 1) = nanmean(trialData.sacNumT(tempI, 1));
+%                     conData.sacNumTStd(countLc, 1) = nanstd(trialData.sacNumT(tempI, 1));
+%                     
+%                     conData.sacAmpSumTMean(countLc, 1) = nanmean(trialData.sacAmpSumT(tempI, 1));
+%                     conData.sacAmpSumTStd(countLc, 1) = nanstd(trialData.sacAmpSumT(tempI, 1));
+%                     
+%                     conData.sacAmpMeanTMean(countLc, 1) = nanmean(trialData.sacAmpMeanT(tempI, 1));
+%                     conData.sacAmpMeanTStd(countLc, 1) = nanstd(trialData.sacAmpMeanT(tempI, 1));
+%                     
+%                     conData.nonErrorTrialN(countLc, 1) = length(tempI);
+%                     
+%                     countLc = countLc+1;
+%                 end
+%             end
+%         end
         
     end
     
-    cd([analysisF '\analysis functions'])
-    % merge directions, mark as 0
-    trialData.torsionVelTMerged = trialData.torsionVelT.*trialData.afterReversalD;
-    trialData.torsionVGainMerged = trialData.torsionVGain.*trialData.afterReversalD;
-    trialData.torsionAngleMerged = trialData.torsionAngle.*trialData.afterReversalD;
-    trialData.torsionPositionMerged = trialData.torsionPosition.*trialData.afterReversalD;
+%     cd([analysisF '\analysis functions'])
+%     % merge directions, mark as 0
+%     trialData.torsionVelTMerged = trialData.torsionVelT.*trialData.afterReversalD;
+%     trialData.torsionVGainMerged = trialData.torsionVGain.*trialData.afterReversalD;
+%     trialData.torsionAngleMerged = trialData.torsionAngle.*trialData.afterReversalD;
+%     trialData.torsionPositionMerged = trialData.torsionPosition.*trialData.afterReversalD;
+%     
+%     countLc = size(conData, 1)+1;
+%     for subj=1:size(names, 2)
+%         %     if subj <=2
+%         %         conditions = conditions0;
+%         %     elseif subj<=3
+%         %         conditions = conditions1;
+%         %     elseif subj<=5
+%         %         conditions = conditions2;
+%         %     else
+%         %         conditions = conditions3;
+%         %     end
+%         for eye = 1:size(eyeName, 2)
+%             for ii = 1:size(conditions, 2)
+%                 conData.sub(countLc, 1) = subj;
+%                 if strcmp(eyeName{eye}, 'L')
+%                     conData.eye(countLc, 1) = 1; % 1-left,
+%                 elseif strcmp(eyeName{eye}, 'R')
+%                     conData.eye(countLc, 1) = 2; % 2-right
+%                 end
+%                 conData.rotationSpeed(countLc, 1) = conditions(ii);
+%                 conData.afterReversalD(countLc, 1) = 0; % direction after reversal merged
+%                 
+%                 tempI = find(all(trialData{:, 1:3}==repmat(conData{countLc, 1:3}, [size(trialData, 1) 1]), 2));
+%                 
+%                 conData.perceptualErrorMean(countLc, 1) = nanmean(trialData.perceptualError(tempI, 1));
+%                 conData.perceptualErrorStd(countLc, 1) = nanstd(trialData.perceptualError(tempI, 1));
+%                 
+%                 conData.torsionPosMean(countLc, 1) = nanmean(trialData.torsionPositionMerged(tempI, 1));
+%                 conData.torsionPosStd(countLc, 1) = nanstd(trialData.torsionPositionMerged(tempI, 1));
+%                 
+%                 conData.torsionVelTMean(countLc, 1) = nanmean(trialData.torsionVelTMerged(tempI, 1));
+%                 conData.torsionVelTStd(countLc, 1) = nanstd(trialData.torsionVelTMerged(tempI, 1));
+%                 
+%                 conData.torsionVelTGainMean(countLc, 1) = nanmean(trialData.torsionVGainMerged(tempI, 1));
+%                 conData.torsionVelTGainStd(countLc, 1) = nanstd(trialData.torsionVGainMerged(tempI, 1));
+%                 
+%                 %             conData.torsionAngleSameMean(countLc, 1) = nanmean(trialData.torsionAngleSame(tempI, 1));
+%                 %             conData.torsionAngleSameStd(countLc, 1) = nanstd(trialData.torsionAngleSame(tempI, 1));
+%                 %
+%                 %             conData.torsionAngleAntiMean(countLc, 1) = nanmean(trialData.torsionAngleAnti(tempI, 1));
+%                 %             conData.torsionAngleAntiStd(countLc, 1) = nanstd(trialData.torsionAngleAnti(tempI, 1));
+%                 
+%                 conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngleMerged(tempI, 1));
+%                 conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngleMerged(tempI, 1));
+%                 %
+%                 %             conData.torsionAngleCWMean(countLc, 1) = nanmean(trialData.torsionAngleCWMerged(tempI, 1));
+%                 %             conData.torsionAngleCWStd(countLc, 1) = nanstd(trialData.torsionAngleCWMerged(tempI, 1));
+%                 %
+%                 %             conData.torsionAngleCCWMean(countLc, 1) = nanmean(trialData.torsionAngleCCWMerged(tempI, 1));
+%                 %             conData.torsionAngleCCWStd(countLc, 1) = nanstd(trialData.torsionAngleCCWMerged(tempI, 1));
+%                 
+%                 conData.sacNumTMean(countLc, 1) = nanmean(trialData.sacNumT(tempI, 1));
+%                 conData.sacNumTStd(countLc, 1) = nanstd(trialData.sacNumT(tempI, 1));
+%                 
+%                 conData.sacAmpSumTMean(countLc, 1) = nanmean(trialData.sacAmpSumT(tempI, 1));
+%                 conData.sacAmpSumTStd(countLc, 1) = nanstd(trialData.sacAmpSumT(tempI, 1));
+%                 
+%                 conData.sacAmpMeanTMean(countLc, 1) = nanmean(trialData.sacAmpMeanT(tempI, 1));
+%                 conData.sacAmpMeanTStd(countLc, 1) = nanstd(trialData.sacAmpMeanT(tempI, 1));
+%                 
+%                 conData.nonErrorTrialN(countLc, 1) = length(tempI);
+%                 
+%                 countLc = countLc+1;
+%             end
+%         end
+%     end
+%     %
+%     % normalization
+%     for ii = 1:size(conData, 1)
+%         if conData.afterReversalD(ii, 1)==0
+%             arr = find(all(trialData{:, 1:3}==repmat(conData{ii, 1:3}, [size(trialData, 1) 1]), 2));
+%             trialData.perceptualErrMergedNorm(arr, 1) = (trialData.perceptualError(arr, 1)-conData.perceptualErrorMean(ii, 1))./conData.perceptualErrorStd(ii, 1);
+%             trialData.torsionVelTMergedNorm(arr, 1) = (trialData.torsionVelTMerged(arr, 1)-conData.torsionVelTMean(ii, 1))./conData.torsionVelTStd(ii, 1);
+%         else
+%             arr = find(all(trialData{:, 1:4}==repmat(conData{ii, 1:4}, [size(trialData, 1) 1]), 2));
+%             trialData.perceptualErrNorm(arr, 1) = (trialData.perceptualError(arr, 1)-conData.perceptualErrorMean(ii, 1))./conData.perceptualErrorStd(ii, 1);
+%             trialData.torsionVelTNorm(arr, 1) = (trialData.torsionVelT(arr, 1)-conData.torsionVelTMean(ii, 1))./conData.torsionVelTStd(ii, 1);
+%         end
+%     end
     
-    countLc = size(conData, 1)+1;
-    for subj=1:size(names, 2)
-        %     if subj <=2
-        %         conditions = conditions0;
-        %     elseif subj<=3
-        %         conditions = conditions1;
-        %     elseif subj<=5
-        %         conditions = conditions2;
-        %     else
-        %         conditions = conditions3;
-        %     end
-        for eye = 1:size(eyeName, 2)
-            for ii = 1:size(conditions, 2)
-                conData.sub(countLc, 1) = subj;
-                if strcmp(eyeName{eye}, 'L')
-                    conData.eye(countLc, 1) = 1; % 1-left,
-                elseif strcmp(eyeName{eye}, 'R')
-                    conData.eye(countLc, 1) = 2; % 2-right
-                end
-                conData.rotationSpeed(countLc, 1) = conditions(ii);
-                conData.afterReversalD(countLc, 1) = 0; % direction after reversal merged
-                
-                tempI = find(all(trialData{:, 1:3}==repmat(conData{countLc, 1:3}, [size(trialData, 1) 1]), 2));
-                
-                conData.perceptualErrorMean(countLc, 1) = nanmean(trialData.perceptualError(tempI, 1));
-                conData.perceptualErrorStd(countLc, 1) = nanstd(trialData.perceptualError(tempI, 1));
-                
-                conData.torsionPosMean(countLc, 1) = nanmean(trialData.torsionPositionMerged(tempI, 1));
-                conData.torsionPosStd(countLc, 1) = nanstd(trialData.torsionPositionMerged(tempI, 1));
-                
-                conData.torsionVelTMean(countLc, 1) = nanmean(trialData.torsionVelTMerged(tempI, 1));
-                conData.torsionVelTStd(countLc, 1) = nanstd(trialData.torsionVelTMerged(tempI, 1));
-                
-                conData.torsionVelTGainMean(countLc, 1) = nanmean(trialData.torsionVGainMerged(tempI, 1));
-                conData.torsionVelTGainStd(countLc, 1) = nanstd(trialData.torsionVGainMerged(tempI, 1));
-                
-                %             conData.torsionAngleSameMean(countLc, 1) = nanmean(trialData.torsionAngleSame(tempI, 1));
-                %             conData.torsionAngleSameStd(countLc, 1) = nanstd(trialData.torsionAngleSame(tempI, 1));
-                %
-                %             conData.torsionAngleAntiMean(countLc, 1) = nanmean(trialData.torsionAngleAnti(tempI, 1));
-                %             conData.torsionAngleAntiStd(countLc, 1) = nanstd(trialData.torsionAngleAnti(tempI, 1));
-                
-                conData.torsionAngleMean(countLc, 1) = nanmean(trialData.torsionAngleMerged(tempI, 1));
-                conData.torsionAngleStd(countLc, 1) = nanstd(trialData.torsionAngleMerged(tempI, 1));
-                %
-                %             conData.torsionAngleCWMean(countLc, 1) = nanmean(trialData.torsionAngleCWMerged(tempI, 1));
-                %             conData.torsionAngleCWStd(countLc, 1) = nanstd(trialData.torsionAngleCWMerged(tempI, 1));
-                %
-                %             conData.torsionAngleCCWMean(countLc, 1) = nanmean(trialData.torsionAngleCCWMerged(tempI, 1));
-                %             conData.torsionAngleCCWStd(countLc, 1) = nanstd(trialData.torsionAngleCCWMerged(tempI, 1));
-                
-                conData.sacNumTMean(countLc, 1) = nanmean(trialData.sacNumT(tempI, 1));
-                conData.sacNumTStd(countLc, 1) = nanstd(trialData.sacNumT(tempI, 1));
-                
-                conData.sacAmpSumTMean(countLc, 1) = nanmean(trialData.sacAmpSumT(tempI, 1));
-                conData.sacAmpSumTStd(countLc, 1) = nanstd(trialData.sacAmpSumT(tempI, 1));
-                
-                conData.sacAmpMeanTMean(countLc, 1) = nanmean(trialData.sacAmpMeanT(tempI, 1));
-                conData.sacAmpMeanTStd(countLc, 1) = nanstd(trialData.sacAmpMeanT(tempI, 1));
-                
-                conData.nonErrorTrialN(countLc, 1) = length(tempI);
-                
-                countLc = countLc+1;
-            end
-        end
-    end
-    %
-    % normalization
-    for ii = 1:size(conData, 1)
-        if conData.afterReversalD(ii, 1)==0
-            arr = find(all(trialData{:, 1:3}==repmat(conData{ii, 1:3}, [size(trialData, 1) 1]), 2));
-            trialData.perceptualErrMergedNorm(arr, 1) = (trialData.perceptualError(arr, 1)-conData.perceptualErrorMean(ii, 1))./conData.perceptualErrorStd(ii, 1);
-            trialData.torsionVelTMergedNorm(arr, 1) = (trialData.torsionVelTMerged(arr, 1)-conData.torsionVelTMean(ii, 1))./conData.torsionVelTStd(ii, 1);
-        else
-            arr = find(all(trialData{:, 1:4}==repmat(conData{ii, 1:4}, [size(trialData, 1) 1]), 2));
-            trialData.perceptualErrNorm(arr, 1) = (trialData.perceptualError(arr, 1)-conData.perceptualErrorMean(ii, 1))./conData.perceptualErrorStd(ii, 1);
-            trialData.torsionVelTNorm(arr, 1) = (trialData.torsionVelT(arr, 1)-conData.torsionVelTMean(ii, 1))./conData.torsionVelTStd(ii, 1);
-        end
-    end
-    
-    save(['dataLong', endName, '.mat'], 'trialData', 'conData'); %, 'trialDeleted');
+    save(['dataLong', endName, '.mat'], 'trialData'); %, 'conData'); %, 'trialDeleted');
 end
