@@ -12,7 +12,7 @@ clear all; close all; clc
 folder = pwd;
 
 % basic setting
-names = {'XW3' 'DC3' 'AR3' 'JF3'};
+names = {'XW3' 'DC3' 'AR3' 'JF3' 'PK3' 'AD3', 'PH3'};
 merged = 0; % whether initial direction is merged; 1=merged, 0=not
 roundN = -4; % keep how many numbers after the point when rounding and matching...; -1 for the initial pilot
 % loadData = 0; % whether get new fitting or using existing fitting
@@ -25,7 +25,20 @@ fontSize = 15; % for plot
 headCons = [-1 0 1]; % head tilt direction
 headNames = {'CCW' 'Up' 'CW'};
 dirCons = [-1 1]; % initial counterclockwise and clockwise; in plots shows direction after reversal
-colorPlot = [232 71 12; 2 255 44; 12 76 150; 140 0 255; 255 212 13]/255;
+% colorPlot = [232 71 12; 2 255 44; 12 76 150; 140 0 255; 255 212 13]/255;
+for t = 1:size(names, 2)
+    if t<=2
+        markerC(t, :) = (t+2)/4*[77 255 202]/255;
+    elseif t<=4
+        markerC(t, :) = (t)/4*[70 95 232]/255;
+    elseif t<=6
+        markerC(t, :) = (t-2)/4*[232 123 70]/255;
+    elseif t<=8
+        markerC(t, :) = (t-4)/4*[255 231 108]/255;
+    elseif t<=10
+        markerC(t, :) = (t-6)/4*[255 90 255]/255;
+    end
+end
 
 cd ..
 % % load baseline
@@ -102,8 +115,8 @@ for ii = 1:size(names, 2)
 figure
 box off
 hold on
-p1 = errorbar(headIdx, meanErrorSub{ii}(:, 1), stdErrorSub{ii}(:, 1), '-o', 'LineWidth', 1, 'color', colorPlot(1, :));
-p2 = errorbar(headIdx, meanErrorSub{ii}(:, 2), stdErrorSub{ii}(:, 2), '--o', 'LineWidth', 1, 'color', colorPlot(1, :));
+p1 = errorbar(headIdx, meanErrorSub{ii}(:, 1), stdErrorSub{ii}(:, 1), '-o', 'LineWidth', 1, 'color', markerC(1, :));
+p2 = errorbar(headIdx, meanErrorSub{ii}(:, 2), stdErrorSub{ii}(:, 2), '--o', 'LineWidth', 1, 'color', markerC(1, :));
 
 legend([p1, p2], {'visual CW' 'visual CCW'}, 'box', 'off', 'Location', 'northwest')
 %         ylim([-25, 25])
@@ -119,9 +132,9 @@ figure
 box off
 for subN = 1:size(names, 2)
     hold on
-    p{subN} = errorbar(headSub{subN}, meanErrorSubM{subN}, stdErrorSubM{subN}, '-o', 'LineWidth', 1, 'color', colorPlot(subN, :));
+    p{subN} = errorbar(headSub{subN}, meanErrorSubM{subN}, stdErrorSubM{subN}, '-o', 'LineWidth', 1, 'color', markerC(subN, :));
 end
-legend([p{1}, p{2}, p{3}, p{4}], names, 'box', 'off', 'Location', 'northwest')
+legend([p{1}, p{2}, p{3}, p{4}, p{5}, p{6}, p{7}], names, 'box', 'off', 'Location', 'northwest')
 %         ylim([-25, 25])
 xlim([-1.5 1.5])
 xlabel('Head tilt direction')

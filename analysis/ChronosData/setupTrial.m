@@ -5,7 +5,7 @@ trial.log.trialIdx = logData.trialIdx(trial.number); % now is the same with curr
 trial.valid = 1; % whether this is a valid trial
 
 %% get start and end frame
-trial.startFrame = data.startFrames(trial.log.trialIdx)+1; % skip the first "upPositin" trial
+trial.startFrame = data.startFrames(trial.log.trialIdx)+1; 
 trial.endFrame = data.endFrames(trial.log.trialIdx)+1;
 
 %% get data for this trial
