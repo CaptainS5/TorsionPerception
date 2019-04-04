@@ -2,7 +2,7 @@
 % tilted
 clear all; close all; clc
 
-names = {'XW3' 'DC3' 'AR3' 'JF3'};
+names = {'XW3' 'DC3' 'AR3' 'JF3' 'PK3' 'AD3' 'PH3'};
 % t2CW only have available data for the first two secs...
 conditions = [200];
 sampleRate = 200;
@@ -11,7 +11,20 @@ dirCons = [-1 1]; % -1 = ccw; 1 = cw
 headCons = [-1 0 1]; % head tilt direction
 headNames = {'CCW' 'Up' 'CW'};
 folder = pwd;
-colorPlot = [232 71 12; 12 76 150; 2 255 44; 140 0 255; 255 212 13]/255;
+% colorPlot = [232 71 12; 12 76 150; 2 255 44; 140 0 255; 255 212 13]/255;
+for t = 1:size(names, 2)
+    if t<=2
+        markerC(t, :) = (t+2)/4*[77 255 202]/255;
+    elseif t<=4
+        markerC(t, :) = (t)/4*[70 95 232]/255;
+    elseif t<=6
+        markerC(t, :) = (t-2)/4*[232 123 70]/255;
+    elseif t<=8
+        markerC(t, :) = (t-4)/4*[255 231 108]/255;
+    elseif t<=10
+        markerC(t, :) = (t-6)/4*[255 90 255]/255;
+    end
+end
 
 %% Experimental trials, directions not merged, generate csv files for R plotting
 % consistent reversal duration and duration after for all participants
@@ -43,7 +56,6 @@ for eye = 2:2
                 % rows are trials, columns are frames
                 
                 % fill in the velocity trace of each frame
-                % interpolate NaN points for a better velocity trace
                 for validTrialN = 1:length(validI)
                     startI = eyeTrialData.stim.onset(subN, validI(validTrialN));
                     endI = eyeTrialData.stim.offset(subN, validI(validTrialN));
@@ -83,26 +95,51 @@ for eye = 2:2
     timePoints = [timePBeforeReversal timePReversal timePAfterReversal]; % align at the reversal and after...
     % reversal onset is 0
     
-    for subN = 1:size(names, 2)
-        figure % plot individual traces in different figures
-        headSub = unique(eyeTrialData.headTilt(subN, :));
-        headI(1) = find(headCons==headSub(1));
-        headI(2) = find(headCons==headSub(2));
-        for dirI = 1:size(dirCons, 2)
-            % filtered mean velocity trace
-            plot(timePoints, velTAverage{headI(1), dirI}(subN, (maxFrameLength-minFrameLength+1):end), '--', 'color', colorPlot(subN, :))
-            hold on
-            plot(timePoints, velTAverage{headI(2), dirI}(subN, (maxFrameLength-minFrameLength+1):end), '-', 'color', colorPlot(subN, :))
-        end
-        legend({['head' headNames{headI(1)} '-motionCCW'], ['head' headNames{headI(2)} '-motionCCW'], ...
-            ['head' headNames{headI(1)} '-motionCW'], ['head' headNames{headI(2)} '-motionCW']}, ...
-            'location', 'northwest')
-        %         title([eyeName{eye}, ' rotational speed ', num2str(conditions(headI))])
-        xlabel('Time (ms)')
-        ylabel('Torsional velocity (deg/s)')
-        % ylim([-0.5 0.5])
-        saveas(gca, ['velocityTracesSub_', names{subN}, '.pdf'])
+    cd ..
+    cd('velocity trace plots')
+    %     % plot individual traces in different figures
+    %     for subN = 1:size(names, 2)
+    %         figure
+    %         headSub = unique(eyeTrialData.headTilt(subN, :));
+    %         headI(1) = find(headCons==headSub(1));
+    %         headI(2) = find(headCons==headSub(2));
+    %         for dirI = 1:size(dirCons, 2)
+    %             % filtered mean velocity trace
+    %             plot(timePoints, velTAverage{headI(1), dirI}(subN, (maxFrameLength-minFrameLength+1):end), '--', 'color', markerC(subN, :))
+    %             hold on
+    %             plot(timePoints, velTAverage{headI(2), dirI}(subN, (maxFrameLength-minFrameLength+1):end), '-', 'color', markerC(subN, :))
+    %         end
+    %         legend({['head' headNames{headI(1)} '-motionCCW'], ['head' headNames{headI(2)} '-motionCCW'], ...
+    %             ['head' headNames{headI(1)} '-motionCW'], ['head' headNames{headI(2)} '-motionCW']}, ...
+    %             'location', 'northwest')
+    %         %         title([eyeName{eye}, ' rotational speed ', num2str(conditions(headI))])
+    %         xlabel('Time (ms)')
+    %         ylabel('Torsional velocity (deg/s)')
+    %         % ylim([-0.5 0.5])
+    %         saveas(gca, ['velocityTracesSub_', names{subN}, '.pdf'])
+    %     end
+    
+    % plot average traces in different head conditions, directions not
+    % merged
+    figure
+    for dirI = 1:size(dirCons, 2)
+        % filtered mean velocity trace
+        p{1} = plot(timePoints, nanmean(velTAverage{1, dirI}(:, (maxFrameLength-minFrameLength+1):end)), '--', 'color', markerC(1, :));
+        hold on
+        p{2} = plot(timePoints, nanmean(velTAverage{2, dirI}(:, (maxFrameLength-minFrameLength+1):end)), '-', 'color', markerC(3, :));
+        p{3} = plot(timePoints, nanmean(velTAverage{3, dirI}(:, (maxFrameLength-minFrameLength+1):end)), '--', 'color', markerC(5, :));
     end
+    legend([p{1}, p{2}, p{3}], {['head CCW'], ['head Up'], ['head CW']}, ...
+        'location', 'northwest')
+    xlabel('Time (ms)')
+    ylabel('Torsional velocity (deg/s)')
+    ylim([-2.5 2.5])
+    saveas(gca, ['velocityTraces_notMerged.pdf'])
+    
+    % directions merged, different head conditions
+    
+    % directions and head conditions merged...
+    
     %     % generate csv files, each file for one speed condition
     %     % each row is the mean velocity trace of one participant
     %     % use the min frame length--the lengeth where all participants have
@@ -205,28 +242,45 @@ for eye = 2:2
     % reversal onset is 0
     
     cd ..
-    cd('velocity trace plots')
-    for subN = 1:size(names, 2)
-        figure % plot individual traces in different figures
-        headSub = unique(eyeTrialDataBase.headTilt(subN, :));
-        headI(1) = find(headCons==headSub(1));
-        headI(2) = find(headCons==headSub(2));
-        for dirI = 1:size(dirCons, 2)
-            % filtered mean velocity trace
-            plot(timePoints, velTAverage{headI(1), dirI}(subN, (maxFrameLength-minFrameLength+1):end), '--', 'color', colorPlot(subN, :))
-            hold on
-            plot(timePoints, velTAverage{headI(2), dirI}(subN, (maxFrameLength-minFrameLength+1):end), '-', 'color', colorPlot(subN, :))
-        end
-        legend({['head' headNames{headI(1)} '-motionCCW'], ['head' headNames{headI(2)} '-motionCCW'], ...
-            ['head' headNames{headI(1)} '-motionCW'], ['head' headNames{headI(2)} '-motionCW']}, ...
-            'location', 'northwest')
-        %         title([eyeName{eye}, ' rotational speed ', num2str(conditions(headI))])
-        xlabel('Time (ms)')
-        ylabel('Torsional velocity (deg/s)')
-        ylim([-3.5 3.5])
-        
-        saveas(gca, ['velocityTracesBaseSub_', names{subN}, '.pdf'])
+    cd('baselinePlots')
+    %     % plot individual traces in different figures
+    %     for subN = 1:size(names, 2)
+    %         figure
+    %         headSub = unique(eyeTrialDataBase.headTilt(subN, :));
+    %         headI(1) = find(headCons==headSub(1));
+    %         headI(2) = find(headCons==headSub(2));
+    %         for dirI = 1:size(dirCons, 2)
+    %             % filtered mean velocity trace
+    %             plot(timePoints, velTAverage{headI(1), dirI}(subN, (maxFrameLength-minFrameLength+1):end), '--', 'color', markerC(subN, :))
+    %             hold on
+    %             plot(timePoints, velTAverage{headI(2), dirI}(subN, (maxFrameLength-minFrameLength+1):end), '-', 'color', markerC(subN, :))
+    %         end
+    %         legend({['head' headNames{headI(1)} '-motionCCW'], ['head' headNames{headI(2)} '-motionCCW'], ...
+    %             ['head' headNames{headI(1)} '-motionCW'], ['head' headNames{headI(2)} '-motionCW']}, ...
+    %             'location', 'northwest')
+    %         %         title([eyeName{eye}, ' rotational speed ', num2str(conditions(headI))])
+    %         xlabel('Time (ms)')
+    %         ylabel('Torsional velocity (deg/s)')
+    %         ylim([-3.5 3.5])
+    %
+    %         saveas(gca, ['velocityTracesBaseSub_', names{subN}, '.pdf'])
+    %     end
+    % plot average traces in different head conditions, directions not
+    % merged
+    figure
+    for dirI = 1:size(dirCons, 2)
+        % filtered mean velocity trace
+        p{1} = plot(timePoints, nanmean(velTAverage{1, dirI}(:, (maxFrameLength-minFrameLength+1):end)), '--', 'color', markerC(1, :));
+        hold on
+        p{2} = plot(timePoints, nanmean(velTAverage{2, dirI}(:, (maxFrameLength-minFrameLength+1):end)), '-', 'color', markerC(3, :));
+        p{3} = plot(timePoints, nanmean(velTAverage{3, dirI}(:, (maxFrameLength-minFrameLength+1):end)), '--', 'color', markerC(5, :));
     end
+    legend([p{1}, p{2}, p{3}], {['head CCW'], ['head Up'], ['head CW']}, ...
+        'location', 'northwest')
+    xlabel('Time (ms)')
+    ylabel('Torsional velocity (deg/s)')
+    ylim([-2.5 2.5])
+    saveas(gca, ['velocityTracesBase_notMerged.pdf'])
 end
 
 %     % generate csv files, each file for one speed condition
