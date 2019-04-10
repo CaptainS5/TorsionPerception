@@ -22,7 +22,7 @@ function varargout = rotationSettingsGUI(varargin)
 
 % Edit the above text to modify the response to help rotationSettingsGUI
 
-% Last Modified by GUIDE v2.5 07-Aug-2015 23:15:51
+% Last Modified by GUIDE v2.5 09-Jul-2013 23:30:14
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -167,7 +167,7 @@ function start_button_Callback(hObject, eventdata, handles)
 % hObject    handle to start_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.output = cell(30, 1);
+handles.output = cell(3);
 handles.output{1} = str2double(get(handles.horizontalSpeed_edit, 'String')); %horizontalSpeed
 handles.output{2} = str2double(get(handles.rotationalSpeed_edit, 'String')); %rotationalSpeed
 handles.output{3} = str2double(get(handles.diameter_edit, 'String')); %circleDiameter
@@ -197,7 +197,6 @@ handles.output{26} = get(handles.baseline_check, 'Value'); %showBaseline
 handles.output{27} = get(handles.torsion_check, 'Value'); %showTorsion
 handles.output{28} = get(handles.circle_check, 'Value'); %circleBaseline
 handles.output{29} = get(handles.dot_check, 'Value'); %dotBaseline
-handles.output{30} = getSpeedLevelsUn(handles); %speedLevelsUnnatural
 
 % Update handles structure
 guidata(hObject, handles);
@@ -523,7 +522,6 @@ state.diameter = get(handles.diameter_edit, 'String');
 state.horizontalSpeed = get(handles.horizontalSpeed_edit, 'String');
 state.rotationalSpeed = get(handles.rotationalSpeed_edit, 'String');
 state.rotationLevels = get(handles.rotationLevels_edit, 'String');
-state.rotationLevelsUn = get(handles.rotationLevelsUn_edit, 'String');
 state.duration = get(handles.duration_edit, 'String');
 state.multiplier = get(handles.multiplier_edit, 'String');
 state.showOutline = get(handles.showOutline_check, 'Value');
@@ -579,7 +577,6 @@ set(handles.diameter_edit, 'String', state.diameter);
 set(handles.horizontalSpeed_edit, 'String', state.horizontalSpeed);
 set(handles.rotationalSpeed_edit, 'String', state.rotationalSpeed);
 set(handles.rotationLevels_edit, 'String', state.rotationLevels);
-set(handles.rotationLevelsUn_edit, 'String', state.rotationLevelsUn);
 set(handles.duration_edit, 'String', state.duration);
 set(handles.multiplier_edit, 'String', state.multiplier);
 set(handles.showOutline_check, 'Value', state.showOutline);
@@ -853,23 +850,12 @@ text = get(handles. rotationLevels_edit,'String');
 speedLevels = strread(text, '%d', 'delimiter', ';');
 speedLevels = speedLevels';
 
-function speedLevelsUn = getSpeedLevelsUn(handles)
-text = get(handles. rotationLevelsUn_edit,'String');
-speedLevelsUn = strread(text, '%d', 'delimiter', ';');
-speedLevelsUn = speedLevelsUn';
-
 %checks whether the String in the speedLevel field can be converted to
 %numbers
 function checkSpeedLevels(handles)
 updateResultInTrials(handles);
 try
     text = get(handles. rotationLevels_edit,'String');
-    levels = strread(text, '%d', 'delimiter', ';');
-    set(handles.start_button,'Enable','on');
-    set(handles.rotationLevels_edit,'BackgroundColor', [1 1 1]);
-    set(handles.rotationLevels_edit,'ForegroundColor', [0 0 0]);
-    updateRotationStatistics(handles);
-    text = get(handles. rotationLevelsUn_edit,'String');
     levels = strread(text, '%d', 'delimiter', ';');
     set(handles.start_button,'Enable','on');
     set(handles.rotationLevels_edit,'BackgroundColor', [1 1 1]);
@@ -1058,27 +1044,3 @@ function checkBlockSelection(handles)
             end
         end
     
-
-
-
-function rotationLevelsUn_edit_Callback(hObject, eventdata, handles)
-% hObject    handle to rotationLevelsUn_edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of rotationLevelsUn_edit as text
-%        str2double(get(hObject,'String')) returns contents of rotationLevelsUn_edit as a double
-checkSpeedLevels(handles);
-
-
-% --- Executes during object creation, after setting all properties.
-function rotationLevelsUn_edit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to rotationLevelsUn_edit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end

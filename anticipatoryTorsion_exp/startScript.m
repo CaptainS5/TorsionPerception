@@ -2,10 +2,10 @@ function startScript()
 clear;
 %start GUI
 
-%check whether there is a LogFiles folder on the same level as the
-%experiment folder
+% % check whether there is a LogFiles folder on the same level as the
+% % experiment folder
 % try
-%     dir(pwd, '..', 'LogFiles');
+%     dir(pwd,'..','LogFiles');
 % catch
 %     disp('');
 %     disp('WARNING: There is no LogFiles folder on the same level as the experiment folder.');
@@ -24,7 +24,6 @@ try
         trigger.stopRecording();
     end
 catch ME
-    Screen('CloseAll')
     trigger.stopRecording();
     disp('Error in startScript');
     disp(ME.message);
@@ -35,8 +34,6 @@ end
 
 function setupTrigger()
 global trigger;
-% trigger = sendSerialDummy();
-% trigger = sendSerialDummy();
 trigger = sendSerial(struct('name','com3','openNow',0));
 trigger = sendSerial(struct('name','com3','openNow',1));
 trigger.stopRecording();
