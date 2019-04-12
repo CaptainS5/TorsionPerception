@@ -57,6 +57,7 @@ circle.diameter = parameter.circleDiameter; %set via GUI %degrees
 circle.horizontalDiameterInPixel = parameter.circleDiameter * display.horizontalPixelPerDegree;
 circle.verticalDiameterInPixel = parameter.circleDiameter * display.verticalPixelPerDegree;
 circle.translationalSpeed = parameter.translationalSpeed; %set via GUI %degrees/second
+% circle.translationalSpeedInPixel = ;
 circle.horizontalSpeed = circle.translationalSpeed * cos(parameter.slopeAngle/180*pi);
 circle.horizontalSpeedInPixel = circle.horizontalSpeed * display.horizontalPixelPerDegree; %pixel/second
 circle.verticalSpeed = circle.translationalSpeed * sin(parameter.slopeAngle/180*pi);
@@ -75,14 +76,14 @@ rightStartingPosition = [display.horizontalMiddle circle.startYInPixel];
 % positions are relative to the screen center, up and left are minus 
 % [x1start, x1end, x2strat, x2end;y1start, y1end, y2strat, y2end]
 % x1 is the left up to right bottom line
-crossDisToDotCenterY = circle.diameter/2/cos(parameter.slopeAngle/180*pi) * display.verticalPixelPerDegree; % in pixels
+crossDisToDotCenterY = (circle.diameter/2)/cos(parameter.slopeAngle/180*pi) * display.verticalPixelPerDegree; % in pixels
 crossToCenterY = circle.startYInPixel+crossDisToDotCenterY-display.verticalMiddle; % in pixels, position to center
 
-upperLength = circle.diameter/2 + circle.diameter/2*tan(parameter.slopeAngle/180*pi); % in degs, upper than the cross point
+upperLength = (circle.diameter/2) + (circle.diameter/2)*tan(parameter.slopeAngle/180*pi); % in degs, upper than the cross point
 upperDisX = upperLength * cos(parameter.slopeAngle/180*pi) * display.horizontalPixelPerDegree;
-upperDisY = upperLength * sin(parameter.slopeAngle/180*pi) * display.verticalPixelPerDegree + crossToCenterY;
+upperDisY = upperLength * sin(parameter.slopeAngle/180*pi) * display.verticalPixelPerDegree - crossToCenterY;
 % start point, [x y] in pixels, distance to center
-lowerLength = parameter.slopeLength-upperlength; % in degs, lower than the cross point
+lowerLength = parameter.slopeLength-upperLength; % in degs, lower than the cross point
 lowerDisX = lowerLength * cos(parameter.slopeAngle/180*pi) * display.horizontalPixelPerDegree;
 lowerDisY = lowerLength * sin(parameter.slopeAngle/180*pi) * display.verticalPixelPerDegree + crossToCenterY;
 % end point, [x y] in pixels, distance to center
@@ -114,7 +115,7 @@ circle.rotationSpeedPerFrame = circle.rotationSpeed/display.frameRate;
 %%Calculate the duration of how long it takes the circle to move from the
 %%starting position to the ending position
 trial.duration = parameter.duration/1000;
-trial.distance = circle.translationalSpeedInPixel * trial.duration;
+% trial.distance = circle.translationalSpeedInPixel * trial.duration;
 
 %Dots settings
 dots.number = parameter.dotsNumber; %set via GUI
@@ -137,7 +138,7 @@ oval.radiusHor = 0.375 * display.horizontalPixelPerDegree;
 oval.radiusVer = 0.375 * display.verticalPixelPerDegree;
 
 %Create a fixation point and show it for a random time (1000-1500ms)
-fixation.duration = rand(1)*0.5+1; %Calculate random time in seconds
+fixation.duration = 0.5; %rand(1)*0.5+1; %Calculate random time in seconds
 fixation.totalFrames = seconds2frames(display.frameRate, fixation.duration); %Convert seconds in frames
 halfDegree = ceil(0.5 * display.horizontalPixelPerDegree); %size of one half degree on the screen
 if(mod(halfDegree,2)==1)
@@ -157,26 +158,27 @@ end
 Screen('FillRect', display.windowPointer, grey);
 
 %don't show fixation point for a certain time
-fixation.pause = seconds2frames(display.frameRate, 0.5);
+fixation.pause = seconds2frames(display.frameRate, 0.05);
 
 fixation.recordedTime = seconds2frames(display.frameRate, 0.7);
 
 %Fixation interval--draw static dots with both slopes
 for frame = 1:fixation.totalFrames-fixation.pause
-    % % the original fixation cross
-    %     Screen('DrawLine', display.windowPointer, red,...
-    %         dots.center(1)-halfDegree/2, dots.center(2),...
-    %         dots.center(1)+halfDegree/2, dots.center(2), 2);
-    %     Screen('DrawLine', display.windowPointer, red,...
-    %         dots.center(1), dots.center(2)-halfDegree/2,...
-    %         dots.center(1), dots.center(2)+halfDegree/2, 2);
+%     % draw RDP
+%     Screen('DrawDots', display.windowPointer, transpose(dots.position),...
+%         dots.diameter, black, dots.center,1);  % change 1 to 0 to draw square dots
     
-    % draw RDP
-    Screen('DrawDots', display.windowPointer, transpose(dots.position),...
-        dots.diameter, black, dots.center,1);  % change 1 to 0 to draw square dots
+    % fixation cross
+    Screen('DrawLine', display.windowPointer, red,...
+        dots.center(1)-halfDegree/2, dots.center(2),...
+        dots.center(1)+halfDegree/2, dots.center(2), 2);
+    Screen('DrawLine', display.windowPointer, red,...
+        dots.center(1), dots.center(2)-halfDegree/2,...
+        dots.center(1), dots.center(2)+halfDegree/2, 2);
+    
     % draw slopes
     Screen('DrawLines', display.windowPointer, ...
-        slope.fullPositionInPixel, 5, black, [display.horizontalMiddle display.verticalMiddle]);
+        slope.cuePositionInPixel, parameter.slopeWidth, black, [display.horizontalMiddle display.verticalMiddle]);
     
     if(frame >= fixation.totalFrames-fixation.recordedTime)
         trigger.startRecording();
@@ -187,14 +189,14 @@ end
 
 %Show blank screen--take one "blockage" off to indicate moving direction
 for frame = 1:fixation.pause
-    % draw RDP
-    Screen('DrawDots', display.windowPointer, transpose(dots.position),...
-        dots.diameter, black, dots.center,1);  % change 1 to 0 to draw square dots
+%     % draw RDP
+%     Screen('DrawDots', display.windowPointer, transpose(dots.position),...
+%         dots.diameter, black, dots.center,1);  % change 1 to 0 to draw square dots
     
     % draw slopes with one side shorter
     % draw slopes
     Screen('DrawLines', display.windowPointer, ...
-        slope.cuePositionInPixel, 5, black, [display.horizontalMiddle display.verticalMiddle]);
+        slope.cuePositionInPixel, parameter.slopeWidth, black, [display.horizontalMiddle display.verticalMiddle]);
     
     Screen('Flip',display.windowPointer);
 end
@@ -216,7 +218,7 @@ for frame = 1:trial.stimulusFrames+1
     end
     % draw slopes
     Screen('DrawLines', display.windowPointer, ...
-        slope.cuePositionInPixel, 5, black, [display.horizontalMiddle display.verticalMiddle]);
+        slope.cuePositionInPixel, parameter.slopeWidth, black, [display.horizontalMiddle display.verticalMiddle]);
     
     %Draw oval on screen
     if(parameter.baselineDot)

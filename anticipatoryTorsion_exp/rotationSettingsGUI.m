@@ -167,7 +167,7 @@ function start_button_Callback(hObject, eventdata, handles)
 % hObject    handle to start_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.output = cell(3);
+handles.output = cell(30);
 handles.output{1} = str2double(get(handles.horizontalSpeed_edit, 'String')); %horizontalSpeed
 handles.output{2} = str2double(get(handles.rotationalSpeed_edit, 'String')); %rotationalSpeed
 handles.output{3} = str2double(get(handles.diameter_edit, 'String')); %circleDiameter

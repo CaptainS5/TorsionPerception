@@ -1,5 +1,6 @@
 function runExperiment(inputParameter)
 
+try
 global trigger;
 
 % New parameter for the slope, just set them manually here...
@@ -8,11 +9,12 @@ global trigger;
 % be below the fixation point with the distance of the RDP radius
 % --the length of the slope above the cross point depends on the
 % diameter of RDP, equals the RDP diameter
-parameter.slopeLength = 16; % in degs, the whole length
+parameter.slopeLength = 24; % in degs, the whole length
 % the travel distance of the RDP should be (slope.length-diameter of
 % RDP)
 parameter.slopeAngle = 15; % in degs
-parameter.fixationYDisToCenter = -4; % in degs; distance to screen center, up is minus
+parameter.fixationYDisToCenter = -2; % in degs; distance to screen center, up is minus
+parameter.slopeWidth = 3;
 
 %Get parameter from GUI (user interface)
 parameter.translationalSpeed = inputParameter{1};
@@ -97,10 +99,12 @@ end
 
 
 
-% HideCursor;
+HideCursor;
 
 %Open screen
 [display.windowPointer, display.size] = Screen('OpenWindow',display.screen);
+% % for debug
+% [display.windowPointer, display.size] = Screen('OpenWindow',display.screen, [], [0 0 640 512]);
 display.windowPointer = display.windowPointer;
 display.size = display.size;
 load('lut527.mat')
@@ -166,17 +170,17 @@ if(parameter.block == 1)
 end
 
 %% show Calibration (this is outdated by now)
-try
-
-    startCalibration(display.screenWidth, display.screenHeight,...
-       display.screenDistance, display.windowPointer, display.size, parameter);
-
-catch ME
-    msgString = getReport(ME)
-    disp(msgString);
-    disp('Calibration interrupted.');
-    disp(ME.message);
-end
+% try
+% 
+%     startCalibration(display.screenWidth, display.screenHeight,...
+%        display.screenDistance, display.windowPointer, display.size); %, parameter);
+% 
+% catch ME
+%     msgString = getReport(ME)
+%     disp(msgString);
+%     disp('Calibration interrupted.');
+%     disp(ME.message);
+% end
 
 %% show Listings Calibration (in any case)
 % 
@@ -281,12 +285,19 @@ Screen('CloseAll');
 ShowCursor;
 fclose(fileID);
 
+catch ME
+    trigger.stopRecording();
+    disp('Error in runExperiment');
+    disp(ME.message);
+    clear all;
+    return;
+end
 
 end
 
 function [fileID] = setupFile(parameter)
-fileName = [parameter.experimentID '_' parameter.initials datestr(now, '_yyyy_mmmm_dd') '.txt'];
-filePath = fullfile(pwd,'..','LogFiles',fileName);
+fileName = [parameter.experimentID '_' parameter.initials datestr(now, '_yyyy_mmmm_dd_HH_MM_SS') '.txt'];
+filePath = fullfile(pwd, 'LogFiles',fileName);
 fileID = fopen(filePath,'a');
 end
 
@@ -305,7 +316,7 @@ end
 
 function printTrialData(fileID, block, trial, translationalDirection,...
     rotationalDirection, randomSpeed, decision, parameter)
-fprintf(fileID, '%d %d %d %d %0.0f %d %0.1f %0.1f %d %d %0.2f %0.2f %d \n',...
+fprintf(fileID, '%d %d %d %d %0.0f %d %0.1f %0.1f %d %d %0.2f %0.2f %d %0.1f \n',...
     block, trial, translationalDirection, rotationalDirection,...
     randomSpeed, decision,...
     parameter.circleDiameter, parameter.translationalSpeed,...

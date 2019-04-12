@@ -20,7 +20,7 @@ try
     while(true)
         output = rotationSettingsGUI();
         runExperiment(output);
-        resetTriggerGUI;
+%         resetTriggerGUI;
         trigger.stopRecording();
     end
 catch ME
