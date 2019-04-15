@@ -1,4 +1,4 @@
-function showCenterFixation(windowPointer, displayDimensions, screenWidth, screenHeight, screenDistance)
+function showCenterFixation(windowPointer, displayDimensions, screenWidth, screenHeight, screenDistance, parameter)
 
 global trigger;
 
@@ -10,11 +10,14 @@ display.heightInPixel = display.dimensions(4) - display.dimensions(2); %latter s
 display.horizontalMiddle = display.widthInPixel/2;
 display.verticalMiddle = display.heightInPixel/2;
 display.screenWidthInCm = screenWidth; %set via GUI
+display.screenHeightInCm = screenHeight; %set via GUI
 display.distanceToScreen = screenDistance; %set via GUI
 %Now do the calculation from degree to pixel
 display.screenWidthInDegree = 360/pi * atan(display.screenWidthInCm/(2*display.distanceToScreen));
+display.screenHeightInDegree = 360/pi * atan(display.screenHeightInCm/(2*display.distanceToScreen));
 display.pixelPerDegree = display.widthInPixel / display.screenWidthInDegree;
 display.pixelRatioWidthPerHeight = (screenWidth/display.widthInPixel)/(screenHeight/display.heightInPixel);
+display.verticalPixelPerDegree = display.heightInPixel / display.screenHeightInDegree;
 %Calculate frame rate
 display.frameRate = 1/Screen('GetFlipInterval',display.windowPointer); %in Hz (frames per second: fps)
 
@@ -23,7 +26,9 @@ black = BlackIndex(display.windowPointer);
 white = WhiteIndex(display.windowPointer);
 grey = [150 150 150];
 
-circleCenter = [display.horizontalMiddle display.verticalMiddle];
+% circleCenter = [display.horizontalMiddle display.verticalMiddle];
+centerY = display.verticalMiddle + parameter.fixationYDisToCenter * display.verticalPixelPerDegree;
+circleCenter = [display.horizontalMiddle centerY];
 durationInSeconds = 3;
 
 totalFrames = seconds2frames(display.frameRate, durationInSeconds);

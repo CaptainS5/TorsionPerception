@@ -10,7 +10,7 @@ conditions.speed = trialConditions(1);
 % conditions.rotationalDirection = trialConditions(2);
 conditions.translationalDirection = trialConditions(3);
 %Determine whether stimulus starts moving from right of from left
-if(conditions.translationalDirection>1)
+if(conditions.translationalDirection==2)
     moveToRight = true; % rightward, CW
     translationalDirection = 1;
     conditions.rotationalDirection = 1;
@@ -18,6 +18,9 @@ else
     moveToRight = false; % leftward, CCW
     translationalDirection = -1;
     conditions.rotationalDirection = -1;
+end
+if trialConditions(2)==2
+    conditions.rotationalDirection = 0; % no rotation
 end
 
 %Setup display properties
@@ -105,11 +108,14 @@ speedLevel = parameter.speedLevels*parameter.multiplier; %in percent
 speedLevel(length(speedLevel)+1) = -100;
 randomSpeed = speedLevel(conditions.speed);
 circle.rotationSpeed = circle.rotationSpeed * (1+randomSpeed/100);
-rotationalDirection = 1; % CW
-if(conditions.rotationalDirection == -1) % CCW
-    circle.rotationSpeed = circle.rotationSpeed * (-1);
-    rotationalDirection = -1;
-end
+% rotationalDirection = 1; % CW
+% if(conditions.rotationalDirection == -1) % CCW
+%     circle.rotationSpeed = circle.rotationSpeed * (-1);
+%     rotationalDirection = -1;
+% end
+rotationalDirection = conditions.rotationalDirection;
+circle.rotationSpeed = circle.rotationSpeed * rotationalDirection;
+
 circle.rotationSpeedPerFrame = circle.rotationSpeed/display.frameRate;
 
 %%Calculate the duration of how long it takes the circle to move from the
@@ -175,6 +181,12 @@ for frame = 1:fixation.totalFrames-fixation.pause
     Screen('DrawLine', display.windowPointer, red,...
         dots.center(1), dots.center(2)-halfDegree/2,...
         dots.center(1), dots.center(2)+halfDegree/2, 2);
+    
+    if rotationalDirection==0 % no rotation, show a circle around fixation
+        Screen('FrameOval', display.windowPointer, red,...
+            [dots.center(1)-halfDegree/2, dots.center(2)-halfDegree/2,...
+        dots.center(1)+halfDegree/2, dots.center(2)+halfDegree/2], 2);
+    end
     
     % draw slopes
     Screen('DrawLines', display.windowPointer, ...
