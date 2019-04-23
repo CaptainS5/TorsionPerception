@@ -12,8 +12,8 @@ try
     parameter.slopeLength = 24; % in degs, the whole length
     % the travel distance of the RDP should be (slope.length-diameter of
     % RDP)
-    parameter.slopeAngle = 10; % in degs
-    parameter.fixationYDisToCenter = -2; % in degs; distance to screen center, up is minus
+    parameter.slopeAngle = 15; % in degs
+    parameter.fixationYDisToCenter = -2.5; % in degs; distance to screen center, up is minus
     parameter.slopeWidth = 3;
     
     %Get parameter from GUI (user interface)
@@ -115,8 +115,8 @@ try
     Screen('LoadNormalizedGammaTable', display.windowPointer, lut527);
     
     numberOfSpeedLevels = length(parameter.speedLevels);
-    possibleConditions = [numberOfSpeedLevels 2 2];
-    % the second is 1-rotation, 2-no rotation;
+    possibleConditions = [numberOfSpeedLevels 1 2];
+    % the second is either with rotation (block 2) or without rotation (block 1)
     % the third is translation direction
     % we always want natural rotation in the slope exp, so rotation
     % direction depends on translation direction--always "natural"

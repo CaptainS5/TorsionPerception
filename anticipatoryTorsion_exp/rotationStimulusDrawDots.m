@@ -19,7 +19,7 @@ else
     translationalDirection = -1;
     conditions.rotationalDirection = -1;
 end
-if trialConditions(2)==2
+if parameter.block==1 % the first block, no rotation
     conditions.rotationalDirection = 0; % no rotation
 end
 
