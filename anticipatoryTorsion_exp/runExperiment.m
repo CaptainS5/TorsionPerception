@@ -12,7 +12,7 @@ try
     parameter.slopeLength = 24; % in degs, the whole length
     % the travel distance of the RDP should be (slope.length-diameter of
     % RDP)
-    parameter.slopeAngle = 15; % in degs
+    parameter.slopeAngle = 10; % in degs
     parameter.fixationYDisToCenter = -2.5; % in degs; distance to screen center, up is minus
     parameter.slopeWidth = 3;
     
@@ -202,21 +202,21 @@ try
     
     
     %% Saccades block
-    if(showSaccades)
-        
-        %Break before each block. Continue with F12
-        showBreakModule(display)
-        
-        
-        try
-            sampledOrder = startListingsPlaneBlock(display.screenWidth, display.screenHeight,...
-                display.screenDistance, display.windowPointer, display.size, parameter);
-            
-        catch ME
-            disp('Listings Calibration interrupted.');
-            disp(ME.message);
-        end
-    end
+%     if(showSaccades)
+%         
+%         %Break before each block. Continue with F12
+%         showBreakModule(display)
+%         
+%         
+%         try
+%             sampledOrder = startListingsPlaneBlock(display.screenWidth, display.screenHeight,...
+%                 display.screenDistance, display.windowPointer, display.size, parameter);
+%             
+%         catch ME
+%             disp('Listings Calibration interrupted.');
+%             disp(ME.message);
+%         end
+%     end
     
     
     
