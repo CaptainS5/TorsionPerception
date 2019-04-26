@@ -10,7 +10,7 @@ rm(list = ls())
 
 #### load data
 # on ASUS
-setwd("E:/XiuyunWu/Torsion-FDE/analysis")
+setwd("E:/XiuyunWu/Torsion-FDE/analysis/R")
 # # on XPS13
 # setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/analysis")
 source("pairwise.t.test.with.t.and.df.R")
@@ -158,13 +158,26 @@ print(torsionVExp1Anova)
 
 ## Partial correlation across participants before reversal
 # dataT <- dataExp1[which(dataExp1$timeWindow==-1),]
-dataAggCor1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1b, FUN = "median")
-dataAggCor1 <- aggregate(. ~ exp * sub, data = dataAggCor1, FUN = "mean")
-# show(dataAggCor1)
+trialData1 <- trialData1Original[which(trialData1Original$timeWindow == -1), ]
+sub <- trialData1["sub"]
+exp <- trialData1["exp"]
+# afterReversalD <- trialData1["afterReversalD"]
+rotationSpeed <- trialData1["rotationSpeed"]
+perceptualError <- trialData1["perceptualError"]
+torsionVelT <- trialData1["torsionVelT"] * trialData1["afterReversalD"]
+dataExp1b <- data.frame(sub, exp, rotationSpeed, perceptualError, torsionVelT)
+dataExp1b$exp <- as.factor(dataExp1b$exp)
+dataExp1b$sub <- as.factor(dataExp1b$sub)
+# dataAggCor1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1b, FUN = "median")
+# dataAggCor1 <- aggregate(. ~ exp * sub, data = dataAggCor1, FUN = "mean")
+dataExp1b$rotationSpeed <- as.numeric(dataExp1b$rotationSpeed)
+dataAggCor1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1b, FUN = "mean")
+# str(dataAggCor1)
+show(dataAggCor1)
 
-corExp1BR <- cor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, method = c("pearson"))
-# corExp1BR <- pcor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, dataAggCor1$rotationSpeed,
-#     method = c("pearson"))
+# corExp1BR <- cor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, method = c("pearson"))
+corExp1BR <- pcor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, dataAggCor1$rotationSpeed,
+    method = c("pearson"))
 print(corExp1BR)
 
 # # at reversal
@@ -177,10 +190,24 @@ print(corExp1BR)
 
 # after reversal
 # dataT <- dataExp1[which(dataExp1$timeWindow==1),]
-dataAggCor1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1a, FUN = "median")
-dataAggCor1 <- aggregate(. ~ exp * sub, data = dataAggCor1, FUN = "mean")
+trialData1 <- trialData1Original[which(trialData1Original$timeWindow == 1), ]
+sub <- trialData1["sub"]
+exp <- trialData1["exp"]
+# afterReversalD <- trialData1["afterReversalD"]
+rotationSpeed <- trialData1["rotationSpeed"]
+perceptualError <- trialData1["perceptualError"]
+torsionVelT <- trialData1["torsionVelT"] * trialData1["afterReversalD"]
+dataExp1a <- data.frame(sub, exp, rotationSpeed, perceptualError, torsionVelT)
+dataExp1a$exp <- as.factor(dataExp1a$exp)
+dataExp1a$sub <- as.factor(dataExp1a$sub)
+# dataAggCor1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1a, FUN = "median")
+# dataAggCor1 <- aggregate(. ~ exp * sub, data = dataAggCor1, FUN = "mean")
+dataExp1a$rotationSpeed <- as.numeric(dataExp1a$rotationSpeed)
+dataAggCor1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1a, FUN = "mean")
 
-corExp1BR <- cor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, method = c("pearson"))
+# corExp1BR <- cor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, method = c("pearson"))
+corExp1BR <- pcor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, dataAggCor1$rotationSpeed,
+    method = c("pearson"))
 print(corExp1BR)
 
 ## 2 way for torsional angle--time window x rotational speed x after-reversal direction
@@ -380,7 +407,7 @@ for (endN in 3:3) {
 ## both-eyes
 # torsional velocity
 # before reversal
-trialBoth2 <- trialDataBoth2Original[which(trialData1Original$timeWindow == -1), ]#[which(abs(trialDataBoth2Original$torsionVelT) <
+trialBoth2 <- trialDataBoth2Original[which(trialDataBoth2Original$timeWindow == 1), ]#[which(abs(trialDataBoth2Original$torsionVelT) <
     # 6), ]
 sub <- trialBoth2["sub"] + 20
 exp <- trialBoth2["exp"]
@@ -393,7 +420,7 @@ dataBoth2b <- data.frame(sub, exp, rotationSpeed, torsionVelT,
 dataBoth2b$exp <- as.factor(dataBoth2b$exp)
 dataBoth2b$sub <- as.factor(dataBoth2b$sub)
 # dataBoth2b$afterReversalD <- as.factor(dataBoth2b$afterReversalD)
-dataBoth2b$rotationSpeed <- as.factor(dataBoth2b$rotationSpeed)
+# dataBoth2b$rotationSpeed <- as.factor(dataBoth2b$rotationSpeed)
 
 conBoth2 <- aggregate(torsionVelT ~ sub * exp * rotationSpeed,
     data = dataBoth2b, FUN = "mean")
@@ -422,14 +449,14 @@ print(p)
 
 # correlation
 conCorBoth2 <- aggregate(cbind(torsionVelT, perceptualError) ~ sub * exp *
-    rotationSpeed, data = dataBoth2b, FUN = "median")
+    rotationSpeed, data = dataBoth2b, FUN = "mean")
 colnames(conCorBoth2)[4] <- "torsionVelTMean"
 colnames(conCorBoth2)[5] <- "perceptualErrorMean"
 # conCorBoth2$rotationSpeed <- as.numeric(conCorBoth2$rotationSpeed)
-conCorBoth2 <- aggregate(. ~ sub * exp, data = conCorBoth2, FUN = "mean")
+# conCorBoth2 <- aggregate(. ~ sub * exp, data = conCorBoth2, FUN = "mean")
 # show(conCorBoth2)
 
-corExp2 <- cor.test(conCorBoth2$perceptualErrorMean, conCorBoth2$torsionVelTMean, method = c("pearson"))
+corExp2 <- pcor.test(conCorBoth2$perceptualErrorMean, conCorBoth2$torsionVelTMean, conCorBoth2$rotationSpeed, method = c("pearson"))
 print(corExp2)
 
 # after reversal

@@ -371,34 +371,54 @@ print(p)
 dev.off()
 
 # correlation of velocity
-dataExp1$rotationSpeed <- as.factor(dataExp1$rotationSpeed)
-dataAgg1 <- aggregate(. ~ rotationSpeed * exp * sub * timeWindow, data = dataExp1, FUN = "median")
-dataAgg1 <- aggregate(. ~ exp * sub * timeWindow, data = dataAgg1, FUN = "mean")
-levels(dataAgg1$timeWindow) <- c(-1, 1)
-
+colourCode <- brewer.pal(n = 7, name = "Greys")
+colourCode <- colourCode[3:7]
 twN <- c("beforeReversal", "afterReversal")
 twValues <- c(-1, 1)
 show(twValues)
+
 # for (tw in 2:2) {
     tw <- 1
-    dataAgg1sub <- dataAgg1[which(dataAgg1$timeWindow==twValues[tw]), ]
+trialData1 <- trialData1Original[which(trialData1Original$timeWindow==twValues[tw]), ]
+sub <- trialData1["sub"]
+exp <- trialData1["exp"]
+# afterReversalD <- trialData1["afterReversalD"]
+rotationSpeed <- trialData1["rotationSpeed"]
+perceptualError <- trialData1["perceptualError"]
+torsionVelT <- trialData1["torsionVelT"] * trialData1["afterReversalD"]
+dataExp1 <- data.frame(sub, exp, rotationSpeed, perceptualError, torsionVelT)
+# dataExp1$exp <- as.factor(dataExp1$exp)
+# dataExp1$sub <- as.factor(dataExp1$sub)
+# dataExp1$rotationSpeed <- as.numeric(dataExp1$rotationSpeed)
+dataAgg1sub <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1, FUN = "mean")
+# dataAgg1 <- aggregate(. ~ exp * sub * timeWindow, data = dataAgg1, FUN = "mean")
+# levels(dataAgg1$timeWindow) <- c(-1, 1)
+
     # correlation coefficient
     dataAgg1sub$perceptualError <- as.numeric(dataAgg1sub$perceptualError)
     dataAgg1sub$torsionVelT <- as.numeric(dataAgg1sub$torsionVelT)
-    corExp1BR <- cor.test(dataAgg1sub$perceptualError, dataAgg1sub$torsionVelT, method = c("pearson"))
+    # show(dataAgg1sub)
+    corExp1BR <- pcor.test(dataAgg1sub$perceptualError, dataAgg1sub$torsionVelT, dataAgg1sub$rotationSpeed, method = c("pearson"))
     print(corExp1BR)
     rho <- corExp1BR$estimate
     minY <- min(dataAgg1sub$torsionVelT)
+    dataAgg1sub$rotationSpeed <- as.factor(dataAgg1sub$rotationSpeed)
+    # is.vector(dataAgg1sub$rotationSpeed)
+    # is.atomic(dataAgg1sub$rotationSpeed)
+    # is.list(dataAgg1sub$perceptualError)
+    # show(dataAgg1sub$rotationSpeed)
 
     pdf(paste(folder1, "correlationVelExp1_", twN[tw], ".pdf", sep = ""))
-    p <- ggplot(dataAgg1sub, aes(x = perceptualError, y = torsionVelT)) +
-            geom_point(size = dotCorSize, shape = 16) +
-            # scale_fill_brewer(palette="Accent", name = "Rotational\nspeed (°/s)") +
+    p <- ggplot(dataAgg1sub, aes(x = perceptualError, y = torsionVelT, colour = rotationSpeed)) +
             geom_smooth(method = "lm", linetype = "dashed", colour = "black", se = FALSE) +
-            geom_segment(aes_all(c('x', 'y', 'xend', 'yend')), data = data.frame(x = c(0, -2), xend = c(20, -2), y = c(-2.5, minY), yend = c(-2.5, 0)), size = axisLineWidth) +
-            scale_y_continuous(name = "Torsional velocity (°/s)", limits = c(-2.5, 0), breaks=c(-2, -1, 0), expand = c(0, 0)) +
-            scale_x_continuous(name = "Illusory position shift (°)", limits = c(-2, 22), breaks=c(0, 10, 20), expand = c(0, 0)) +
+            # geom_segment(data = data.frame(x = c(0, -3), xend = c(30, -3), y = c(-3.2, -3), yend = c(-3.2, 0)), aes_all(c('x', 'y', 'xend', 'yend')), size = axisLineWidth) +
+            geom_point(aes(fill = rotationSpeed), size = dotCorSize, shape = 16) +
+            # scale_fill_brewer(palette="Accent", name = "Rotational\nspeed (°/s)") +
+            scale_y_continuous(name = "Torsional velocity (°/s)", limits = c(-3.2, 0), breaks=c(-3, -2, -1, 0), expand = c(0, 0)) +
+            scale_x_continuous(name = "Illusory position shift (°)", limits = c(-3, 33), breaks=c(0, 10, 20, 30), expand = c(0, 0)) +
             # scale_colour_discrete(name = "After reversal\ndirection", labels = c("CCW", "CW")) +
+            scale_colour_manual(name = "Rotational speed (°/s)", labels = c("25", "50", "100", "200", "400"),
+                                values = colourCode) +
             theme(axis.text=element_text(colour="black"),
                   axis.ticks=element_line(colour="black", size = axisLineWidth),
                   panel.grid.major = element_blank(),
@@ -413,24 +433,39 @@ show(twValues)
     dev.off()
 
     tw <- 2
-    dataAgg1sub <- dataAgg1[which(dataAgg1$timeWindow==twValues[tw]), ]
+    trialData1 <- trialData1Original[which(trialData1Original$timeWindow==twValues[tw]), ]
+    sub <- trialData1["sub"]
+    exp <- trialData1["exp"]
+    # afterReversalD <- trialData1["afterReversalD"]
+    rotationSpeed <- trialData1["rotationSpeed"]
+    perceptualError <- trialData1["perceptualError"]
+    torsionVelT <- trialData1["torsionVelT"] * trialData1["afterReversalD"]
+    dataExp1 <- data.frame(sub, exp, rotationSpeed, perceptualError, torsionVelT)
+    # dataExp1$exp <- as.factor(dataExp1$exp)
+    # dataExp1$sub <- as.factor(dataExp1$sub)
+    # dataExp1$rotationSpeed <- as.numeric(dataExp1$rotationSpeed)
+    dataAgg1sub <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1, FUN = "mean")
+
     # correlation coefficient
     dataAgg1sub$perceptualError <- as.numeric(dataAgg1sub$perceptualError)
     dataAgg1sub$torsionVelT <- as.numeric(dataAgg1sub$torsionVelT)
-    corExp1BR <- cor.test(dataAgg1sub$perceptualError, dataAgg1sub$torsionVelT, method = c("pearson"))
+    corExp1BR <- pcor.test(dataAgg1sub$perceptualError, dataAgg1sub$torsionVelT, dataAgg1sub$rotationSpeed, method = c("pearson"))
     print(corExp1BR)
     rho <- corExp1BR$estimate
     # minY <- min(dataAgg1sub$torsionVelT)
+    dataAgg1sub$rotationSpeed <- as.factor(dataAgg1sub$rotationSpeed)
 
     pdf(paste(folder1, "correlationVelExp1_", twN[tw], ".pdf", sep = ""))
-    p <- ggplot(dataAgg1sub, aes(x = perceptualError, y = torsionVelT)) +
-            geom_point(size = dotCorSize, shape = 16) +
-            # scale_fill_brewer(palette="Accent", name = "Rotational\nspeed (°/s)") +
+    p <- ggplot(dataAgg1sub, aes(x = perceptualError, y = torsionVelT, colour = rotationSpeed)) +
             geom_smooth(method = "lm", linetype = "dashed", colour = "black", se = FALSE) +
-            geom_segment(aes_all(c('x', 'y', 'xend', 'yend')), data = data.frame(x = c(0, -2), xend = c(20, -2), y = c(0, 0), yend = c(0, 2.5)), size = axisLineWidth) +
-            scale_y_continuous(name = "Torsional velocity (°/s)", limits = c(0, 2.5), breaks=c(2, 1, 0), expand = c(0, 0)) +
-            scale_x_continuous(name = "Illusory position shift (°)", limits = c(-2, 22), breaks=c(0, 10, 20), expand = c(0, 0)) +
+            # geom_segment(data = data.frame(x = c(0, -3), xend = c(30, -3), y = c(-3.2, -3), yend = c(-3.2, 0)), aes_all(c('x', 'y', 'xend', 'yend')), size = axisLineWidth) +
+            geom_point(aes(fill = rotationSpeed), size = dotCorSize, shape = 16) +
+            # scale_fill_brewer(palette="Accent", name = "Rotational\nspeed (°/s)") +
+            scale_y_continuous(name = "Torsional velocity (°/s)", limits = c(0, 3), breaks=c(3, 2, 1, 0), expand = c(0, 0)) +
+            scale_x_continuous(name = "Illusory position shift (°)", limits = c(-3, 33), breaks=c(0, 10, 20, 30), expand = c(0, 0)) +
             # scale_colour_discrete(name = "After reversal\ndirection", labels = c("CCW", "CW")) +
+            scale_colour_manual(name = "Rotational speed (°/s)", labels = c("25", "50", "100", "200", "400"),
+                                values = colourCode) +
             theme(axis.text=element_text(colour="black"),
                   axis.ticks=element_line(colour="black", size = axisLineWidth),
                   panel.grid.major = element_blank(),
