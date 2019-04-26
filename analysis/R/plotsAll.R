@@ -12,15 +12,15 @@ library(dplyr)
 rm(list = ls())
 
 #### load data
-# on ASUS
-setwd("E:/XiuyunWu/Torsion-FDE/analysis/R")
-folder1 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp1/")
-folder2 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp2/")
-# # on XPS13
-# setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/analysis/R")
-# folder1 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp1/")
-# folder2 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp2/")
-# folder3 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp3/")
+# # on ASUS
+# setwd("E:/XiuyunWu/Torsion-FDE/analysis/R")
+# folder1 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp1/")
+# folder2 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp2/")
+# on XPS13
+setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/analysis/R")
+folder1 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp1/")
+folder2 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp2/")
+folder3 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp3/")
 # conData1Original <- read.csv('conDataAllExp1.csv')
 # conData2Original <- read.csv('conDataAllExp2BothEyes.csv')
 # # eye: 1 left eye, 2 right eye
@@ -412,9 +412,9 @@ dataAgg1sub <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1, FUN = "
     p <- ggplot(dataAgg1sub, aes(x = perceptualError, y = torsionVelT, colour = rotationSpeed)) +
             geom_smooth(method = "lm", linetype = "dashed", colour = "black", se = FALSE) +
             # geom_segment(data = data.frame(x = c(0, -3), xend = c(30, -3), y = c(-3.2, -3), yend = c(-3.2, 0)), aes_all(c('x', 'y', 'xend', 'yend')), size = axisLineWidth) +
-            geom_point(aes(fill = rotationSpeed), size = dotCorSize, shape = 16) +
+            geom_point(size = 1.5, shape = 16) +
             # scale_fill_brewer(palette="Accent", name = "Rotational\nspeed (°/s)") +
-            scale_y_continuous(name = "Torsional velocity (°/s)", limits = c(-3.2, 0), breaks=c(-3, -2, -1, 0), expand = c(0, 0)) +
+            scale_y_continuous(name = "Torsional velocity (°/s)", limits = c(-3.2, 0), breaks=c(0, -1, -2, -3, -3.2), expand = c(0, 0)) +
             scale_x_continuous(name = "Illusory position shift (°)", limits = c(-3, 33), breaks=c(0, 10, 20, 30), expand = c(0, 0)) +
             # scale_colour_discrete(name = "After reversal\ndirection", labels = c("CCW", "CW")) +
             scale_colour_manual(name = "Rotational speed (°/s)", labels = c("25", "50", "100", "200", "400"),
@@ -459,9 +459,9 @@ dataAgg1sub <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1, FUN = "
     p <- ggplot(dataAgg1sub, aes(x = perceptualError, y = torsionVelT, colour = rotationSpeed)) +
             geom_smooth(method = "lm", linetype = "dashed", colour = "black", se = FALSE) +
             # geom_segment(data = data.frame(x = c(0, -3), xend = c(30, -3), y = c(-3.2, -3), yend = c(-3.2, 0)), aes_all(c('x', 'y', 'xend', 'yend')), size = axisLineWidth) +
-            geom_point(aes(fill = rotationSpeed), size = dotCorSize, shape = 16) +
+            geom_point(size = 1.5, shape = 16) +
             # scale_fill_brewer(palette="Accent", name = "Rotational\nspeed (°/s)") +
-            scale_y_continuous(name = "Torsional velocity (°/s)", limits = c(0, 3), breaks=c(3, 2, 1, 0), expand = c(0, 0)) +
+            scale_y_continuous(name = "Torsional velocity (°/s)", limits = c(-0.2, 3), breaks=c(-0.2, 0, 1, 2, 3), expand = c(0, 0)) +
             scale_x_continuous(name = "Illusory position shift (°)", limits = c(-3, 33), breaks=c(0, 10, 20, 30), expand = c(0, 0)) +
             # scale_colour_discrete(name = "After reversal\ndirection", labels = c("CCW", "CW")) +
             scale_colour_manual(name = "Rotational speed (°/s)", labels = c("25", "50", "100", "200", "400"),
