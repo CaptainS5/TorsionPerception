@@ -32,9 +32,9 @@ display.pixelPerDegree = display.widthInPixel / display.screenWidthInDegree;
 
 fiveDegreeHorizontal = 5 * display.pixelPerDegree;
 fiveDegreeVertical = 5 * display.pixelPerDegree * display.pixelRatioWidthPerHeight;
-% not 10 deg any more
-tenDegreeHorizontal = 16 * display.pixelPerDegree;
-tenDegreeVertical = 16 * display.pixelPerDegree * display.pixelRatioWidthPerHeight;
+
+tenDegreeHorizontal = 10 * display.pixelPerDegree;
+tenDegreeVertical = 10 * display.pixelPerDegree * display.pixelRatioWidthPerHeight;
 
 %Fill background
 Screen('FillRect', display.windowPointer, grey);
