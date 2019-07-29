@@ -9,10 +9,10 @@ library(multcomp)
 rm(list = ls())
 
 #### load data
-# on ASUS
-setwd("E:/XiuyunWu/Torsion-FDE/analysis/R")
-# # on XPS13
-# setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/analysis")
+# # on ASUS
+# setwd("E:/XiuyunWu/Torsion-FDE/analysis/R")
+# on XPS13
+setwd("C:/Users/wuxiu/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/analysis/R")
 source("pairwise.t.test.with.t.and.df.R")
 baseTorsion1Original <- read.csv("trialDataBaseAllExp1.csv")
 baseTorsion2Original <- read.csv("trialDataBaseAllExp2.csv")
@@ -171,12 +171,13 @@ dataExp1b$sub <- as.factor(dataExp1b$sub)
 # dataAggCor1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1b, FUN = "median")
 # dataAggCor1 <- aggregate(. ~ exp * sub, data = dataAggCor1, FUN = "mean")
 dataExp1b$rotationSpeed <- as.numeric(dataExp1b$rotationSpeed)
-dataAggCor1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1b, FUN = "mean")
+dataAggCor1 <- aggregate(. ~ exp * sub, data = dataExp1b, FUN = "mean")
+# dataAggCor1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1b, FUN = "mean")
 # str(dataAggCor1)
-show(dataAggCor1)
+# show(dataAggCor1)
 
-# corExp1BR <- cor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, method = c("pearson"))
-corExp1BR <- pcor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, dataAggCor1$rotationSpeed,
+corExp1BR <- cor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, method = c("pearson"))
+# corExp1BR <- pcor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, dataAggCor1$rotationSpeed,
     method = c("pearson"))
 print(corExp1BR)
 
@@ -203,11 +204,12 @@ dataExp1a$sub <- as.factor(dataExp1a$sub)
 # dataAggCor1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1a, FUN = "median")
 # dataAggCor1 <- aggregate(. ~ exp * sub, data = dataAggCor1, FUN = "mean")
 dataExp1a$rotationSpeed <- as.numeric(dataExp1a$rotationSpeed)
-dataAggCor1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1a, FUN = "mean")
+dataAggCor1 <- aggregate(. ~ exp * sub, data = dataExp1a, FUN = "mean")
+# dataAggCor1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1a, FUN = "mean")
 
-# corExp1BR <- cor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, method = c("pearson"))
-corExp1BR <- pcor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, dataAggCor1$rotationSpeed,
-    method = c("pearson"))
+corExp1BR <- cor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, method = c("pearson"))
+# corExp1BR <- pcor.test(dataAggCor1$perceptualError, dataAggCor1$torsionVelT, dataAggCor1$rotationSpeed, 
+    # method = c("pearson"))
 print(corExp1BR)
 
 ## 2 way for torsional angle--time window x rotational speed x after-reversal direction

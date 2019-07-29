@@ -60,7 +60,7 @@ textscan(fid, '%*[^\n]', 2);
 skipLines = sum(blockSizes(blockNumbers<block)); %skip lines of previous blocks
 textscan(fid, '%*[^\n]', skipLines);
 
-allData = textscan(fid, '%d %d %d %d %d %d %f %f %d %d %f %f %d %d %*[^\n]',currentBlockSize);
+allData = textscan(fid, '%d %d %d %d %f %d %f %f %f %f %f %f %d %f %*[^\n]',currentBlockSize);
 
 logData.fileName = selectedLogFile;
 logData.block = block;
@@ -70,7 +70,7 @@ logData.rotationalDirection = allData{4};
 logData.randomSpeed = allData{5};
 logData.decision = allData{6};
 logData.circleDiameter = allData{7};
-logData.horizontalSpeed = allData{8};
+logData.translationalSpeed = allData{8};
 logData.rotationalSpeed = allData{9};
 logData.duration = allData{10};
 logData.multiplier = allData{11};

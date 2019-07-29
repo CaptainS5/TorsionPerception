@@ -32,7 +32,7 @@ end
 
 endFrame = trial.stim_offset-ms2frames(200);
 
-pursuit.gain = nanmean(abs(trial.frames.DX_noSac(closedLoop)))/10;
+pursuit.gain = nanmean(abs(trial.frames.DX_noSac(closedLoop)))/(10*cos(10/180*pi)); 
 
 % calculate position error
 horizontalError = trial.frames.S(startFrame:endFrame)-trial.frames.X_noSac(startFrame:endFrame);

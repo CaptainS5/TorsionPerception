@@ -30,7 +30,7 @@ trial.lostTframes = data.lostTframes(trial.startFrame:trial.endFrame);
 
 %% calculate stim_onset and stim_offset
 trial.stim_onset = ms2frames(500);                          
-trial.stim_offset = trial.stim_onset + ms2frames(1750);     
+trial.stim_offset = trial.stim_onset + ms2frames(1600);     
 trial.length = length(trial.startFrame:trial.endFrame);
 
 %% read log data
@@ -68,7 +68,7 @@ trial.frames.DS = diff(trial.frames.S)*sampleRate;
 trial.frames.DS = [trial.frames.DS; NaN];
 
 trial.stimulusMeanVelocity = nanmean(trial.frames.DS(trial.stim_onset:trial.stim_offset));
-trial.rotationBaseVelocity = trial.log.rotationalDirection*3; % 0 for baseline no-rotation blocks
+trial.rotationBaseVelocity = 0; %trial.log.rotationalDirection*3; % 0 for baseline no-rotation blocks
 %% set start and end frame to 1:length
 trial.startFrame = 1;
 trial.endFrame = trial.length;

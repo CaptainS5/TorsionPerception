@@ -1,320 +1,158 @@
-% Xiuyun Wu, 03/08/2019
-% Exp3, head tilt condition and different afterReversalD are critical
+% Xiuyun Wu, 07/15/2019, anticipatory torsion control
+% Exp3, one block baseline--no rotation, one block with rotation
+% each block 200 trials; 5 rotational speed: 166, 173, 180, 187, 194
 clear all; close all; clc
 
 global trial
 
-names = {'p1' 'p3' 'p4' 'p5'};
-conditions = [200]; % rotationSpeed
-% load('meanLatencyExp1')
+names = {'p1' 'p3' 'p4' 'p5' 'p7'};
+load(['eyeTrialDataAll_R.mat']);
 cd ..
-analysisF = pwd;
-folder = {'C:\Users\CaptainS5\Documents\PhD@UBC\Lab\1stYear\TorsionPerception\data'};
-% folder = {'E:\XiuyunWu\Torsion-FDE\data'};
-dirCons = [-1 1]; % initial direction; in the plot shows the direction after reversal
-headCons = [-1 0 1]; % head tilt direction
-headNames = {'CCW' 'Up' 'CW'};
-trialPerCon = 20; % for each head tilt, directions separated
-torsionThreshold = 6*ones(size(names));
-torsionFrames = 3*ones(size(names));
-eyeName = {'L' 'R'};
-endNames = {'BeforeReversal' 'AfterReversal'};
+analysisFolder = pwd;
+cd ..
+cd('data')
+dataFolder = pwd;
 
-cd ..
-% load(['dataBase_all', num2str(size(names, 2)), '.mat'])
-%% Experimental trials
-for endN = 1:2
-    if endN<=1 % before reversal
-        checkAngle = -1;
-    else % after reversal
-        checkAngle = 1;
-    end
-    endName = endNames{endN};
-    trialData = table(); % organize into long format
-    trialPos = struct;
-    countPos = 1;
-    %     trialDeleted = zeros(1, length(names));
-    for subj = 1:length(names)
-        cd(analysisF)
+%% all trials
+trialData = table(); % organize into long format
+for subN = 1:length(names)
+        cd(analysisFolder)
         % Subject details
-        subject = names{subj};
-        counts = {zeros(size(conditions)) zeros(size(conditions))};
+        subject = names{subN};
+        % skip p2 for now
+        if subN>=2 && subN<5
+            subNtemp = subN+1;
+        elseif subN==5
+            subNtemp = 7;
+        else
+            subNtemp = subN;
+        end
         
-        countLt = 1;
+        countTemp = 1;
         dataTemp = table();
         for block = 1:2
-            %             errorsL = load(['Errorfiles\Exp' num2str(block) '_Subject' num2str(subj,'%.2i') '_Block' num2str(block,'%.2i') '_L_errorFile.mat']);
-            errorsR = load(['Errorfiles\Exp3_Subject' num2str(subj,'%.2i') '_Block' num2str(block,'%.2i') '_R_errorFile.mat']);
+            % read in experimental and eye data
+            filename = ['session_' num2str(block, '%.2i') '_R.dat'];
+            filelocation = [dataFolder '\' subject];
+            data = readDataFile(filename, filelocation);
+            data = socscalexy(data);
             
-            % load response data for trial information
-            dataFile = dir([folder{:} '\' subject '\response' num2str(block) '_*.mat']);
-            load([folder{:} '\' subject '\' dataFile.name]) % resp is the response data for the current block
+            logFile = dir([dataFolder '\' subject '\01_' subject '_b' num2str(block) '_*.txt']);
+            [header, logData] = readLogFile(block, logFile.name , [dataFolder '\' subject]);
+            sampleRate = 200;
             
-            for t = 1:size(resp, 1) % trial number
-                if errorsR.errorStatus(t)==0 && resp.rotationSpeed(t)~=0
-                    eye = 2;
-                    if countLt>1
-                        dataTemp{countLt, :} = NaN;
-                    end
-                    dataTemp.sub(countLt, 1) = subj;
+            % load error file
+            errors = load([analysisFolder '\Errorfiles\Exp3_Subject' num2str(subNtemp,'%.2i') '_Block' num2str(block,'%.2i') '_R_errorFile.mat']);
+            
+            for trialN = 1:size(logData.trial, 1) % trial number
+                if errors.errorStatus(trialN)==0 % valid eye data trial
+                    %% analyzeTrial
+                    currentTrial = trialN;
                     
-                    dataTemp.rotationSpeed(countLt, 1) = resp.rotationSpeed(t);
-                    dataTemp.afterReversalD(countLt, 1) = -resp.initialDirection(t); % 1-clockwise, -1 counterclockwise
-                    dataTemp.headTilt(countLt, 1) = resp.headTilt(t);
-                    
-                    %% perceptual error
-                    resp.reportAngle(t) = resp.reportAngle(t)-90;
-                    if resp.reportAngle(t) < 0
-                        resp.reportAngle(t) = resp.reportAngle(t)+180;
-                    end
-                    resp.reversalAngle(t) = resp.reversalAngle(t)-90;
-                    if resp.reversalAngle(t) < 0
-                        resp.reversalAngle(t) = resp.reversalAngle(t)+180;
-                    end
-                    %                     idxBase = find(dataBase.sub==subj & dataBase.headTilt==resp.headTilt(t));
-                    %                     baseAngle = dataBase.baseMeanAngle(idxBase, 1);
-                    
-                    dataTemp.perceptualError(countLt, 1) = -(resp.reportAngle(t)-resp.reversalAngle(t))*resp.initialDirection(t);
-                    
-                    currentTrial = t;
-                    eye = 2;
-                    % read in data and socscalexy
-                    filename = ['session_' num2str(block,'%.2i') '_' eyeName{eye} '.dat'];
-                    data = readDataFile(filename, [folder{:} '\' subject]);
-                    data = socscalexy(data);
-                    [header, logData] = readLogFile(block, ['response' num2str(block,'%.2i') '_' subject] , [folder{:} '\' subject]);
-                    sampleRate = 200;
-                    
-                    % get mean velocities
                     % setup trial
                     trial = setupTrial(data, header, logData, currentTrial);
-                    trial.torsionFrames = torsionFrames(subj);
-                    
-                    %% choose the time window here
-                    tempLatency = 0.15;% meanLatency(conIdx);
-                    if strcmp(endName, 'AtReversal') % at reversal
-                        trial.stim_onset = trial.stim_reversalOnset; % reversal
-                        trial.stim_offset = trial.stim_reversalOnset + ms2frames(tempLatency*1000); % reversal
-                    elseif strcmp(endName, 'BeforeReversal')
-                        trial.stim_onset = ms2frames((logData.fixationDuration(currentTrial)+tempLatency)*1000); % 120ms latency
-                        trial.stim_offset = trial.stim_reversalOnset; % reversal
-                    elseif strcmp(endName, 'AfterReversal')
-                        trial.stim_onset = trial.stim_reversalOnset + ms2frames(tempLatency*1000);
-                        trial.stim_offset = trial.stim_reversalOffset + ms2frames(logData.durationAfter(currentTrial)*1000-50); % end of display
+                    pSacThreshold = 20;
+                    if trial.log.rotationalDirection==0
+                        tSacThreshold = 5;
+                    else
+                        tSacThreshold = 8;
                     end
                     
-                    find saccades;
-                    [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
-                    [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
-                    [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset-40, min(trial.length, trial.stim_offset+40), trial.frames.DT_filt, trial.frames.DDT_filt, torsionThreshold(subj), 0);
+                    % find saccades
+                    [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.startFrame, trial.endFrame, trial.frames.DX_filt, trial.frames.DDX_filt, pSacThreshold, 0);
+                    [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.startFrame, trial.endFrame, trial.frames.DY_filt, trial.frames.DDY_filt, pSacThreshold, 0);
+                    [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.startFrame, trial.endFrame, trial.frames.DT_filt, trial.frames.DDT_filt, tSacThreshold, 0);
                     
                     % analyze saccades
                     [trial] = analyzeSaccades(trial, saccades);
                     clear saccades;
+                    % find pursuit onset
+                    pursuit = socchange(trial);
                     
                     % remove saccades
                     trial = removeSaccades(trial);
                     
-                    %% analyze torsion
-                    pursuit.onset = trial.stim_onset; % the frame to start torsion analysis
+                    % analyze pursuit
+                    pursuit = analyzePursuit(trial, pursuit);
+                    
+                    % analyze torsion
                     [torsion, trial] = analyzeTorsion(trial, pursuit);
-                    % end of analyzeTrial
+                    %%%%%%%% end of analyzeTrial
                     
-                    startFrame = trial.stim_onset;
-                    endFrame = trial.stim_offset;
+                    %% trial info
+                    % trial info
+                    dataTemp.sub(countTemp, 1) = subN;
+                    dataTemp.trial(countTemp, 1) = trialN;
+                    dataTemp.trialType(countTemp, 1) = block-1; % 0=baseline, 1=experimental trials
+                    dataTemp.eye(countTemp, 1) = 2; % right eye
+                    dataTemp.rotationSpeed(countTemp, 1) = logData.rotationalSpeed(trialN)*(1+logData.randomSpeed(trialN)/100); % the actual rotational speed after calculation
+                    dataTemp.translationalSpeed(countTemp, 1) = logData.translationalSpeed(trialN);
+                    dataTemp.slopeAngle(countTemp, 1) = logData.slopeAngle(trialN);
+                    dataTemp.errorStatus(countTemp, 1) = errors.errorStatus(trialN);
+                    dataTemp.translationalDirection(countTemp, 1) = logData.translationalDirection(trialN); % 1=right, -1=left
+                    dataTemp.rotationalDirection(countTemp, 1) = logData.rotationalDirection(trialN); % 1=clockwise, -1=counterclockwise
+                    dataTemp.choice(countTemp, 1) = logData.decision(trialN); % 1=faster, 0=slower
                     
-                    %                             if abs(torsion.slowPhases.meanSpeed)<20
+                    %% eye data
+                    % anticipatory window
+                    trialNAll = 200*(block-1)+trialN;
+                    startI = eyeTrialData.frameLog.stimOnset(subN, trialNAll)-0.05*sampleRate+1;
+                    endI = eyeTrialData.frameLog.stimOnset(subN, trialNAll)+0.05*sampleRate;
+                    % torsion velocity
+                    dataTemp.torsionVel(countTemp, 1) = torsion.slowPhases.meanSpeed;
+                    % anticipatory torsion velocity
+                    dataTemp.anticipatoryTorsionVel(countTemp, 1) = nanmean(eyeTrialData.frames{subN, trialNAll}.DT_noSac(startI:endI));
                     
-                    %% retinal torsion angle
-                    dataTemp.torsionPosition(countLt, 1) = nanmean(trial.frames.T_filt(trial.stim_reversalOffset:(trial.stim_reversalOffset+8)))-nanmean(trial.frames.T_filt((trial.stim_onset-20):trial.stim_onset));
+                    % torsion velocity gain
+                    dataTemp.torsionVelGain(countTemp, 1) = torsion.slowPhases.meanSpeed/dataTemp.rotationSpeed(countTemp, 1);
                     
-                    %% torsion velocity
-                    dataTemp.torsionVelT(countLt, 1) = torsion.slowPhases.meanSpeed;
+                    % anticipatory pursuit velocity
+                    dataTemp.anticipatoryPursuitHVel(countTemp, 1) = nanmean(eyeTrialData.frames{subN, trialNAll}.DX_noSac(startI:endI));
                     
-                    %% torsion magnitude
-                    dataTemp.torsionAngleTotal(countLt, 1) = torsion.slowPhases.totalAngle;
-                    dataTemp.torsionAngleCW(countLt, 1) = torsion.slowPhases.totalAngleCW;
-                    dataTemp.torsionAngleCCW(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
-                    % just take the one that is not zero, if both
-                    % not zero, take the expected direction
-                    if torsion.slowPhases.totalAngleCW==0
-                        dataTemp.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
-                    elseif torsion.slowPhases.totalAngleCCW==0
-                        dataTemp.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
-                    elseif dataTemp.afterReversalD(countLt, 1)*checkAngle==1
-                        dataTemp.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
-                    elseif dataTemp.afterReversalD(countLt, 1)*checkAngle==-1
-                        dataTemp.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
-                    end
+                    % horizontal pursuit velocity gain
+                    dataTemp.pursuitHVelGain(countTemp, 1) = pursuit.gain;
                     
-                    %% saccade numbers
-                    dataTemp.sacNumT(countLt, 1) = trial.saccades.T.number;
-                    dataTemp.sacNumTCW(countLt, 1) = trial.saccades.T_CW.number;
-                    dataTemp.sacNumTCCW(countLt, 1) = trial.saccades.T_CCW.number;
+                    % torsion angle
+%                     dataTemp.torsionAngleTotal(countTemp, 1) = torsion.slowPhases.totalAngle;
+%                     dataTemp.torsionAngleCW(countTemp, 1) = torsion.slowPhases.totalAngleCW;
+%                     dataTemp.torsionAngleCCW(countTemp, 1) = torsion.slowPhases.totalAngleCCW;
+%                     %                         if dataTemp.afterReversalD(countLt, 1)==-1
+%                     %                             dataTemp.torsionAngleSame(countLt, 1) = torsion.slowPhases.totalAngleCCW; % same as afterReversal angle
+%                     %                             dataTemp.torsionAngleAnti(countLt, 1) = torsion.slowPhases.totalAngleCW; % opposite to afterReversal angle
+%                     %                         else
+%                     %                             dataTemp.torsionAngleSame(countLt, 1) = torsion.slowPhases.totalAngleCW; % same as afterReversal angle
+%                     %                             dataTemp.torsionAngleAnti(countLt, 1) = torsion.slowPhases.totalAngleCCW; % opposite to afterReversal angle
+%                     %                         end
+%                     % just take the one that is not zero, if both
+%                     % not zero, take the expected direction
+%                     if torsion.slowPhases.totalAngleCW==0
+%                         dataTemp.torsionAngle(countTemp, 1) = -torsion.slowPhases.totalAngleCCW;
+%                     elseif torsion.slowPhases.totalAngleCCW==0
+%                         dataTemp.torsionAngle(countTemp, 1) = torsion.slowPhases.totalAngleCW;
+%                     elseif dataTemp.afterReversalD(countTemp, 1)*checkAngle==1
+%                         dataTemp.torsionAngle(countTemp, 1) = torsion.slowPhases.totalAngleCW;
+%                     elseif dataTemp.afterReversalD(countTemp, 1)*checkAngle==-1
+%                         dataTemp.torsionAngle(countTemp, 1) = -torsion.slowPhases.totalAngleCCW;
+%                     end
+%                     
+%                     % saccade numbers
+%                     dataTemp.sacNumT(countTemp, 1) = trial.saccades.T.number;
+%                     
+%                     % saccade sum amplitudes
+%                     dataTemp.sacAmpSumT(countTemp, 1) = trial.saccades.T.sum;
+%                     
+%                     % saccade mean amplitudes
+%                     dataTemp.sacAmpMeanT(countTemp, 1) = trial.saccades.T.meanAmplitude;
                     
-                    %% saccade sum amplitudes
-                    dataTemp.sacAmpSumT(countLt, 1) = trial.saccades.T.sum;
-                    dataTemp.sacAmpSumTCW(countLt, 1) = trial.saccades.T_CW.sum;
-                    dataTemp.sacAmpSumTCCW(countLt, 1) = trial.saccades.T_CCW.sum;
-                    
-                    %% saccade mean amplitudes
-                    dataTemp.sacAmpMeanT(countLt, 1) = trial.saccades.T.meanAmplitude;
-                    dataTemp.sacAmpMeanTCW(countLt, 1) = trial.saccades.T_CW.meanAmplitude;
-                    dataTemp.sacAmpMeanTCCW(countLt, 1) = trial.saccades.T_CCW.meanAmplitude;
-                    %                             end
-                    countLt = countLt+1;
-                elseif errorsR.errorStatus(t)==0 && resp.rotationSpeed(t)==0
-                    trialPos.sub(countPos, 1) = subj; % currently just get all position data... to see for later
-                    trialPos.rotationSpeed(countPos, 1) = resp.rotationSpeed(t);
-                    trialPos.afterReversalD(countPos, 1) = -resp.initialDirection(t); % 1-clockwise, -1 counterclockwise
-                    trialPos.headTilt(countPos, 1) = resp.headTilt(t);
-                    trialPos.stim.onset(countPos, 1) = trial.stim_onset;
-                    trialPos.stim.offset(countPos, 1) = trial.stim_offset;
-                    trialPos.frameLog.startFrame(countPos, 1) = trial.startFrame;
-                    trialPos.frameLog.endFrame(countPos, 1) = trial.endFrame;
-                    trialPos.frameLog.length(countPos, 1) = trial.length;
-                    trialPos.frames{countPos, 1} = trial.frames;
-                    countPos = countPos + 1;
+                    countTemp = countTemp+1;
                 end
             end
         end
         trialData = [trialData; dataTemp];
-    end
-    % end
-    cd([analysisF '\analysis functions'])
-    save(['dataLong', endName, '.mat'], 'trialData', 'trialPos'); %, 'trialDeleted');
 end
+cd([analysisFolder '\eyeAnalysis'])
+save(['dataLongAll.mat'], 'trialData');
 
-%% Baseline
-trialDataBase = table(); % organize into long format
-trialPosBase = struct;
-countPos = 1;
-%     trialDeleted = zeros(1, length(names));
-for subj = 1:length(names)
-    cd(analysisF)
-    % Subject details
-    subject = names{subj};
-    counts = {zeros(size(conditions)) zeros(size(conditions))};
-    
-    countLt = 1;
-    dataTemp = table();
-    for block = 1:2
-        %             errorsL = load(['Errorfiles\Exp' num2str(block) '_Subject' num2str(subj,'%.2i') '_Block' num2str(block,'%.2i') '_L_errorFile.mat']);
-        errorsR = load(['Errorfiles\Exp0_Subject' num2str(subj,'%.2i') '_Block' num2str(block,'%.2i') '_R_errorFile.mat']);
-        
-        % load response data for trial information
-        dataFile = dir([folder{:} '\' subject '\baselineTorsion\response' num2str(block) '_*.mat']);
-        load([folder{:} '\' subject '\baselineTorsion\' dataFile.name]) % resp is the response data for the current block
-        
-        for t = 1:size(resp, 1)-1 % trial number
-            if errorsR.errorStatus(t)==0 && resp.rotationSpeed(t)~=0
-                eye = 2;
-                if countLt>1
-                    dataTemp{countLt, :} = NaN;
-                end
-                dataTemp.sub(countLt, 1) = subj;
-                
-                dataTemp.rotationSpeed(countLt, 1) = resp.rotationSpeed(t);
-                dataTemp.afterReversalD(countLt, 1) = -resp.initialDirection(t); % 1-clockwise, -1 counterclockwise
-                dataTemp.headTilt(countLt, 1) = resp.headTilt(t);
-                
-                currentTrial = t;
-                eye = 2;
-                % read in data and socscalexy
-                filename = ['session_' num2str(block,'%.2i') '_' eyeName{eye} '.dat'];
-                data = readDataFile(filename, [folder{:} '\' subject '\baselineTorsion']);
-                data = socscalexy(data);
-                [header, logData] = readLogFile(block, ['response' num2str(block,'%.2i') '_' subject] , [folder{:} '\' subject '\baselineTorsion']);
-                sampleRate = 200;
-                
-                % get mean velocities
-                % setup trial
-                trial = setupTrial(data, header, logData, currentTrial);
-                trial.torsionFrames = torsionFrames(subj);
-                
-                %% choose the time window here
-                tempLatency = 0.15;% meanLatency(conIdx);
-                
-                trial.stim_onset = ms2frames(tempLatency*1000); % 120ms latency
-                trial.stim_offset = trial.stim_onset + ms2frames(2.5*1000); % end of display
-                
-                find saccades;
-                [saccades.X.onsets, saccades.X.offsets, saccades.X.isMax] = findSaccades(trial.stim_onset, min(trial.length, trial.stim_offset+40), trial.frames.DX_filt, trial.frames.DDX_filt, 20, 0);
-                [saccades.Y.onsets, saccades.Y.offsets, saccades.Y.isMax] = findSaccades(trial.stim_onset, min(trial.length, trial.stim_offset+40), trial.frames.DY_filt, trial.frames.DDY_filt, 20, 0);
-                [saccades.T.onsets, saccades.T.offsets, saccades.T.isMax] = findSaccades(trial.stim_onset, min(trial.length, trial.stim_offset+40), trial.frames.DT_filt, trial.frames.DDT_filt, torsionThreshold(subj), 0);
-                
-                % analyze saccades
-                [trial] = analyzeSaccades(trial, saccades);
-                clear saccades;
-                
-                % remove saccades
-                trial = removeSaccades(trial);
-                
-                %% analyze torsion
-                pursuit.onset = trial.stim_onset; % the frame to start torsion analysis
-                [torsion, trial] = analyzeTorsion(trial, pursuit);
-                % end of analyzeTrial
-                
-                startFrame = trial.stim_onset;
-                endFrame = trial.stim_offset-ms2frames(50);
-                
-                %                             if abs(torsion.slowPhases.meanSpeed)<20
-                
-                %                 %% retinal torsion angle during flash presentation
-                %                 dataTemp.torsionPosition(countLt, 1) = nanmean(trial.frames.T_filt(trial.stim_reversalOnset:trial.stim_reversalOffset));
-                
-                %% torsion velocity
-                dataTemp.torsionVelT(countLt, 1) = torsion.slowPhases.meanSpeed;
-                
-                %% torsion magnitude
-                dataTemp.torsionAngleTotal(countLt, 1) = torsion.slowPhases.totalAngle;
-                dataTemp.torsionAngleCW(countLt, 1) = torsion.slowPhases.totalAngleCW;
-                dataTemp.torsionAngleCCW(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
-                % just take the one that is not zero, if both
-                % not zero, take the expected direction
-                if torsion.slowPhases.totalAngleCW==0
-                    dataTemp.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
-                elseif torsion.slowPhases.totalAngleCCW==0
-                    dataTemp.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
-                elseif dataTemp.afterReversalD(countLt, 1)==1
-                    dataTemp.torsionAngle(countLt, 1) = torsion.slowPhases.totalAngleCW;
-                elseif dataTemp.afterReversalD(countLt, 1)==-1
-                    dataTemp.torsionAngle(countLt, 1) = -torsion.slowPhases.totalAngleCCW;
-                end
-                
-                %% saccade numbers
-                dataTemp.sacNumT(countLt, 1) = trial.saccades.T.number;
-                dataTemp.sacNumTCW(countLt, 1) = trial.saccades.T_CW.number;
-                dataTemp.sacNumTCCW(countLt, 1) = trial.saccades.T_CCW.number;
-                
-                %% saccade sum amplitudes
-                dataTemp.sacAmpSumT(countLt, 1) = trial.saccades.T.sum;
-                dataTemp.sacAmpSumTCW(countLt, 1) = trial.saccades.T_CW.sum;
-                dataTemp.sacAmpSumTCCW(countLt, 1) = trial.saccades.T_CCW.sum;
-                
-                %% saccade mean amplitudes
-                dataTemp.sacAmpMeanT(countLt, 1) = trial.saccades.T.meanAmplitude;
-                dataTemp.sacAmpMeanTCW(countLt, 1) = trial.saccades.T_CW.meanAmplitude;
-                dataTemp.sacAmpMeanTCCW(countLt, 1) = trial.saccades.T_CCW.meanAmplitude;
-                %                             end
-                countLt = countLt+1;
-            elseif errorsR.errorStatus(t)==0 && resp.rotationSpeed(t)==0
-                trialPosBase.sub(countPos, 1) = subj; % currently just get all position data... to see for later
-                trialPosBase.rotationSpeed(countPos, 1) = resp.rotationSpeed(t);
-                trialPosBase.afterReversalD(countPos, 1) = -resp.initialDirection(t); % 1-clockwise, -1 counterclockwise
-                trialPosBase.headTilt(countPos, 1) = resp.headTilt(t);
-                trialPosBase.stim.onset(countPos, 1) = trial.stim_onset;
-                trialPosBase.stim.offset(countPos, 1) = trial.stim_offset;
-                trialPosBase.frameLog.startFrame(countPos, 1) = trial.startFrame;
-                trialPosBase.frameLog.endFrame(countPos, 1) = trial.endFrame;
-                trialPosBase.frameLog.length(countPos, 1) = trial.length;
-                trialPosBase.frames{countPos, 1} = trial.frames;
-                countPos = countPos + 1;
-            end
-        end
-    end
-    trialDataBase = [trialDataBase; dataTemp];
-end
-% end
-cd([analysisF '\analysis functions'])
-save(['dataLongBase.mat'], 'trialDataBase', 'trialPosBase'); %, 'trialDeleted');
+% generate CSV file to use in R
+cd([analysisFolder '\R'])
+writetable(trialData, 'trialDataAll.csv')

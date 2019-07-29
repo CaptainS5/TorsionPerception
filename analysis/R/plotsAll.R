@@ -16,11 +16,11 @@ rm(list = ls())
 # setwd("E:/XiuyunWu/Torsion-FDE/analysis/R")
 # folder1 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp1/")
 # folder2 <- ("E:/XiuyunWu/Torsion-FDE/figures/Exp2/")
-# on XPS13
-setwd("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/analysis/R")
-folder1 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp1/")
-folder2 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp2/")
-folder3 <- ("C:/Users/CaptainS5/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp3/")
+# on Inspiron13
+setwd("C:/Users/wuxiu/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/analysis/R")
+folder1 <- ("C:/Users/wuxiu/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp1/")
+folder2 <- ("C:/Users/wuxiu/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp2/")
+folder3 <- ("C:/Users/wuxiu/Documents/PhD@UBC/Lab/1stYear/TorsionPerception/results/figures/Exp3/")
 # conData1Original <- read.csv('conDataAllExp1.csv')
 # conData2Original <- read.csv('conDataAllExp2BothEyes.csv')
 # # eye: 1 left eye, 2 right eye
@@ -36,6 +36,7 @@ trialData2Original <- read.csv("trialDataAllExp2.csv")
 trialDataBoth2Original <- read.csv("trialDataAllBothEyeExp2.csv")
 baseTorsion3Original <- read.csv("trialDataBaseAllExp3pilot.csv")
 trialData3Original <- read.csv("trialDataAllExp3pilot.csv")
+trialDataTwoEyes2Original <- read.csv("trialDataAllTwoEyesExp2.csv")
 # eye: 1 left eye, 2 right eye
 # afterReversalD: -1 CCW, 1 CW, 0 merged as CW
 # time window: -1 120ms after onset to flash onset; 0-flash onset to flash offset; 1 120ms after flash offset to end
@@ -72,7 +73,7 @@ dataExp1$sub <- as.factor(dataExp1$sub)
 
 dataAgg1 <- aggregate(. ~ rotationSpeed * exp * sub, data = dataExp1, FUN = "mean")
 dataAgg1$psd <- aggregate(perceptualError ~ rotationSpeed * exp * sub, data = dataExp1, FUN = "sd")$perceptualError
-
+# show(dataAgg1)
 pdf(paste(folder1,"perceptionExp1.pdf", sep = ""))
 p <- ggplot(dataAgg1, aes(x = rotationSpeed, y = perceptualError)) +
         stat_summary(aes(y = perceptualError), fun.y = mean, geom = "point", shape = 95, size = 15) +
@@ -1071,8 +1072,9 @@ dataHist$sub <- as.factor(dataHist$sub)
 dataHist$timeWindow <- as.factor(dataHist$timeWindow)
 # show(dataHist)
 pdf(paste(folder2, "histVelocityBothEye.pdf", sep = ""))
-p <- ggplot(dataHist, aes(torsionVelT, colour = sub)) +
+p <- ggplot(dataHist, aes(torsionVelT, colour = sub)) + 
         geom_line(stat = "density", size = 1) +
+        # geom_density(mapping = NULL, data = NULL, stat = "density",   position = "identity", na.rm = FALSE, show.legend = NA,   inherit.aes = TRUE) +
         scale_y_continuous(name = "Density", breaks=c(0, 1, 2), limits = c(-0.2, 2), expand = c(0, 0)) +
         scale_x_continuous(name = "Torsional velocity (°/s)", breaks=seq(-2, 2, 1), limits = c(-2.5, 2.5), expand = c(0, 0)) +
         # geom_segment(aes_all(c('x', 'y', 'xend', 'yend')), data = data.frame(x = -2.5, xend = 2.5, y = 0, yend = 0), size = 1, colour = "white") +
@@ -1172,6 +1174,38 @@ p <- ggplot(dataAgg2, aes(x = rotationSpeed, y = torsionAngleSame)) +
               legend.background = element_rect(fill="transparent"),
               legend.key = element_rect(colour = "transparent", fill = "white")) +
               facet_wrap(~timeWindow)
+print(p)
+dev.off()
+
+## trials where both eyes data are available; plot eyes separately to check for cyclovergence
+# torsional velocity
+trialDataTwo2 <- trialDataTwoEyes2Original #[which(trialDataBoth2Original$timeWindow != 0), ]
+
+# histogram of velocity
+# before reversal
+dataHist <- trialDataTwo2[which(trialDataTwo2$rotationSpeed==200 & trialDataTwo2$eye!=0 & trialDataTwo2$timeWindow==1),]
+dataHist$sub <- as.factor(dataHist$sub)
+# dataHist$timeWindow <- as.factor(dataHist$timeWindow)
+dataHist$eye <- as.factor(dataHist$eye)
+# show(dataHist$eye)
+pdf(paste(folder2, "histVelocityTwoEyesSub200After.pdf", sep = ""))
+p <- ggplot(dataHist, aes(torsionVelT, linetype = eye)) +
+        geom_line(stat = "density", size = 1) +
+        # scale_y_continuous(name = "Density", breaks=c(0, 1, 2), limits = c(-0.2, 2), expand = c(0, 0)) +
+        scale_x_continuous(name = "Torsional velocity (°/s)", breaks=c(-3, 0, 3), limits = c(-3, 3), expand = c(0, 0)) +
+        # geom_segment(aes_all(c('x', 'y', 'xend', 'yend')), data = data.frame(x = -2.5, xend = 2.5, y = 0, yend = 0), size = 1, colour = "white") +
+        # geom_segment(aes_all(c('x', 'y', 'xend', 'yend')), data = data.frame(x = c(-2, -2.5), xend = c(2, -2.5), y = c(-0.2, 0), yend = c(-0.2, 2)), size = axisLineWidth, colour = "black") +
+        theme(axis.text=element_text(colour="black"),
+              axis.ticks=element_line(colour="black", size = axisLineWidth),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              panel.border = element_blank(),
+              panel.background = element_blank(),
+              text = element_text(size = textSize),
+              legend.background = element_rect(fill="transparent"),
+              legend.key = element_rect(colour = "transparent", fill = "white"),
+              aspect.ratio=1) +
+        facet_wrap(~sub, nrow = 2)
 print(p)
 dev.off()
 

@@ -118,6 +118,4 @@ trial.saccades.T_CCW.offsets = saccades.T_CCW.offsets;
 trial.saccades.T_CW.onsets = saccades.T_CW.onsets;
 trial.saccades.T_CW.offsets = saccades.T_CW.offsets;
 
-
-
 end
