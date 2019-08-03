@@ -78,6 +78,7 @@ logData.dotsDiameter = allData{12};
 logData.dotsNumber = allData{13};
 logData.slopeAngle = allData{14};
 
+% didn't change, not correct, all natural in the control exp
 rightNatural = ~logData.translationalDirection & ~logData.rotationalDirection;
 leftNatural  = logData.translationalDirection & logData.rotationalDirection;
 
