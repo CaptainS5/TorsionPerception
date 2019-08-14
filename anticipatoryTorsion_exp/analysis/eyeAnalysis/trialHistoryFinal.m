@@ -1,11 +1,37 @@
-% tree plot of the effects of trial history...
+% analysis including the old experiments, mostly tree plots
 
+%% calculate number of excluded trials
+% initializeParas;
+% cd(analysisFolder)
+% exclusion = [];
+% 
+% % from the old experiments 1 and 2
+% exp14 = load('horizontalAnt_exp14.mat');
+% exp16 = load('horizontalAnt_exp16.mat');
+% for subN = 1:9
+%     temp14 = length(find(isnan(exp14.horizontalAnt(:, :, 1))));
+%     temp16 = length(find(isnan(exp16.horizontalAnt(:, :, 1))));
+%     exclusion = [exclusion; temp14/600];
+%     exclusion = [exclusion; temp16/600];
+% end
+% 
+% % from exp 3
+% for subN = 1:5
+%     temp = length(find(trialData.sub==subN));
+%     exclusion = [exclusion; 1-temp/400];
+% end
+% % mean and range
+% mean(exclusion)
+% min(exclusion)
+% max(exclusion)
+
+%% tree plots of the effects of trial history...
 %% Old data, Experiment 2, for anticipatory torsion
 % always left to right, so natural = CW, unnatural = CCW
 initializeParas;
 cd(analysisFolder)
-individualPlots = 1;
-averagedPlots = 1;
+individualPlots = 0;
+averagedPlots = 0;
 
 load('torsionAnt_exp16') % anticipatory torsion
 % to reconstruct trial order? read in log files first
@@ -108,7 +134,7 @@ cd(analysisFolder)
 
 %% New data, Experiment 3 (control)
 initializeParas;
-individualPlots = 1;
+individualPlots = 0;
 averagedPlots = 1;
 
 for subN = 1:size(names, 2)
@@ -174,10 +200,10 @@ end
 
 %% averaged plots
 if averagedPlots==1
-    % torsion plots
-    cd(torsionFolder)
-    % anticipatory torsion
-    drawPlot(1, nodesTmean, nodesTste, 'Trial', 'Anticipatory torsion velocity (deg/s)', {'CW' 'CCW'}, 'trialHistory_anticipatoryT_', 'Exp3_all', [])
+%     % torsion plots
+%     cd(torsionFolder)
+%     % anticipatory torsion
+%     drawPlot(1, nodesTmean, nodesTste, 'Trial', 'Anticipatory torsion velocity (deg/s)', {'CW' 'CCW'}, 'trialHistory_anticipatoryT_', 'Exp3_all', [])
     
     % pursuit plots
     cd(pursuitFolder)
@@ -273,6 +299,7 @@ for subConI = 1:length(subConNames)
         plot([1], meanY{subConI, subN}(3, 1)', 'ok', 'MarkerFaceColor', 'k')
     end
     xlim([0.5 3.5])
+%     ylim([-0.5 0.8])
     title([subConNames(subConI) ' ' subName ' ' dirConName])
     legend([p{:}], {'Right/CCW (negative)' 'Left/CW (positive)'}, 'location', 'best')
     set(gca, 'XTick', [1, 2, 3], 'XTickLabels', {'n-2', 'n-1', 'n'})

@@ -1,8 +1,8 @@
-% plots for the manuscript
+% anova and plots for the manuscript
 initializeParas;
 trialData.translationalDirection = double(trialData.translationalDirection);
 
-%% for the manuscript, directions merged
+%% plots and ANOVA for the manuscript, directions merged
 for subN = 1:size(names, 2)
     %% Eye velocity bar plots
     % anticipatory torsion/pursuit, right minus left moving trials
@@ -13,6 +13,27 @@ for subN = 1:size(names, 2)
         anticipatoryP(subN, trialTypeI) = nanmean(-data.anticipatoryPursuitHVel.*data.translationalDirection); % collapsed to left, positive (-1=left)
     end
 end
+
+%% ANOVA 
+%% anticipatory pursuit
+antiPtable = table();
+% antiPtable.sub = names';
+antiPtable.neutral = anticipatoryP(:, 1);
+antiPtable.natural = anticipatoryP(:, 2);
+Meas = table([1 2]','VariableNames',{'Rotation'});
+rm = fitrm(antiPtable,'neutral-natural~1','WithinDesign',Meas);
+ranovatbl = ranova(rm)
+etaSquared = ranovatbl.SumSq(1)/sum(ranovatbl.SumSq)
+
+%% anticipatory torsion
+antiTtable = table();
+% antiTtable.sub = names';
+antiTtable.neutral = anticipatoryT(:, 1);
+antiTtable.natural = anticipatoryT(:, 2);
+Meas = table([1 2]','VariableNames',{'Rotation'});
+rm = fitrm(antiTtable,'neutral-natural~1','WithinDesign',Meas);
+ranovatbl = ranova(rm)
+etaSquared = ranovatbl.SumSq(1)/sum(ranovatbl.SumSq)
 
 %% bar plots
 % calculate the group mean and ste
