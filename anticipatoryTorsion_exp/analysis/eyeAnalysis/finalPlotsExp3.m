@@ -16,6 +16,7 @@ end
 
 %% ANOVA 
 %% anticipatory pursuit
+%% ANOVA for exp 3
 antiPtable = table();
 % antiPtable.sub = names';
 antiPtable.neutral = anticipatoryP(:, 1);
@@ -25,7 +26,140 @@ rm = fitrm(antiPtable,'neutral-natural~1','WithinDesign',Meas);
 ranovatbl = ranova(rm)
 etaSquared = ranovatbl.SumSq(1)/sum(ranovatbl.SumSq)
 
+%% ANOVA comparing mean anticipatory pursuit velocity in exp1, 2, and 3
+data1 = load('horizontalAnt_exp14');
+data2 = load('horizontalAnt_exp16');
+aspAlltable = table();
+aspIdx = 1;
+for subN = 1:size(data1.horizontalAnt, 3)
+    if subN~=7 && subN~=11 && subN~=12
+        aspAlltable.exp(aspIdx, 1) = 1;
+        temp = data1.horizontalAnt(:, :, subN);
+        if subN==2
+            temp2 = data1.horizontalAnt(:, :, 12);
+            aspAlltable.asp(aspIdx, 1) = mean(abs([nanmean(temp) nanmean(temp2)]));
+        elseif subN==3
+            temp2 = data1.horizontalAnt(:, :, 7);
+            aspAlltable.asp(aspIdx, 1) = mean(abs([nanmean(temp) nanmean(temp2)]));
+        elseif subN==4
+            temp2 = data1.horizontalAnt(:, :, 11);
+            aspAlltable.asp(aspIdx, 1) = mean(abs([nanmean(temp) nanmean(temp2)]));
+        else
+            aspAlltable.asp(aspIdx, 1) = abs(mean(nanmean(temp)));
+        end
+        aspIdx = aspIdx+1;
+    end
+% if subN~=7 && subN~=11 && subN~=12
+%     aspAlltable.exp(aspIdx, 1) = 1;
+%     temp = data1.horizontalAnt(:, :, subN);
+%     if subN==2
+%         temp2 = data1.horizontalAnt(:, :, 12);
+%         aspAlltable.asp(aspIdx, 1) = mean(abs([nanmean(temp(:)) nanmean(temp2(:))]));
+%     elseif subN==3
+%         temp2 = data1.horizontalAnt(:, :, 7);
+%         aspAlltable.asp(aspIdx, 1) = mean(abs([nanmean(temp(:)) nanmean(temp2(:))]));
+%     elseif subN==4
+%         temp2 = data1.horizontalAnt(:, :, 11);
+%         aspAlltable.asp(aspIdx, 1) = mean(abs([nanmean(temp(:)) nanmean(temp2(:))]));
+%     else
+%         aspAlltable.asp(aspIdx, 1) = abs(mean(nanmean(temp)));
+%     end
+%     aspIdx = aspIdx+1;
+% end
+end
+for subN = 1:size(data2.horizontalAnt, 3)
+    aspAlltable.exp(aspIdx, 1) = 2;
+    temp = data2.horizontalAnt(:, :, subN);
+    aspAlltable.asp(aspIdx, 1) = abs(mean(nanmean(temp)));
+%         aspAlltable.asp(aspIdx, 1) = abs(nanmean(temp(:)));
+    aspIdx = aspIdx+1;
+end
+for subN = 1:size(anticipatoryP, 1)
+    aspAlltable.exp(aspIdx, 1) = 3;
+    aspAlltable.asp(aspIdx, 1) = nanmean(anticipatoryP(subN, :));
+    aspIdx = aspIdx+1;
+end
+[p, tbl, stats] = anovan(aspAlltable.asp, aspAlltable.exp);
+etaSquared = tbl{2, 2}/tbl{4, 2}
+
+%% Anova in experiment 1
+aspTable1 = table();
+subIdx = 1;
+for subN = 1:size(data1.horizontalAnt, 3)
+    if subN~=7 && subN~=11 && subN~=12
+        if subN==2
+            neutral1 = abs(nanmean(data1.horizontalAnt(:, 3, subN)));
+            natural1 = abs(nanmean(data1.horizontalAnt(:, 1, subN)));
+            unnatural1 = abs(nanmean(data1.horizontalAnt(:, 2, subN)));
+            neutral2 = abs(nanmean(data1.horizontalAnt(:, 3, 12)));
+            natural2 = abs(nanmean(data1.horizontalAnt(:, 1, 12)));
+            unnatural2 = abs(nanmean(data1.horizontalAnt(:, 2, 12)));
+            
+            aspTable1.neutral(subIdx, 1) = mean([neutral1 neutral2]);
+            aspTable1.natural(subIdx, 1) = mean([natural1 natural2]);
+            aspTable1.unnatural(subIdx, 1) = mean([unnatural1 unnatural2]);
+        elseif subN==3
+            neutral1 = abs(nanmean(data1.horizontalAnt(:, 3, subN)));
+            natural1 = abs(nanmean(data1.horizontalAnt(:, 1, subN)));
+            unnatural1 = abs(nanmean(data1.horizontalAnt(:, 2, subN)));
+            neutral2 = abs(nanmean(data1.horizontalAnt(:, 3, 7)));
+            natural2 = abs(nanmean(data1.horizontalAnt(:, 1, 7)));
+            unnatural2 = abs(nanmean(data1.horizontalAnt(:, 2, 7)));
+            
+            aspTable1.neutral(subIdx, 1) = mean([neutral1 neutral2]);
+            aspTable1.natural(subIdx, 1) = mean([natural1 natural2]);
+            aspTable1.unnatural(subIdx, 1) = mean([unnatural1 unnatural2]);
+        elseif subN==4
+            neutral1 = abs(nanmean(data1.horizontalAnt(:, 3, subN)));
+            natural1 = abs(nanmean(data1.horizontalAnt(:, 1, subN)));
+            unnatural1 = abs(nanmean(data1.horizontalAnt(:, 2, subN)));
+            neutral2 = abs(nanmean(data1.horizontalAnt(:, 3, 11)));
+            natural2 = abs(nanmean(data1.horizontalAnt(:, 1, 11)));
+            unnatural2 = abs(nanmean(data1.horizontalAnt(:, 2, 11)));
+            
+            aspTable1.neutral(subIdx, 1) = mean([neutral1 neutral2]);
+            aspTable1.natural(subIdx, 1) = mean([natural1 natural2]);
+            aspTable1.unnatural(subIdx, 1) = mean([unnatural1 unnatural2]);
+        else
+            aspTable1.neutral(subIdx, 1) = abs(nanmean(data1.horizontalAnt(:, 3, subN)));
+            aspTable1.natural(subIdx, 1) = abs(nanmean(data1.horizontalAnt(:, 1, subN)));
+            aspTable1.unnatural(subIdx, 1) = abs(nanmean(data1.horizontalAnt(:, 2, subN)));
+        end
+        subIdx = subIdx+1;
+    end
+end
+Meas = table([1 2 3]','VariableNames',{'Rotation'});
+rm = fitrm(aspTable1,'neutral-unnatural~1','WithinDesign',Meas);
+ranovatbl = ranova(rm)
+etaSquared = ranovatbl.SumSq(1)/sum(ranovatbl.SumSq)
+
+%% Anova in experiment 2
+aspTable2 = table();
+for subN = 1:size(data2.horizontalAnt, 3)
+    aspTable2.neutral(subN, 1) = abs(nanmean(data2.horizontalAnt(:, 3, subN)));
+    aspTable2.natural(subN, 1) = abs(nanmean(data2.horizontalAnt(:, 1, subN)));
+    aspTable2.unnatural(subN, 1) = abs(nanmean(data2.horizontalAnt(:, 2, subN)));
+end
+Meas = table([1 2 3]','VariableNames',{'Rotation'});
+rm = fitrm(aspTable2,'neutral-unnatural~1','WithinDesign',Meas);
+ranovatbl = ranova(rm)
+etaSquared = ranovatbl.SumSq(1)/sum(ranovatbl.SumSq)
+
 %% anticipatory torsion
+%% ANOVA in experiment 2
+dataT2 = load('torsionAnt_exp16');
+atTable2 = table();
+for subN = 1:size(dataT2.torsionAnt, 3)
+    atTable2.neutral(subN, 1) = abs(nanmean(dataT2.torsionAnt(:, 3, subN)));
+    atTable2.natural(subN, 1) = abs(nanmean(dataT2.torsionAnt(:, 1, subN)));
+    atTable2.unnatural(subN, 1) = abs(nanmean(dataT2.torsionAnt(:, 2, subN)));
+end
+Meas = table([1 2 3]','VariableNames',{'Rotation'});
+rm = fitrm(atTable2,'neutral-unnatural~1','WithinDesign',Meas);
+ranovatbl = ranova(rm)
+etaSquared = ranovatbl.SumSq(1)/sum(ranovatbl.SumSq)
+
+%% ANOVA in exp3
 antiTtable = table();
 % antiTtable.sub = names';
 antiTtable.neutral = anticipatoryT(:, 1);
